@@ -105,7 +105,17 @@ def _celda(valor):
         return "SI"
     if valor is False:
         return "NAO"
+    if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+        return _numero_a_texto(valor)
     return str(valor)
+
+
+def _numero_a_texto(valor):
+    """Numero en formato pt-BR sin separador de milhar: 215380,4 / 37000."""
+    f = float(valor)
+    if f == int(f) and abs(f) < 1e15:
+        return str(int(f))
+    return f"{f:.12g}".replace(".", ",")
 
 
 def carregar_json(ruta):

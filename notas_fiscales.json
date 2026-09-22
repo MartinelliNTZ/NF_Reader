@@ -10,7 +10,7 @@
     "data_emissao": "15/07/2022",
     "data_entrada_saida": "15/07/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": "215.380,40",
+    "valor_da_nota": 215380.4,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidadeterceiros",
     "protocolo_autorizacao": "151220049325871",
     "qr": "NF-e emitidapeloOobj-NFE-http://www.oobj.com.br",
@@ -35,8 +35,8 @@
       "cnpj_cpf": "10.280.806/0014-5",
       "placa": "RHH-4G17"
     },
-    "peso_bruto": "0",
-    "peso_liquido": "37.000,000",
+    "peso_bruto": 0,
+    "peso_liquido": 37000.0,
     "produtos": [
       {
         "codigo": "P015",
@@ -45,12 +45,14 @@
         "origem_cst": "6/20",
         "cfop": "5102",
         "unidade": "TON",
-        "quantidade": "37,0000",
-        "valor_unitario": "5.821,0919",
-        "valor_total": "215.380.40",
-        "bc_icms": "12.664.37",
-        "valor_icms": "2.152,94",
-        "valor_ipi": "0.0017,000."
+        "quantidade": 37.0,
+        "valor_unitario": 5821.0919,
+        "valor_total": 215380.4,
+        "bc_icms": 12664.37,
+        "valor_icms": 2152.94,
+        "valor_ipi": null,
+        "desconto": null,
+        "aliquota": null
       }
     ],
     "dados_adicionais": "Armazenarem local.seco,cobertoearejado; | FABRICACAO-PEDIDODEVENDA2520-PLACACAVALORHH-4G17-DadosDestinatario: | INFORMACOESCOMPLEMENTARES | IPInaotributadoconformeDecreto89502016capitulo31dasecaoVILei10925art1 | NF-e emitidapeloOobj-NFE-http://www.oobj.com.br | REF.NF9803DATADEFABRICACAO15/07/2022-VALIDADEDE12MESESAPARTIRDADATADE | RESERVADOAOFISCO | de23/07/2004reduzaaliquota0dePiS/COFINSReducaodaBCdoICMSconformeDecreto | n932/2021(DOEde05.05.2021)ConvenioICMS26/2021de12demarcode2021",
@@ -149,12 +151,14 @@
         "origem_cst": "6/20",
         "cfop": "5102",
         "unidade": "TON",
-        "quantidade": "37.0000",
-        "desconto": "5.821,0919",
-        "valor_total": "215.380.40",
-        "aliquota": "ICMSTIPI 0.0017.000.00",
-        "bc_icms": "12.664.37",
-        "valor_icms": "2.152.94"
+        "quantidade": 37.0,
+        "desconto": null,
+        "valor_total": 215380.4,
+        "aliquota": null,
+        "bc_icms": 12664.37,
+        "valor_icms": 2152.94,
+        "valor_unitario": 5821.0919,
+        "valor_ipi": null
       }
     ],
     "dados_adicionais": "INFORMACOESCOMPLEMENTARES | IPInaotributadoconformeDecreto89502016capitulo31dasecaoV1Lei10925art1 | LOTEIMP197022/2022-DATADEFABRICACAO18/07/2022-VALIDADEDE12MESESAPARTIR | MEA6867DadosDestinatario:Armazenarem local seco,cobertoearejado: | NF-eemitidapeloOobj-NFE-http:/www.oobj.com.br | RESERVADO AOFISCO | de23/07/2004reduzAaliquota0dePIS/COFINSReducaodaBCdoICMSconformeDecreto | n932/2021(DOEde05.05.2021)ConvenioICMS26/2021de 12de marcode2021",
@@ -174,7 +178,7 @@
     "data_emissao": "18/07/2022",
     "data_entrada_saida": "18/07/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": "209.559,31",
+    "valor_da_nota": 209559.31,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidade terceiros",
     "protocolo_autorizacao": "15122004976234718",
     "qr": "NF-e emitidapeloOobj-NFE-http://www.oobj.com.br",
@@ -199,21 +203,23 @@
       "cnpj_cpf": null,
       "placa": null
     },
-    "peso_bruto": "0",
-    "peso_liquido": "36.000,00",
+    "peso_bruto": 0,
+    "peso_liquido": 36000.0,
     "produtos": [
       {
         "codigo": "P015",
         "descricao": "FosfatoMonoamonico11%N-52%P205- Granulado",
         "ncm": "31054000",
         "origem_cst": "6/20",
-        "cfop": "5102 TON",
-        "quantidade": "36.0000",
-        "desconto": "5.821.0919",
-        "valor_total": "209.559,31",
-        "bc_icms": "12.322.09",
-        "valor_icms": "2.094,76",
-        "valor_ipi": "0.0017.00"
+        "cfop": "5102",
+        "quantidade": 36.0,
+        "desconto": null,
+        "valor_total": 209559.31,
+        "bc_icms": 12322.09,
+        "valor_icms": 2094.76,
+        "valor_ipi": null,
+        "valor_unitario": 5821.0919,
+        "aliquota": null
       }
     ],
     "dados_adicionais": "DADATADEFABRICACAO-PEDIDODEVENDA2520-PLACACAVALOKIO-5592DadoS | Destinatario:Armazenarem local seco,cobertoe arejado; | INFORMACOESCOMPLEMENTARES | IPInaotributadoconformeDecreto89502016capitulo31da secaoVILei10925art1 | LOTEIMP197022/9833-DATADEFABRICACAO16/07/2022-VALIDADEDE12MESESAPARTIR | NF-e emitidapeloOobj-NFE-http://www.oobj.com.br | RESERVADOAOFISCO | de23/07/2004reduza aliquota0dePIS/COFINSReducaodaBCdoICMSconformeDecreto | n932/2021（D0Ede05052021)Convenio1CMS26/2021de12demarcode2021",
@@ -311,12 +317,15 @@
         "descricao": "FosfatoMonoamonico11%N-52%P205- Granulado",
         "ncm": "31054000",
         "origem_cst": "6/20",
-        "cfop": "5102 TON",
-        "valor_unitario": "48,0000 5.907,0600",
-        "valor_total": "283.538.88",
-        "bc_icms": "16.672.09",
-        "valor_icms": "2.834,26",
-        "valor_ipi": "0.0017.000.0"
+        "cfop": "5102",
+        "valor_unitario": 5907.06,
+        "valor_total": 283538.88,
+        "bc_icms": 16672.09,
+        "valor_icms": 2834.26,
+        "valor_ipi": null,
+        "quantidade": 48.0,
+        "desconto": null,
+        "aliquota": null
       }
     ],
     "dados_adicionais": "Destinatario:Amazenaremlocal seco,cobertoearejado; | INFORMACOESCOMPLEMENTARES | IPInaotributadoconformeDecreto89502016capitulo31da secaoVi;Lei10925art1 | LOTE:IMP194022DATADEFABRICACAO20/07/2022-VALIDADEDE12MESESAPARTIRDADATA | NF-eemitidapeloOobj-NFE-http:/www.oobj.com,br | RESERVADOAOFISCO | de23/07/2004reduzaaliquota0dePIS/COFINSReducaodaBCdoiCMSconformeDecreto | n932/2021(DOEde05052021)ConvenioICMS26/2021de12demarcode2021",
@@ -336,7 +345,7 @@
     "data_emissao": "01/08/2022",
     "data_entrada_saida": "01/08/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": "189.025,92",
+    "valor_da_nota": 189025.92,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidadeterceiros",
     "protocolo_autorizacao": "15122005358937201",
     "qr": "NF-eemitidapeioOobj-NFE-http:/www.oobj.com.br",
@@ -361,8 +370,8 @@
       "cnpj_cpf": "10.280.806/0001-34",
       "placa": "MGO-8A48"
     },
-    "peso_bruto": "0",
-    "peso_liquido": "133601609",
+    "peso_bruto": 0,
+    "peso_liquido": null,
     "produtos": [
       {
         "codigo": "POIS",
@@ -371,12 +380,14 @@
         "origem_cst": "6/20",
         "cfop": "5102",
         "unidade": "TON",
-        "quantidade": "32,0000",
-        "valor_unitario": "5.907,0600",
-        "valor_total": "189.025.92",
-        "bc_icms": "11.114.72",
-        "valor_icms": "1.889.50",
-        "valor_ipi": "0,00|17.000.0"
+        "quantidade": 32.0,
+        "valor_unitario": 5907.06,
+        "valor_total": 189025.92,
+        "bc_icms": 11114.72,
+        "valor_icms": 1889.5,
+        "valor_ipi": 0.0,
+        "desconto": null,
+        "aliquota": null
       }
     ],
     "dados_adicionais": "INFORMACOESCOMPLEMENTARES | IPInao tributadoconformeDecreto89502016capitulo31dasecaoV1Lei10925art1 | LOTEIMP197022/2022-DATADEFABRICACAO01/08/2022-VALIDADEDE12MESESAPARTIR | MHQ-4629DadosDestinatario:Armazenarem local seco,cobertoearejado; | NF-eemitidapeioOobj-NFE-http:/www.oobj.com.br | RESERVADOAOFISCO | de23/07/2004reduzAaliquota0dePIS/COFINSReducaodaBCdoICMSconfommeDecreto | n932/2021（D0Ede05.05.2021)ConvenioICMS26/2021.de12demarcode2021",
@@ -424,17 +435,20 @@
     "peso_liquido": null,
     "produtos": [
       {
-        "codigo": "P015 DADOSADICIONAIS",
+        "codigo": "P015",
         "descricao": "Granulado FosfatoMonoamonico11%N-52%P205- APLICACAOVIASOLO: Obs:FERT.MINERALSIMPLES, Lote:IMP197022-Qtde:36; Lote(s):Reg.MAPA:PR 0015695 000026.",
         "ncm": "31054000",
         "origem_cst": "6/20",
         "cfop": "5102",
-        "unidade": "TON 36,0000",
-        "valor_unitario": "5.821,0925",
-        "valor_total": "209.559,33",
-        "bc_icms": "12.322,09",
-        "valor_icms": "2.094,76",
-        "aliquota": "0,0017,000,00"
+        "unidade": "TON",
+        "valor_unitario": 5821.0925,
+        "valor_total": 209559.33,
+        "bc_icms": 12322.09,
+        "valor_icms": 2094.76,
+        "aliquota": null,
+        "quantidade": 36.0,
+        "desconto": null,
+        "valor_ipi": null
       }
     ],
     "dados_adicionais": "INFORMACOESCOMPLEMENTARES | INTERSITESISTEMASLTDA-geral@intersite.com.br-(67)3047-2020 | IPinaotributadoconformeDecreto89502016capitulo31dasecaoV1Lei10925art1 | LOTEIMP197022-DATADEFABRICACAO01/08/2022-VALIDADEDE12MESESAPARTIRDA | NF-eemitidapeloOobj-NFE-http://www.oobj.com.br | QIY-6756/7066DadosDestinatario:Armazenaremlocal seco,cobertoearejado; | RESERVADOAOFISCO | ValorAprox.Tributos:R$118,44-16,45%FonteIBPT | de23/07/2004reduzaaliquota0dePIS/COFINSReducaodaBCdoICMSconformeDecreto | n932/2021（DOEde05.05.2021)ConvenioICMS26/2021,de12demarcode2021",

@@ -35,6 +35,9 @@ try:
 except ImportError:
     import fitz as pymupdf  # versao antiga
 
+from normalizar_numeros import (generar_reporte, normalizar_campos_numericos,
+                                normalizar_numero)
+
 # ---------------------------------------------------------------------------
 # Utilidades de normalizacao
 # ---------------------------------------------------------------------------
@@ -666,7 +669,8 @@ def avaliar_completude(info, chave_valida):
     """
     if not chave_valida:
         return "parcial", "chave de acesso com digito verificador invalido (DV)"
-    faltantes = [c for c in CAMPOS_NUCLEARES if not _campo_aninhado(info, c)]
+    faltantes = [c for c in CAMPOS_NUCLEARES
+                 if _campo_aninhado(info, c) in (None, "")]
     if faltantes:
         return "parcial", "campos nucleares ausentes: " + ", ".join(faltantes)
     return "completa", None
@@ -693,24 +697,27 @@ def processar_pdf(caminho, raiz, engine, dpi):
             itens = None
 
     if not itens:
-        return None, None, False, "nao foi possivel extrair texto nem OCR do PDF"
+        return None, None, False, "nao foi possibil extrair texto nem OCR do PDF", []
 
     chave, ok = extrair_chave_acesso(itens)
     if not chave:
-        return None, None, False, "nao foi encontrada a chave de acesso (44 digitos)"
+        return None, None, False, "nao foi encontrada a chave de acesso (44 digitos)", []
 
-    # Mesmo com DV invalido, os dados (parciales) sao extraidos em vez de
+    # Mesmo con DV invalido, os datos (parciales) sao extraidos em vez de
     # descartar o PDF: o campo status_extracao indica "completa" / "parcial"
     info = extrair_infos(itens, rel)
     info["origem_texto"] = origem
+    # ---- normalizacion numerica BR ('.' milhar, ',' decimal) ----
+    revision = normalizar_campos_numericos(info)
     status, motivo_parcial = avaliar_completude(info, ok)
     info["status_extracao"] = status
     if motivo_parcial:
         info["motivo_extracao_parcial"] = motivo_parcial
     if not ok:
         return (info, chave, False,
-                f"chave de acesso encontrada mas com digito verificador invalido: {chave}")
-    return info, chave, True, None
+                f"chave de acesso encontrada mas com digito verificador invalido: {chave}",
+                revision)
+    return info, chave, True, None, revision
 
 
 def main():
@@ -758,21 +765,25 @@ def main():
     ins = actual = sin_cambio = parc = 0
     fallos = []
     parciales = []
+    revision_total = []
 
     for i, pdf in enumerate(pdfs, 1):
         print("-" * 78)
         print(f"[{i}/{len(pdfs)}] Processando: {pdf.relative_to(raiz)}")
         try:
-            info, chave, ok, motivo = processar_pdf(pdf, raiz, engine, args.dpi)
+            info, chave, ok, motivo, revision = processar_pdf(pdf, raiz, engine, args.dpi)
         except Exception as e:
             info = chave = ok = None
             motivo = f"erro inesperado: {e}"
+            revision = []
             traceback.print_exc()
 
         if not chave:
             fallos.append((str(pdf.relative_to(raiz)), motivo))
             print(f"    >> NAO foi possivel processar -> {motivo}")
             continue
+
+        revision_total.extend(revision)
 
         print(f"    >> Chave de acesso: {chave}")
         print(f"    >> Chave valida (DV): {'SI' if ok else 'NAO'}")
@@ -834,6 +845,15 @@ def main():
             print(f"      motivo: {motivo}")
     print("=" * 78)
     print(f"JSON final: {json_path}  ({len(datos)} chaves de acesso)")
+
+    # ---- reporte de normalizacion numerica ----
+    if revision_total:
+        reporte_path = raiz / "reporte_normalizacion.txt"
+        n_anom = generar_reporte(revision_total, reporte_path)
+        print("-" * 78)
+        print(f" REPORTE DE NORMALIZACION NUMERICA: {reporte_path}")
+        print(f"   Valores procesados : {len(revision_total)}")
+        print(f"   Anomalias a revisar: {n_anom}")
 
 
 if __name__ == "__main__":
