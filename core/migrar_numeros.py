@@ -20,7 +20,10 @@ import json
 import sys
 from pathlib import Path
 
-from normalizar_numeros import (generar_reporte, normalizar_campos_numericos)
+try:
+    from .normalizar_numeros import (generar_reporte, normalizar_campos_numericos)
+except ImportError:  # ejecucion directa: python core/migrar_numeros.py
+    from normalizar_numeros import (generar_reporte, normalizar_campos_numericos)
 
 
 def carregar_json(ruta):
@@ -35,7 +38,7 @@ def salvar_json(datos, ruta):
     tmp.replace(ruta)
 
 
-def main():
+def main(argv=None):
     try:
         sys.stdout.reconfigure(line_buffering=True)
         sys.stderr.reconfigure(line_buffering=True)
@@ -47,9 +50,9 @@ def main():
     parser.add_argument("--json", dest="json_path", default="notas_fiscales.json")
     parser.add_argument("--reporte", dest="reporte_path",
                         default="reporte_normalizacion.txt")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    base = Path(__file__).resolve().parent
+    base = Path(__file__).resolve().parent.parent
     json_path = Path(args.json_path)
     if not json_path.is_absolute():
         json_path = base / json_path

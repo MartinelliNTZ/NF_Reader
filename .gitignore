@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+
+*.shp
+*.shx
+*.dbf
+*.prj
+
+*.pdf
+
+.env

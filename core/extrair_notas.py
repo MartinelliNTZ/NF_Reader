@@ -5,8 +5,8 @@ Extrai informacoes de Notas Fiscais (NF-e / DANFE) a partir de arquivos PDF
 acumulador.
 
 Uso:
-    python extrair_notas.py [--raiz PASTA] [--json ARQUIVO.json] [--dpi 300]
-                            [--sem-ocr]
+    python core/extrair_notas.py [--raiz PASTA] [--json ARQUIVO.json] [--dpi 300]
+                                 [--sem-ocr]
 
 Requisitos:  pip install pymupdf opencv-python rapidocr-onnxruntime
 
@@ -35,8 +35,12 @@ try:
 except ImportError:
     import fitz as pymupdf  # versao antiga
 
-from normalizar_numeros import (generar_reporte, normalizar_campos_numericos,
-                                normalizar_numero)
+try:
+    from .normalizar_numeros import (generar_reporte, normalizar_campos_numericos,
+                                     normalizar_numero)
+except ImportError:  # ejecucion directa: python core/extrair_notas.py
+    from normalizar_numeros import (generar_reporte, normalizar_campos_numericos,
+                                    normalizar_numero)
 
 # ---------------------------------------------------------------------------
 # Utilidades de normalizacao
@@ -720,7 +724,7 @@ def processar_pdf(caminho, raiz, engine, dpi):
     return info, chave, True, None, revision
 
 
-def main():
+def main(argv=None):
     try:
         sys.stdout.reconfigure(line_buffering=True)
         sys.stderr.reconfigure(line_buffering=True)
@@ -738,9 +742,9 @@ def main():
                         help="NAO atualizar chaves ja existentes no JSON.")
     parser.add_argument("--sem-ocr", action="store_true",
                         help="NAO usar OCR (so PDFs com texto embebido).")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    raiz = Path(args.raiz).resolve() if args.raiz else Path(__file__).resolve().parent
+    raiz = Path(args.raiz).resolve() if args.raiz else Path(__file__).resolve().parent.parent
     json_path = Path(args.json_path)
     if not json_path.is_absolute():
         json_path = raiz / json_path

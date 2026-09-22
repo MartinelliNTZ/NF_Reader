@@ -4,8 +4,8 @@ Gera um CSV tabulado a partir do JSON acumulador de notas fiscales
 (generado por extrair_notas.py).
 
 Uso:
-    python generar_csv.py [--json notas_fiscales.json] [--csv notas_fiscales.csv]
-                          [--incluir-ocr]
+    python core/generar_csv.py [--json notas_fiscales.json] [--csv notas_fiscales.csv]
+                               [--incluir-ocr]
 
 Formato de saida (pensado para abrir em Excel com locale pt-BR):
     - Separador   : ';' (punto e coma).
@@ -156,7 +156,7 @@ def guardar_csv(csv_path, cabeceras, filas):
         writer.writerows(filas)
 
 
-def main():
+def main(argv=None):
     try:
         sys.stdout.reconfigure(line_buffering=True)
         sys.stderr.reconfigure(line_buffering=True)
@@ -171,9 +171,9 @@ def main():
                         help="Arquivo CSV de saida (por omissao: notas_fiscales.csv).")
     parser.add_argument("--incluir-ocr", action="store_true",
                         help="Agregar a columna 'texto_ocr' ao final do CSV.")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    base = Path(__file__).resolve().parent
+    base = Path(__file__).resolve().parent.parent
     json_path = Path(args.json_path)
     if not json_path.is_absolute():
         json_path = base / json_path
