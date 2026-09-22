@@ -6,7 +6,7 @@ acumulador.
 
 Uso:
     python extrair_notas.py [--raiz PASTA] [--json ARQUIVO.json] [--dpi 300]
-                            [--salvar-cache] [--sem-ocr]
+                            [--sem-ocr]
 
 Requisitos:  pip install pymupdf opencv-python rapidocr-onnxruntime
 
@@ -15,9 +15,10 @@ chaves novas sao INSERIDAS. PDFs que nao puderem ser processados sao pulados
 e listados no resumo final com o motivo.
 
 Cada registro guarda o campo "status_extracao": "completa" o "parcial".
-Si a chave de acceso encontrada tem o digito verificador invalido (por
-exemplo por erro de OCR), o PDF NAO e descartado: se extraen os dados
-possibles e se rexistran como PARCIAIS, co motivo en "motivo_extracao_parcial".
+Se a chave de acesso encontrada tem o digito verificador invalido (por
+exemplo por erro de OCR), o PDF NAO e descartado: os dados possibles sao
+extraidos e guardados como PARCIAIS, com o motivo em
+"motivo_extracao_parcial".
 """
 
 import argparse
@@ -25,7 +26,6 @@ import json
 import os
 import re
 import sys
-import tempfile
 import traceback
 import unicodedata
 from pathlib import Path
@@ -50,7 +50,7 @@ def normaliza(texto):
 
 
 def compacta(texto):
-    """Somente letras/digitos, tudo junto — usado p/ casar rotulos."""
+    """Somente letras/digitos, tudo junto - usado p/ casar rotulos."""
     t = normaliza(texto)
     return "".join(c for c in t if c.isalnum())
 
@@ -61,7 +61,7 @@ REG_CPF = r"\d{3}\.\d{3}\.\d{3}-\d{2}"
 REG_VALOR = r"\d{1,3}(?:\.\d{3})*,\d{2}"
 
 
-def valida_chave(chave):
+def validar_chave(chave):
     """Valida chave de acesso NFe de 44 digitos (modulo 11)."""
     chave = "".join(c for c in chave if c.isdigit())
     if len(chave) != 44:
@@ -86,13 +86,13 @@ ESCALA = 300 / 72.0  # converte pontos do PDF p/ mesma escala do OCR a 300dpi
 
 def ler_paginas_texto(caminho):
     """Tenta extrair texto com coordenadas diretamente do PDF."""
-    entradas = []
+    itens = []
     doc = pymupdf.open(caminho)
     try:
         for p in doc:
             palavras = p.get_text("words")  # x0,y0,x1,y1,palavra,...
             for (x0, y0, x1, y1, pal, *_resto) in palavras:
-                entradas.append({
+                itens.append({
                     "texto": pal,
                     "x": (x0 + x1) / 2 * ESCALA,
                     "y": (y0 + y1) / 2 * ESCALA,
@@ -101,7 +101,7 @@ def ler_paginas_texto(caminho):
                 })
     finally:
         doc.close()
-    return entradas if entradas else None
+    return itens if itens else None
 
 
 _OCR_ENGINE = None
@@ -116,26 +116,26 @@ def obter_engine_ocr():
     return _OCR_ENGINE
 
 
-def _entradas_da_pagina(img_bgr, engine, pagina):
+def _itens_da_pagina(img_bgr, engine, pagina):
     resultado, _elapse = engine(img_bgr)
-    entradas = []
-    if not resultado:  # quando não detecta nada, resultado é None
-        return entradas
+    itens = []
+    if not resultado:  # quando nao detecta nada, resultado e None
+        return itens
     for box, texto, conf in resultado:
         xs = [p[0] for p in box]
         ys = [p[1] for p in box]
-        entradas.append({
+        itens.append({
             "texto": texto,
             "x": (min(xs) + max(xs)) / 2,
             "y": (min(ys) + max(ys)) / 2,
             "conf": float(conf),
             "pagina": pagina,
         })
-    return entradas
+    return itens
 
 
 def ler_paginas_ocr(caminho, engine, dpi):
-    entradas = []
+    itens = []
     import io
     import numpy as np
 
@@ -148,16 +148,16 @@ def ler_paginas_ocr(caminho, engine, dpi):
             if pix.n == 4:
                 import cv2
                 img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-            entradas_pag = _entradas_da_pagina(img, engine, p.number + 1)
-            entradas.extend(entradas_pag)
+            itens_pag = _itens_da_pagina(img, engine, p.number + 1)
+            itens.extend(itens_pag)
     finally:
         doc.close()
-    return entradas
+    return itens
 # ---------------------------------------------------------------------------
 # Helpers de extracao de campos
 # ---------------------------------------------------------------------------
 
-# rotulos que NUNCA son "valores" (se excluyen ao buscar o valor ao lado)
+# rotulos que NUNCA sao "valores" (excluidos ao buscar o valor ao lado)
 ROTULOS_EXCLUIR = {
     "nomerazaosocial", "razaosocial", "destinatarioremetente",
     "cnpjcpf", "cnpj", "datadeemissao", "datadeentradasaida",
@@ -183,10 +183,10 @@ ROTULOS_EXCLUIR = {
 }
 
 
-def achar_rotulo(entradas, rotulos, y_min=0, y_max=1e18, pagina=None):
+def achar_rotulo(itens, rotulos, y_min=0, y_max=1e18, pagina=None):
     """Faz match por substring do compacto de cada token de texto."""
     alvos = [compacta(r) for r in rotulos]
-    for e in entradas:
+    for e in itens:
         if not (y_min <= e["y"] <= y_max):
             continue
         if pagina is not None and e["pagina"] != pagina:
@@ -198,13 +198,13 @@ def achar_rotulo(entradas, rotulos, y_min=0, y_max=1e18, pagina=None):
     return None
 
 
-def valor_ao_lado(entradas, rotulo_entry, padrao, margem=45, abre_lado=False,
+def valor_ao_lado(itens, rotulo, padrao, margem=45, abre_lado=False,
                   y_min=None, y_max=None, pagina=None, lado="direita"):
     """Procura o valor na mesma linha (ao lado) ou na linha de abaixo."""
-    x0 = rotulo_entry["x"]
-    y0 = rotulo_entry["y"]
+    x0 = rotulo["x"]
+    y0 = rotulo["y"]
     cand = []
-    for e in entradas:
+    for e in itens:
         if pagina is not None and e["pagina"] != pagina:
             continue
         if y_min is not None and e["y"] < y_min:
@@ -240,51 +240,51 @@ def valor_ao_lado(entradas, rotulo_entry, padrao, margem=45, abre_lado=False,
     return None
 
 
-def pegar_valor(entradas, rotulos, padrao, margem=45, y_min=0, y_max=1e18,
+def pegar_valor(itens, rotulos, padrao, margem=45, y_min=0, y_max=1e18,
                 pagina=None, lado="direita"):
-    e = achar_rotulo(entradas, rotulos, y_min, y_max, pagina)
+    e = achar_rotulo(itens, rotulos, y_min, y_max, pagina)
     if not e:
         return None
-    return valor_ao_lado(entradas, e, padrao, margem, y_min=y_min,
+    return valor_ao_lado(itens, e, padrao, margem, y_min=y_min,
                          y_max=y_max, pagina=pagina, lado=lado)
 
 
-def _ventana_valida(digitos, limite=44):
-    """Busca uma janela de 44 digitos com DV válido dentro de 'digitos'."""
+def _janela_valida(digitos, limite=44):
+    """Busca uma janela de 44 digitos com DV valido dentro de 'digitos'."""
     for i in range(len(digitos) - limite + 1):
         k = digitos[i:i + limite]
-        if valida_chave(k):
+        if validar_chave(k):
             return k
     return None
 
 
-def extrair_chave_acesso(entradas):
-    """Localiza a chave de acesso (44 dígitos) junto ao rótulo CHAVE DE ACESSO.
+def extrair_chave_acesso(itens):
+    """Localiza a chave de acesso (44 digitos) junto ao rotulo CHAVE DE ACESSO.
 
-    Procura un token com "CHAVE" (variante OCR) e reúne os dígitos das filas
-    próximas. Como padrão se exixe uma xanela de 44 dígitos con DV válido nesa
-    zona. Somente como último recurso varre fila por fila (nunca une dígitos
-    de filas distintas, para evitar chaves falsas).
+    Procura um token com "CHAVE" (variante OCR) e une os digitos das filas
+    proximas. Como padrao se exige uma janela de 44 digitos com DV valido
+    nessa zona. Somente como ultimo recurso varre fila por fila (nunca une
+    digitos de filas distintas, para evitar chaves falsas).
     """
     rotulos_achados = []
-    for e in entradas:
+    for e in itens:
         ct = compacta(e["texto"])
         if "chavedeacesso" in ct or "chavedacesso" in ct or ct.startswith("chav"):
             rotulos_achados.append(e)
 
-    # 1) junto ao rótulo (mesma fila e filas adxacentes)
+    # 1) junto ao rotulo (mesma fila e filas adjacentes)
     for e in rotulos_achados:
-        vizinhos = [t for t in entradas
+        vizinhos = [t for t in itens
                     if abs(t["y"] - e["y"]) <= 50 and abs(t["x"] - e["x"]) <= 850]
         dig = "".join(re.findall(r"\d", "".join(t["texto"] for t in vizinhos)))
-        candidata = _ventana_valida(dig)
-        if candidata:
-            return candidata, True
+        janela = _janela_valida(dig)
+        if janela:
+            return janela, True
 
-    # 2) respaldo: fila por fila
+    # 2) plano B: fila por fila
     if not rotulos_achados:
         filas = []
-        for t in sorted(entradas, key=lambda t: (t["y"], t["x"])):
+        for t in sorted(itens, key=lambda t: (t["y"], t["x"])):
             agreg = False
             for f in filas:
                 if abs(f[0]["y"] - t["y"]) <= 12:
@@ -297,25 +297,25 @@ def extrair_chave_acesso(entradas):
             f.sort(key=lambda t: t["x"])
         for f in filas:
             dig = "".join(re.findall(r"\d", "".join(t["texto"] for t in f)))
-            candidata = _ventana_valida(dig)
-            if candidata:
-                return candidata, True
+            janela = _janela_valida(dig)
+            if janela:
+                return janela, True
 
-    # 3) rótulo presente sen chave válida -> devolve a secuencia como inválida
+    # 3) rotulo presente sem chave valida -> devolve a secuencia como invalida
     for e in rotulos_achados:
-        vizinhos = [t for t in entradas
+        vizinhos = [t for t in itens
                     if abs(t["y"] - e["y"]) <= 50 and abs(t["x"] - e["x"]) <= 850]
         dig = "".join(re.findall(r"\d", "".join(t["texto"] for t in vizinhos)))
         for i in range(len(dig) - 43):
             k = dig[i:i + 44]
-            if len(k) == 44 and not valida_chave(k):
+            if len(k) == 44 and not validar_chave(k):
                 return k, False
     return None, False
 
 
-def extrair_produtos(entradas, y_ini, y_fim, pagina):
+def extrair_produtos(itens, y_ini, y_fim, pagina):
     """Tabela de produtos entre DADOS DO PRODUTO e DADOS ADICIONAIS."""
-    regiao = [e for e in entradas
+    regiao = [e for e in itens
               if y_ini <= e["y"] <= y_fim and e["pagina"] == pagina]
     if not regiao:
         return []
@@ -417,17 +417,17 @@ def extrair_produtos(entradas, y_ini, y_fim, pagina):
     return produtos
 
 
-def extrair_infos(entradas, arquivo_rel):
-    """Constrói um dict completo com os dados da nota."""
-    chave, chave_valida = extrair_chave_acesso(entradas)
-    paginas = sorted({e["pagina"] for e in entradas})
+def extrair_infos(itens, arquivo_rel):
+    """Construi um dict completo com os dados da nota."""
+    chave, chave_valida = extrair_chave_acesso(itens)
+    paginas = sorted({e["pagina"] for e in itens})
     modelo = "desconhecido"
-    if any("danfe" in compacta(e["texto"]) for e in entradas):
+    if any("danfe" in compacta(e["texto"]) for e in itens):
         modelo = "NF-e (DANFE)"
-    elif any("nfe" in compacta(e["texto"]) for e in entradas):
+    elif any("nfe" in compacta(e["texto"]) for e in itens):
         modelo = "NF-e"
 
-    compacto_total = "".join(compacta(e["texto"]) for e in entradas)
+    compacto_total = "".join(compacta(e["texto"]) for e in itens)
 
     info = {
         "arquivo": arquivo_rel.replace("\\", "/"),
@@ -437,12 +437,12 @@ def extrair_infos(entradas, arquivo_rel):
         "modelo": modelo,
     }
 
-    # ---- número de nota ----
+    # ---- numero de nota ----
     numero = None
-    for e in entradas:
+    for e in itens:
         if re.fullmatch(r"[Nn][°ºoO0]?\.?|no\.?", e["texto"].strip()) and \
                 len(e["texto"].strip()) <= 3:
-            v = valor_ao_lado(entradas, e, r"(\d{3,12})")
+            v = valor_ao_lado(itens, e, r"(\d{3,12})")
             if v:
                 numero = v
                 break
@@ -452,49 +452,49 @@ def extrair_infos(entradas, arquivo_rel):
             numero = m.group(1)
     info["numero_nota"] = numero
 
-    serie = pegar_valor(entradas, ["serie"], r"([A-Za-z0-9\-]{1,6})", y_max=900)
+    serie = pegar_valor(itens, ["serie"], r"([A-Za-z0-9\-]{1,6})", y_max=900)
     if not serie:
-        for e in entradas:
+        for e in itens:
             ct = compacta(e["texto"])
             if ct.startswith("serie") and len(ct) > 5:
                 serie = e["texto"][5:].strip()
                 break
     info["serie"] = serie
 
-    info["data_emissao"] = pegar_valor(entradas, ["datadeemissao", "datadeemission"],
+    info["data_emissao"] = pegar_valor(itens, ["datadeemissao", "datadeemission"],
                                        REG_DATA)
     info["data_entrada_saida"] = pegar_valor(
-        entradas, ["datadeentradasaid", "datadeentradasaida", "datadeentrada"],
+        itens, ["datadeentradasaid", "datadeentradasaida", "datadeentrada"],
         REG_DATA)
     info["hora_entrada_saida"] = pegar_valor(
-        entradas, ["horadeentrada/said", "horadeentrada"], r"\d{2}:\d{2}")
-    info["valor_da_nota"] = pegar_valor(entradas, ["valordanota", "valordalanota"],
+        itens, ["horadeentrada/said", "horadeentrada"], r"\d{2}:\d{2}")
+    info["valor_da_nota"] = pegar_valor(itens, ["valordanota", "valordalanota"],
                                         REG_VALOR)
     naturaleza = pegar_valor(
-        entradas, ["natureza daoperacao", "natureza"],
+        itens, ["natureza daoperacao", "natureza"],
         r"(.{10,90})", margem=70, y_max=900)
     if naturaleza:
         # recorta tudo o que vem depois de um "rotulo" de outra linha
         naturaleza = re.split(r"\s+[A-ZÀ-Ú]{2,}[\s(]", naturaleza)[0].strip()
     info["natureza_da_operacao"] = naturaleza
 
-    prot = pegar_valor(entradas, ["protdeautorizacao", "prot.deautorizacao",
-                                  "protocolo"], r"(\d{10,20})", y_max=900)
+    prot = pegar_valor(itens, ["protdeautorizacao", "prot.deautorizacao",
+                               "protocolo"], r"(\d{10,20})", y_max=900)
     info["protocolo_autorizacao"] = prot
 
-    info["qr"] = next((e["texto"] for e in entradas
+    info["qr"] = next((e["texto"] for e in itens
                        if "http" in e["texto"].lower()), None)
 
     # ---- emitente ----
     emitente = {}
-    cn = next((e for e in entradas
+    cn = next((e for e in itens
                if re.search(REG_CNPJ, e["texto"])), None)
     if cn:
         cnpj = re.search(REG_CNPJ, cn["texto"])
         if cnpj:
             emitente["cnpj_cpf"] = cnpj.group(0)
-    # razon social: bloco com "S.A." no quadrante superior esquerdo do emitente
-    cand = [e for e in entradas
+    # razao social: bloco com "S.A." no quadrante superior esquerdo do emitente
+    cand = [e for e in itens
             if e["y"] < 800 and e["x"] < 1100
             and re.fullmatch(r"[A-Za-zÀ-ú0-9.\- ]+", e["texto"])
             and re.search(r"S\.?\s*A\.?$|L\.?\s*T\.?\s*D\.?\s*A\b|S\.R\.L",
@@ -503,54 +503,54 @@ def extrair_infos(entradas, arquivo_rel):
     if cand:
         cand.sort(key=lambda e: e["y"])
         emitente["razao_social"] = cand[0]["texto"].strip(" .-–—,/")
-    ie_em = pegar_valor(entradas, ["inscricaoestadual"], r"(\d{6,12})",
+    ie_em = pegar_valor(itens, ["inscricaoestadual"], r"(\d{6,12})",
                         y_min=0, y_max=900)
     emitente["inscricao_estadual"] = ie_em
     info["emitente"] = emitente
-# ---- destinatário ----
+    # ---- destinatario ----
     Y_DEST = (915, 1230)
     dest = {}
     dest["nome"] = pegar_valor(
-        entradas, ["nomerazaosocial"], r"(.{2,60})", y_min=Y_DEST[0],
+        itens, ["nomerazaosocial"], r"(.{2,60})", y_min=Y_DEST[0],
         y_max=Y_DEST[1], margem=60)
     dest["cnpj_cpf"] = pegar_valor(
-        entradas, ["cnpjcpf"], REG_CNPJ + r"|" + REG_CPF,
+        itens, ["cnpjcpf"], REG_CNPJ + r"|" + REG_CPF,
         y_min=Y_DEST[0], y_max=Y_DEST[1], margem=60)
     if not dest["cnpj_cpf"]:
         m = re.search(REG_CNPJ + r"|" + REG_CPF, compacto_total)
         dest["cnpj_cpf"] = m.group(0) if m else None
     dest["endereco"] = pegar_valor(
-        entradas, ["endereco"], r"(.{5,90})", y_min=Y_DEST[0],
+        itens, ["endereco"], r"(.{5,90})", y_min=Y_DEST[0],
         y_max=Y_DEST[1], margem=60)
     if not dest["endereco"]:
         m = re.search(r"endereco\s*([A-Z0-9.,À-ú\- ]{5,90})", compacto_total)
         dest["endereco"] = m.group(1) if m else None
     dest["municipio"] = pegar_valor(
-        entradas, ["municipio"], r"([A-Za-zÀ-ú]{3,30})", y_min=Y_DEST[0],
+        itens, ["municipio"], r"([A-Za-zÀ-ú]{3,30})", y_min=Y_DEST[0],
         y_max=Y_DEST[1])
     dest["uf"] = pegar_valor(
-        entradas, ["uf"], r"([A-Za-zÀ-ú]{2,6})", y_min=Y_DEST[0],
+        itens, ["uf"], r"([A-Za-zÀ-ú]{2,6})", y_min=Y_DEST[0],
         y_max=Y_DEST[1])
     if isinstance(dest["uf"], str) and len(dest["uf"]) >= 2:
         # "MTBrasil" ou "MTB" -> "MT"
         dest["uf"] = re.sub(r"^([A-Z]{2}).*", r"\1", dest["uf"])
     dest["cep"] = pegar_valor(
-        entradas, ["cep"], r"(\d{2,3}[\.\-]?\d{3}[\.\-]?\d{3})",
+        itens, ["cep"], r"(\d{2,3}[\.\-]?\d{3}[\.\-]?\d{3})",
         y_min=Y_DEST[0], y_max=Y_DEST[1])
     if not dest["cep"]:
         m = re.search(r"cep[\.:]?\s*(\d{5,8})", compacto_total)
         dest["cep"] = m.group(1) if m else None
     dest["pais"] = pegar_valor(
-        entradas, ["pais"], r"([A-Za-zÀ-ú]{4,15})", y_min=Y_DEST[0],
+        itens, ["pais"], r"([A-Za-zÀ-ú]{4,15})", y_min=Y_DEST[0],
         y_max=Y_DEST[1])
     if isinstance(dest["pais"], str):
-        # "MTBrasil" -> "Brasil" (estado+país colados)
+        # "MTBrasil" -> "Brasil" (estado+pais colados)
         dest["pais"] = re.sub(r"^[A-Z]{2}(?=[A-ZÀ-Ú])", "", dest["pais"])
     dest["telefono"] = pegar_valor(
-        entradas, ["fone/fax", "fone"], r"([(]?\d{2,5}[)]?[\d\- ]{5,18})",
+        itens, ["fone/fax", "fone"], r"([(]?\d{2,5}[)]?[\d\- ]{5,18})",
         y_min=Y_DEST[0], y_max=Y_DEST[1])
     dest["inscricao_estadual"] = pegar_valor(
-        entradas, ["inscricaoestadual"], r"(\d{6,12})", y_min=Y_DEST[0],
+        itens, ["inscricaoestadual"], r"(\d{6,12})", y_min=Y_DEST[0],
         y_max=Y_DEST[1])
     info["destinatario"] = dest
 
@@ -558,60 +558,60 @@ def extrair_infos(entradas, arquivo_rel):
     Y_TRANS = (1450, 1760)
     transp = {}
     transp["razao_social"] = pegar_valor(
-        entradas, ["razaosocial"], r"(.{3,60})", y_min=Y_TRANS[0],
+        itens, ["razaosocial"], r"(.{3,60})", y_min=Y_TRANS[0],
         y_max=Y_TRANS[1], margem=60)
     transp["cnpj_cpf"] = pegar_valor(
-        entradas, ["cnpj"], r"(\d{2,3}\.\d{3}\.\d{3}/\d{3,6}[ -]\d{1,2})",
+        itens, ["cnpj"], r"(\d{2,3}\.\d{3}\.\d{3}/\d{3,6}[ -]\d{1,2})",
         y_min=Y_TRANS[0], y_max=Y_TRANS[1], margem=60)
     transp["placa"] = pegar_valor(
-        entradas, ["placadoveiculo", "placadovehiculo"],
+        itens, ["placadoveiculo", "placadovehiculo"],
         r"([A-Za-z]{2,4}[- ]?[0-9]{1,5}[- ]?[A-Za-z]{1,4}[- ]?[0-9]{0,4})",
         y_min=Y_TRANS[0], y_max=Y_TRANS[1], margem=60)
     info["transportadora"] = transp
 
     info["peso_bruto"] = pegar_valor(
-        entradas, ["pesobruto"], r"([0-9][0-9.,]{0,14})",
+        itens, ["pesobruto"], r"([0-9][0-9.,]{0,14})",
         y_min=1640, y_max=1760, margem=60, lado="ambos")
     info["peso_liquido"] = pegar_valor(
-        entradas, ["pesoliquido"], r"([0-9][0-9.,]{0,14})",
+        itens, ["pesoliquido"], r"([0-9][0-9.,]{0,14})",
         y_min=1640, y_max=1760, margem=60, lado="ambos")
 
-    # ---- productos ----
+    # ---- produtos ----
     ini_y = fin_y = None
-    e1 = achar_rotulo(entradas, ["dadosdoproduto", "datosdoproduto",
-                                 "dadosdelproducto"])
-    e2 = achar_rotulo(entradas, ["dadosadicionais", "datosadicionais"])
+    e1 = achar_rotulo(itens, ["dadosdoproduto", "datosdoproduto",
+                              "dadosdelproducto"])
+    e2 = achar_rotulo(itens, ["dadosadicionais", "datosadicionais"])
     if e1:
-        ini_y = e1["y"] + 8  # excluir o titulo "DADOS DO PRODUTO" da tabla
+        ini_y = e1["y"] + 8  # excluir o titulo "DADOS DO PRODUTO" da tabela
     if e2:
         fin_y = e2["y"]
-    productos = []
+    produtos = []
     if ini_y and fin_y and ini_y < fin_y:
         for pag in paginas:
-            productos.extend(extrair_produtos(entradas, ini_y, fin_y, pag))
-    info["productos"] = productos
+            produtos.extend(extrair_produtos(itens, ini_y, fin_y, pag))
+    info["produtos"] = produtos
 
     # ---- dados adicionais ----
     dados_extra = []
     if e2:
-        for e in entradas:
+        for e in itens:
             if e["y"] > e2["y"] and e["x"] < e2["x"] + 1400:
                 dados_extra.append(e["texto"])
         dados_extra.sort()
     info["dados_adicionais"] = " | ".join(dados_extra) if dados_extra else None
 
     # ---- texto OCR completo ----
-    ent = sorted(entradas, key=lambda e: (e["y"], e["x"]))
+    ent = sorted(itens, key=lambda e: (e["y"], e["x"]))
     info["texto_ocr"] = "\n".join(
         f"[p{e['pagina']} y={e['y']:.0f} x={e['x']:.0f}] {e['texto']}"
         for e in ent)
 
     return info
 # ---------------------------------------------------------------------------
-# Procesamiento principal
+# Processamento principal
 # ---------------------------------------------------------------------------
 
-def guardar_json(datos, ruta):
+def salvar_json(datos, ruta):
     ruta = Path(ruta)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     tmp = ruta.with_suffix(ruta.suffix + ".tmp")
@@ -620,18 +620,18 @@ def guardar_json(datos, ruta):
     os.replace(tmp, ruta)
 
 
-def cargar_json(ruta):
+def carregar_json(ruta):
     if ruta.exists():
         try:
             with open(ruta, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            print(f"!! No se pudo leer el JSON existente ({e}); se creara de cero. ")
+            print(f"!! NAO foi possivel ler o JSON existente ({e}); sera criado do zero. ")
     return {}
 
 
 # ---------------------------------------------------------------------------
-# Completitud de la extraccion (status "completa" / "parcial")
+# Completude da extracao (status "completa" / "parcial")
 # ---------------------------------------------------------------------------
 
 CAMPOS_NUCLEARES = [
@@ -647,7 +647,7 @@ CAMPOS_NUCLEARES = [
 
 
 def _campo_aninhado(info, camino):
-    """Lee un campo posiblemente anidado con notación 'a.b.c'."""
+    """Le um campo anidado com notacion 'a.b.c'."""
     atual = info
     for parte in camino.split("."):
         if not isinstance(atual, dict):
@@ -659,57 +659,57 @@ def _campo_aninhado(info, camino):
 
 
 def avaliar_completude(info, chave_valida):
-    """Decide si la extracción fue completa o parcial.
+    """Decide se a extracao foi completa ou parcial.
 
-    Completa -> chave con DV válido Y todos los campos nucleares presentes.
-    Parcial  -> en cualquier otro caso (devuelve también el motivo).
+    Completa -> chave com DV valido E todos os campos nucleares presentes.
+    Parcial  -> em qualquer outro caso (devolve tambem o motivo).
     """
     if not chave_valida:
-        return "parcial", "chave de acceso con digito verificador invalido (DV)"
+        return "parcial", "chave de acesso com digito verificador invalido (DV)"
     faltantes = [c for c in CAMPOS_NUCLEARES if not _campo_aninhado(info, c)]
     if faltantes:
         return "parcial", "campos nucleares ausentes: " + ", ".join(faltantes)
     return "completa", None
 
 
-def procesar_pdf(caminho, raiz, engine, dpi):
-    """Devuelve (info_dict, chave, chave_valida, motivo_error)."""
+def processar_pdf(caminho, raiz, engine, dpi):
+    """Devolve (info_dict, chave, chave_valida, motivo_error)."""
     rel = str(caminho.relative_to(raiz))
 
-    # 1) intentar texto embebido
-    entradas = None
-    origen = "texto"
+    # 1) tentar texto embebido
+    itens = None
+    origem = "texto"
     try:
-        entradas = ler_paginas_texto(caminho)
+        itens = ler_paginas_texto(caminho)
     except Exception:
         pass
 
-    # 2) si no hay texto, OCR
-    if not entradas:
-        origen = "ocr"
+    # 2) se nao ha texto, OCR
+    if not itens:
+        origem = "ocr"
         try:
-            entradas = ler_paginas_ocr(caminho, engine, dpi)
+            itens = ler_paginas_ocr(caminho, engine, dpi)
         except Exception:
-            entradas = None
+            itens = None
 
-    if not entradas:
-        return None, None, False, "no se pudo extraer texto ni OCR del PDF"
+    if not itens:
+        return None, None, False, "nao foi possivel extrair texto nem OCR do PDF"
 
-    chave, valida = extrair_chave_acesso(entradas)
+    chave, ok = extrair_chave_acesso(itens)
     if not chave:
-        return None, None, False, "no se encontro la chave de acceso (44 digitos)"
+        return None, None, False, "nao foi encontrada a chave de acesso (44 digitos)"
 
-    # Incluso com DV invalido se extraen los datos (parciales) en vez de
-    # descartar el PDF: el campo status_extracao indica "completa" / "parcial"
-    info = extrair_infos(entradas, rel)
-    info["origen_texto"] = origen
-    status, motivo_parcial = avaliar_completude(info, valida)
+    # Mesmo com DV invalido, os dados (parciales) sao extraidos em vez de
+    # descartar o PDF: o campo status_extracao indica "completa" / "parcial"
+    info = extrair_infos(itens, rel)
+    info["origem_texto"] = origem
+    status, motivo_parcial = avaliar_completude(info, ok)
     info["status_extracao"] = status
     if motivo_parcial:
         info["motivo_extracao_parcial"] = motivo_parcial
-    if not valida:
+    if not ok:
         return (info, chave, False,
-                f"chave de acceso encontrada pero con digito verificador invalido: {chave}")
+                f"chave de acesso encontrada mas com digito verificador invalido: {chave}")
     return info, chave, True, None
 
 
@@ -720,17 +720,17 @@ def main():
     except Exception:
         pass
     parser = argparse.ArgumentParser(
-        description="Extrae chaves de acceso e informação de notas fiscales (PDF -> JSON).")
+        description="Extrai chaves de acesso e informacao de notas fiscales (PDF -> JSON).")
     parser.add_argument("--raiz", default=None,
-                        help="Pasta raiz a percorrer (por omissão: a do script).")
+                        help="Pasta raiz a percorrer (por omissao: a do script).")
     parser.add_argument("--json", dest="json_path", default="notas_fiscales.json",
-                        help="Arquivo JSON acumulador (por omissão: notas_fiscales.json).")
+                        help="Arquivo JSON acumulador (por omissao: notas_fiscales.json).")
     parser.add_argument("--dpi", type=int, default=300,
-                        help="Resolução para OCR (por omissão: 300).")
+                        help="Resolucion para OCR (por omissao: 300).")
     parser.add_argument("--so-novas", action="store_true",
-                        help="Não atualizar chaves já existentes no JSON.")
+                        help="NAO atualizar chaves ja existentes no JSON.")
     parser.add_argument("--sem-ocr", action="store_true",
-                        help="Não usar OCR (só PDFs com texto embebido).")
+                        help="NAO usar OCR (so PDFs com texto embebido).")
     args = parser.parse_args()
 
     raiz = Path(args.raiz).resolve() if args.raiz else Path(__file__).resolve().parent
@@ -740,17 +740,17 @@ def main():
 
     pdfs = sorted(raiz.rglob("*.pdf"))
     print("=" * 78)
-    print(" EXTRACÇÃO DE NOTAS FISCAIS (PDF -> JSON)")
+    print(" EXTRACCAO DE NOTAS FISCAIS (PDF -> JSON)")
     print(f" Raiz: {raiz}")
     print(f" JSON: {json_path}")
     print(f" PDFs encontrados: {len(pdfs)}")
     print("=" * 78)
 
     if not pdfs:
-        print("Não há arquivos PDF na raiz nem subpastas.")
+        print("NAO ha arquivos PDF na raiz nem subpastas.")
         return
 
-    datos = cargar_json(json_path)
+    datos = carregar_json(json_path)
     engine = None
     if not args.sem_ocr:
         engine = obter_engine_ocr()
@@ -763,51 +763,51 @@ def main():
         print("-" * 78)
         print(f"[{i}/{len(pdfs)}] Processando: {pdf.relative_to(raiz)}")
         try:
-            info, chave, valida, motivo = procesar_pdf(pdf, raiz, engine, args.dpi)
+            info, chave, ok, motivo = processar_pdf(pdf, raiz, engine, args.dpi)
         except Exception as e:
-            info = chave = valida = None
+            info = chave = ok = None
             motivo = f"erro inesperado: {e}"
             traceback.print_exc()
 
         if not chave:
             fallos.append((str(pdf.relative_to(raiz)), motivo))
-            print(f"    >> NÃO foi possível processar -> {motivo}")
+            print(f"    >> NAO foi possivel processar -> {motivo}")
             continue
 
-        print(f"    >> Chave de acceso: {chave}")
-        print(f"    >> Chave válida (DV): {'SÍ' if valida else 'NÃO'}")
-        status = info.get("status_extracao", "completa" if valida else "parcial")
-        print(f"    >> Status extracción: {status.upper()}")
-        if not valida:
-            print("    >> AVISO: DV inválido; se guardarán datos PARCIAIS")
+        print(f"    >> Chave de acesso: {chave}")
+        print(f"    >> Chave valida (DV): {'SI' if ok else 'NAO'}")
+        status = info.get("status_extracao", "completa" if ok else "parcial")
+        print(f"    >> Status extracao: {status.upper()}")
+        if not ok:
+            print("    >> AVISO: DV invalido; serao guardados dados PARCIAIS")
 
         ya_existia = chave in datos
         if ya_existia and args.so_novas:
-            print("    >> A chave já existe no JSON -> omitida (--so-novas)")
+            print("    >> A chave ja existe no JSON -> omitida (--so-novas)")
             sin_cambio += 1
             continue
 
         info_ant = datos.get(chave)
         if info_ant == info:
             datos[chave] = info
-            print("    >> OK: sem alterações (informação idéntica)")
+            print("    >> OK: sem alteracao (informacao identica)")
             sin_cambio += 1
         elif ya_existia:
             datos[chave] = info
-            print("    >> OK: chave JÁ EXISTENTE -> ATUALIZADA")
+            print("    >> OK: chave JA EXISTENTE -> ATUALIZADA")
             actual += 1
         else:
             datos[chave] = info
             print("    >> OK: chave NOVA -> INSERTADA")
             ins += 1
 
-        if not valida:
+        if not ok:
             parc += 1
             parciales.append((str(pdf.relative_to(raiz)),
                               info.get("motivo_extracao_parcial") or motivo))
 
-        guardar_json(datos, json_path)
-        print(f"    >> JSON guardado em {json_path}")
+        salvar_json(datos, json_path)
+        print(f"    >> JSON salvado em {json_path}")
 
     # ---- resumo final ----
     print()
@@ -817,18 +817,18 @@ def main():
     print(f"  PDFs encontrados      : {len(pdfs)}")
     print(f"  Chaves INSERTADAS     : {ins}")
     print(f"  Chaves ACTUALIZADAS   : {actual}")
-    print(f"  Sem alterações        : {sin_cambio}")
-    print(f"  Parciais (DV inválido): {parc}")
+    print(f"  Sem alteracao         : {sin_cambio}")
+    print(f"  Parciais (DV invalido): {parc}")
     print(f"  Falhas / omitidas     : {len(fallos)}")
     if parciales:
         print("-" * 78)
-        print(" Detalhe de PDFs guardados PARCIALMENTE (status: parcial):")
+        print(" Detalhe de PDFs salvados PARCIALMENTE (status: parcial):")
         for archivo, motivo in parciales:
             print(f"  - {archivo}")
             print(f"      motivo: {motivo}")
     if fallos:
         print("-" * 78)
-        print(" Detalhe de PDFs não processados:")
+        print(" Detalhe de PDFs nao processados:")
         for archivo, motivo in fallos:
             print(f"  - {archivo}")
             print(f"      motivo: {motivo}")
