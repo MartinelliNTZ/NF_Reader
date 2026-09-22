@@ -13,6 +13,11 @@ Requisitos:  pip install pymupdf opencv-python rapidocr-onnxruntime
 Se o JSON ja existe: para cada PDF a chave ja existente e ATUALIZADA,
 chaves novas sao INSERIDAS. PDFs que nao puderem ser processados sao pulados
 e listados no resumo final com o motivo.
+
+Cada registro guarda o campo "status_extracao": "completa" o "parcial".
+Si a chave de acceso encontrada tem o digito verificador invalido (por
+exemplo por erro de OCR), o PDF NAO e descartado: se extraen os dados
+possibles e se rexistran como PARCIAIS, co motivo en "motivo_extracao_parcial".
 """
 
 import argparse
@@ -625,6 +630,48 @@ def cargar_json(ruta):
     return {}
 
 
+# ---------------------------------------------------------------------------
+# Completitud de la extraccion (status "completa" / "parcial")
+# ---------------------------------------------------------------------------
+
+CAMPOS_NUCLEARES = [
+    "numero_nota",
+    "data_emissao",
+    "valor_da_nota",
+    "serie",
+    "emitente.razao_social",
+    "emitente.cnpj_cpf",
+    "destinatario.nome",
+    "destinatario.cnpj_cpf",
+]
+
+
+def _campo_aninhado(info, camino):
+    """Lee un campo posiblemente anidado con notación 'a.b.c'."""
+    atual = info
+    for parte in camino.split("."):
+        if not isinstance(atual, dict):
+            return None
+        atual = atual.get(parte)
+        if atual is None:
+            return None
+    return atual
+
+
+def avaliar_completude(info, chave_valida):
+    """Decide si la extracción fue completa o parcial.
+
+    Completa -> chave con DV válido Y todos los campos nucleares presentes.
+    Parcial  -> en cualquier otro caso (devuelve también el motivo).
+    """
+    if not chave_valida:
+        return "parcial", "chave de acceso con digito verificador invalido (DV)"
+    faltantes = [c for c in CAMPOS_NUCLEARES if not _campo_aninhado(info, c)]
+    if faltantes:
+        return "parcial", "campos nucleares ausentes: " + ", ".join(faltantes)
+    return "completa", None
+
+
 def procesar_pdf(caminho, raiz, engine, dpi):
     """Devuelve (info_dict, chave, chave_valida, motivo_error)."""
     rel = str(caminho.relative_to(raiz))
@@ -651,12 +698,18 @@ def procesar_pdf(caminho, raiz, engine, dpi):
     chave, valida = extrair_chave_acesso(entradas)
     if not chave:
         return None, None, False, "no se encontro la chave de acceso (44 digitos)"
-    if not valida:
-        return (None, None, False,
-                f"chave de acceso encontrada pero con digito verificador invalido: {chave}")
 
+    # Incluso com DV invalido se extraen los datos (parciales) en vez de
+    # descartar el PDF: el campo status_extracao indica "completa" / "parcial"
     info = extrair_infos(entradas, rel)
     info["origen_texto"] = origen
+    status, motivo_parcial = avaliar_completude(info, valida)
+    info["status_extracao"] = status
+    if motivo_parcial:
+        info["motivo_extracao_parcial"] = motivo_parcial
+    if not valida:
+        return (info, chave, False,
+                f"chave de acceso encontrada pero con digito verificador invalido: {chave}")
     return info, chave, True, None
 
 
@@ -702,8 +755,9 @@ def main():
     if not args.sem_ocr:
         engine = obter_engine_ocr()
 
-    ins = actual = sin_cambio = 0
+    ins = actual = sin_cambio = parc = 0
     fallos = []
+    parciales = []
 
     for i, pdf in enumerate(pdfs, 1):
         print("-" * 78)
@@ -715,13 +769,17 @@ def main():
             motivo = f"erro inesperado: {e}"
             traceback.print_exc()
 
-        if not chave or not valida:
+        if not chave:
             fallos.append((str(pdf.relative_to(raiz)), motivo))
             print(f"    >> NÃO foi possível processar -> {motivo}")
             continue
 
         print(f"    >> Chave de acceso: {chave}")
         print(f"    >> Chave válida (DV): {'SÍ' if valida else 'NÃO'}")
+        status = info.get("status_extracao", "completa" if valida else "parcial")
+        print(f"    >> Status extracción: {status.upper()}")
+        if not valida:
+            print("    >> AVISO: DV inválido; se guardarán datos PARCIAIS")
 
         ya_existia = chave in datos
         if ya_existia and args.so_novas:
@@ -743,6 +801,11 @@ def main():
             print("    >> OK: chave NOVA -> INSERTADA")
             ins += 1
 
+        if not valida:
+            parc += 1
+            parciales.append((str(pdf.relative_to(raiz)),
+                              info.get("motivo_extracao_parcial") or motivo))
+
         guardar_json(datos, json_path)
         print(f"    >> JSON guardado em {json_path}")
 
@@ -755,7 +818,14 @@ def main():
     print(f"  Chaves INSERTADAS     : {ins}")
     print(f"  Chaves ACTUALIZADAS   : {actual}")
     print(f"  Sem alterações        : {sin_cambio}")
+    print(f"  Parciais (DV inválido): {parc}")
     print(f"  Falhas / omitidas     : {len(fallos)}")
+    if parciales:
+        print("-" * 78)
+        print(" Detalhe de PDFs guardados PARCIALMENTE (status: parcial):")
+        for archivo, motivo in parciales:
+            print(f"  - {archivo}")
+            print(f"      motivo: {motivo}")
     if fallos:
         print("-" * 78)
         print(" Detalhe de PDFs não processados:")
