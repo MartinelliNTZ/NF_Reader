@@ -1,6 +1,6 @@
 ==============================================================================
  REPORTE DE NORMALIZACION NUMERICA - NOTAS FISCALES BR
- Generado : 23/09/2026 09:48:31
+ Generado : 23/09/2026 12:01:01
  Regla    : '.' milhar | ',' decimal | 2 digitos -> decimal, 3 -> milhar
             Campos guardados SOLO como numero (sin milhar).
 ==============================================================================

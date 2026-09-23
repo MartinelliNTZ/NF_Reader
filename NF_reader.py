@@ -61,6 +61,11 @@ from core.extrair_notas import (
     salvar_json,
 )
 
+from core.rastreio import (
+    configurar_log,
+    log as rastreio_log,
+)
+
 from core.generar_csv import (
     construir_filas as construir_linhas,
     guardar_csv as salvar_csv,
@@ -257,7 +262,13 @@ def processar_pasta(
         pasta_raiz.rglob("*.pdf")
     )
 
+    rastreio_log.info("==== PIPELINE NF_reader | pasta=%s", pasta_raiz)
+    rastreio_log.info("pipeline | PDFs=%d OCR=%s incluir_ocr_csv=%s dpi=%d apenas_adicionar=%s",
+                      len(arquivos_pdf), usar_ocr, incluir_texto_ocr_csv, dpi,
+                      apenas_adicionar)
+
     if not arquivos_pdf:
+        rastreio_log.warning("pipeline | nenhum PDF encontrado em %s", pasta_raiz)
         return {
             "erro": (
                 "Nenhum arquivo PDF foi encontrado "
@@ -278,6 +289,8 @@ def processar_pasta(
         dados = {}
 
     quantidade_antes = len(dados)
+    rastreio_log.info("pipeline | JSON existente: %s (chaves=%d)",
+                      caminho_json, quantidade_antes)
 
     # -------------------------------------------------------------------------
     # OCR
@@ -293,6 +306,7 @@ def processar_pasta(
 
         try:
             motor_ocr = obter_motor_ocr()
+            rastreio_log.info("pipeline | motor OCR inicializado")
 
             if callback_status:
                 callback_status(
@@ -301,6 +315,7 @@ def processar_pasta(
 
         except Exception as erro:  # noqa: BLE001
             motor_ocr = None
+            rastreio_log.error("pipeline | falha ao iniciar RapidOCR: %s", erro)
 
             mensagem = (
                 f"Não foi possível iniciar o RapidOCR: {erro}. "
@@ -347,6 +362,9 @@ def processar_pasta(
             f"Processando {caminho_pdf.name}"
         )
 
+        rastreio_log.info("pipeline | [%d/%d] processando %s",
+                          indice, quantidade_total_pdfs, caminho_relativo)
+
         if callback_progresso:
             callback_progresso(
                 percentual,
@@ -373,7 +391,9 @@ def processar_pasta(
 
             if not possui_texto:
                 contadores["falhas"] += 1
-
+                rastreio_log.warning(
+                    "pipeline | %s | PDF sem texto incorporado e sem OCR", 
+                    caminho_relativo)
                 detalhes_falhas.append(
                     {
                         "arquivo": str(
@@ -413,9 +433,16 @@ def processar_pasta(
             revisao = []
 
             traceback.print_exc()
+            rastreio_log.error(
+                "pipeline | %s | erro inesperado: %s",
+                caminho_relativo, erro,
+                exc_info=True)
 
         if not chave_acesso:
             contadores["falhas"] += 1
+            rastreio_log.error(
+                "pipeline | %s | NAO processado -> %s",
+                caminho_relativo, motivo)
 
             detalhes_falhas.append(
                 {
@@ -445,15 +472,23 @@ def processar_pasta(
                 )
 
             contadores["atualizadas"] += 1
+            rastreio_log.info("pipeline | %s | chave %s ATUALIZADA",
+                              caminho_relativo, chave_acesso)
 
         else:
             dados[chave_acesso] = (
                 informacoes_nota
             )
             contadores["inseridas"] += 1
+            rastreio_log.info("pipeline | %s | chave %s INSERTADA",
+                              caminho_relativo, chave_acesso)
 
         if not extracao_completa:
             contadores["parciais"] += 1
+            rastreio_log.warning("pipeline | %s | extracao PARCIAL (%s)",
+                                 caminho_relativo,
+                                 informacoes_nota.get("motivo_extracao_parcial")
+                                 if informacoes_nota else motivo)
 
     # -------------------------------------------------------------------------
     # Saídas
@@ -508,6 +543,19 @@ def processar_pasta(
     duracao_segundos = (
         time.time() - horario_inicio
     )
+
+    rastreio_log.info(
+        "pipeline | RESULTADO: pdfs=%d inseridas=%d atualizadas=%d "
+        "parciais=%d falhas=%d antes=%d depois=%d duracao=%.1fs",
+        quantidade_total_pdfs, contadores["inseridas"],
+        contadores["atualizadas"], contadores["parciais"],
+        contadores["falhas"], quantidade_antes,
+        quantidade_depois, duracao_segundos)
+    if detalhes_falhas:
+        for d in detalhes_falhas:
+            rastreio_log.error("pipeline | FALHA %s -> %s",
+                               d.get("arquivo"), d.get("motivo"))
+    rastreio_log.info("pipeline | JSON=%s CSV=%s", caminho_json, caminho_csv)
 
     if callback_progresso:
         callback_progresso(
@@ -1277,6 +1325,9 @@ class AplicacaoNotasFiscais(QObject):
 # =============================================================================
 
 def main() -> None:
+    # garante o arquivo de log de rastreio (rastreio_extracao.log na raiz)
+    configurar_log()
+
     aplicativo = QApplication(
         sys.argv
     )

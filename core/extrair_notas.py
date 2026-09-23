@@ -42,6 +42,11 @@ except ImportError:  # ejecucion directa: python core/extrair_notas.py
     from normalizar_numeros import (generar_reporte, normalizar_campos_numericos,
                                     normalizar_numero)
 
+try:
+    from .rastreio import configurar_log, log
+except ImportError:  # ejecucion directa: python core/extrair_notas.py
+    from rastreio import configurar_log, log
+
 # ---------------------------------------------------------------------------
 # Utilidades de normalizacao
 # ---------------------------------------------------------------------------
@@ -344,16 +349,17 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
 
     # linha do cabecalho da tabela (com fallbacks p/ variantes de DANFE/OCR)
     cab = None
+    cab_crit = None
     for l in linhas:
         txt = " ".join(e["texto"] for e in l).upper()
         if "CODIGO" in txt and "CFOP" in txt and "VLR UNIT" in txt.replace("VLRUNIT", "VLR UNIT"):
-            cab = l
+            cab, cab_crit = l, "1. CODIGO+CFOP+VLR UNIT"
             break
     if cab is None:
         for l in linhas:
             txt = " ".join(e["texto"] for e in l).upper()
             if "CODIGO" in txt and "CFOP" in txt:
-                cab = l
+                cab, cab_crit = l, "2. CODIGO+CFOP"
                 break
     if cab is None:
         # alguns emissores nao imprimem a coluna CFOP no cabecalho; outros PDFs
@@ -362,16 +368,20 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         for l in linhas:
             txt = " ".join(e["texto"] for e in l).upper()
             if "CODIGO" in txt and ("DESCRICAO" in txt or "DESCRIPCION" in txt):
-                cab = l
+                cab, cab_crit = l, "3. CODIGO+DESCRICAO (sem CFOP no cab)"
                 break
     if cab is None:
         for l in linhas:
             txt = " ".join(e["texto"] for e in l).upper()
             if "CODIGO" in txt:
-                cab = l
+                cab, cab_crit = l, "4. CODIGO somente (fallback final)"
                 break
     if cab is None:
+        log.warning("produtos: cabecalho da tabela NAO encontrado "
+                    "(regiao y=%.0f..%.0f p%s, itens=%d)",
+                    y_ini, y_fim, pagina, len(regiao))
         return []
+    log.info("produtos: cabecalho detectado pelo criterio '%s'", cab_crit)
 
     NOMES = {
         "codigo": "codigo",
@@ -421,6 +431,9 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
                 melhor = (dist, c)
         return melhor[1]["nome"] if melhor and melhor[0] <= 320 else None
 
+    log.info("produtos: colunas mapeadas (%d): %s", len(colunas),
+             [c["nome"] for c in colunas])
+
     produtos = []
     atual = None
     notas_vistas = False
@@ -444,12 +457,18 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
                 produtos.append(atual)
             atual = celulas
             notas_vistas = False
+            log.debug("produtos: novo item -> %s",
+                      {k: v for k, v in celulas.items()})
         elif atual is not None:
             if not notas_vistas:
                 es_nota = any(k == "descricao" and v.lower().startswith("obs:")
                               for k, v in celulas.items())
                 if es_nota:
                     notas_vistas = True
+                    log.debug("produtos: linha de 'obs' vista; valores "
+                              "nao-descricao aproveitados -> %s",
+                              {k: v for k, v in celulas.items()
+                               if k != "descricao"})
                     # a obs nao entra na descricao, mas pode estar na MESMA
                     # linha que valores numericos (OCR agrupou tudo) - entao
                     # aproveitamos apenas as demais colunas da linha
@@ -460,8 +479,26 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
                 else:
                     for k, v in celulas.items():
                         atual[k] = (atual.get(k, "") + " " + v).strip()
+            else:
+                log.debug("produtos: linha descartada apos obs -> %s",
+                          {k: v for k, v in celulas.items()})
     if atual is not None:
         produtos.append(atual)
+
+    # ---- rastreio do resultado ----
+    log.info("produtos: %d item(ns) extraido(s)", len(produtos))
+    for i, p in enumerate(produtos, 1):
+        desc = str(p.get("descricao") or "").strip()
+        if not desc:
+            log.warning("produtos: item %d SEM DESCRICAO "
+                        "(codigo=%r qtde=%r)", i, p.get("codigo"),
+                        p.get("quantidade"))
+        else:
+            log.info("produtos: item %d codigo=%r descricao=%r "
+                     "ncm=%r und=%r qtde=%r vlr_unit=%r vlr_total=%r",
+                     i, p.get("codigo"), desc[:90], p.get("ncm"),
+                     p.get("unidade"), p.get("quantidade"),
+                     p.get("valor_unitario"), p.get("valor_total"))
     return produtos
 
 
@@ -633,10 +670,19 @@ def extrair_infos(itens, arquivo_rel):
         ini_y = e1["y"] + 8  # excluir o titulo "DADOS DO PRODUTO" da tabela
     if e2:
         fin_y = e2["y"]
+    if not e1:
+        log.debug("campos: rotulo 'DADOS DO PRODUTO' nao encontrado")
+    if not e2:
+        log.debug("campos: rotulo 'DADOS ADICIONAIS' nao encontrado")
     produtos = []
     if ini_y and fin_y and ini_y < fin_y:
         for pag in paginas:
             produtos.extend(extrair_produtos(itens, ini_y, fin_y, pag))
+        log.info("produtos: total combinado (paginas) = %d", len(produtos))
+    else:
+        log.warning("produtos: regiao de produtos invalida "
+                    "(e1=%s e2=%s ini_y=%s fin_y=%s)",
+                    bool(e1), bool(e2), ini_y, fin_y)
     info["produtos"] = produtos
 
     # ---- dados adicionais ----
@@ -724,6 +770,7 @@ def avaliar_completude(info, chave_valida):
 def processar_pdf(caminho, raiz, engine, dpi):
     """Devolve (info_dict, chave, chave_valida, motivo_error)."""
     rel = str(caminho.relative_to(raiz))
+    log.info("%s | inicio de extracao", rel)
 
     # 1) tentar texto embebido
     itens = None
@@ -742,11 +789,16 @@ def processar_pdf(caminho, raiz, engine, dpi):
             itens = None
 
     if not itens:
+        log.warning("%s | nao foi possivel extrair texto nem OCR do PDF", rel)
         return None, None, False, "nao foi possibil extrair texto nem OCR do PDF", []
 
+    log.info("%s | origem=%s itens=%d", rel, origem, len(itens))
     chave, ok = extrair_chave_acesso(itens)
     if not chave:
+        log.warning("%s | chave de acesso (44 digitos) NAO encontrada", rel)
         return None, None, False, "nao foi encontrada a chave de acesso (44 digitos)", []
+
+    log.info("%s | chave=%s DV_valido=%s", rel, chave, ok)
 
     # Mesmo con DV invalido, os datos (parciales) sao extraidos em vez de
     # descartar o PDF: o campo status_extracao indica "completa" / "parcial"
@@ -758,6 +810,11 @@ def processar_pdf(caminho, raiz, engine, dpi):
     info["status_extracao"] = status
     if motivo_parcial:
         info["motivo_extracao_parcial"] = motivo_parcial
+        log.warning("%s | extracao PARCIAL -> %s", rel, motivo_parcial)
+    else:
+        log.info("%s | extracao COMPLETA", rel)
+    log.info("%s | produtos=%d status=%s", rel,
+             len(info.get("produtos") or []), status)
     if not ok:
         return (info, chave, False,
                 f"chave de acesso encontrada mas com digito verificador invalido: {chave}",
@@ -783,7 +840,13 @@ def main(argv=None):
                         help="NAO atualizar chaves ja existentes no JSON.")
     parser.add_argument("--sem-ocr", action="store_true",
                         help="NAO usar OCR (so PDFs com texto embebido).")
+    parser.add_argument("--log", dest="log_path", default=None,
+                        help="Arquivo de log de rastreio (por omissao: "
+                             "rastreio_extracao.log na raiz).")
     args = parser.parse_args(argv)
+
+    configurar_log(args.log_path)
+    log.info("==== INICIO DA EXTRACAO PDF->JSON ====")
 
     raiz = Path(args.raiz).resolve() if args.raiz else Path(__file__).resolve().parent.parent
     json_path = Path(args.json_path)
@@ -797,6 +860,8 @@ def main(argv=None):
     print(f" JSON: {json_path}")
     print(f" PDFs encontrados: {len(pdfs)}")
     print("=" * 78)
+    log.info("configuracao: raiz=%s json=%s pdfs=%d",
+             raiz, json_path, len(pdfs))
 
     if not pdfs:
         print("NAO ha arquivos PDF na raiz nem subpastas.")
@@ -822,10 +887,13 @@ def main(argv=None):
             motivo = f"erro inesperado: {e}"
             revision = []
             traceback.print_exc()
+            log.error("%s | ERRO inesperado ao processar: %s", pdf.relative_to(raiz), e,
+                      exc_info=True)
 
         if not chave:
             fallos.append((str(pdf.relative_to(raiz)), motivo))
             print(f"    >> NAO foi possivel processar -> {motivo}")
+            log.error("%s | NAO processado -> %s", pdf.relative_to(raiz), motivo)
             continue
 
         revision_total.extend(revision)
@@ -841,6 +909,7 @@ def main(argv=None):
         if ya_existia and args.so_novas:
             print("    >> A chave ja existe no JSON -> omitida (--so-novas)")
             sin_cambio += 1
+            log.info("%s | chave ja existente -> omitida (--so-novas)", chave)
             continue
 
         info_ant = datos.get(chave)
@@ -848,14 +917,17 @@ def main(argv=None):
             datos[chave] = info
             print("    >> OK: sem alteracao (informacao identica)")
             sin_cambio += 1
+            log.info("%s | sem alteracao (informacao identica)", chave)
         elif ya_existia:
             datos[chave] = info
             print("    >> OK: chave JA EXISTENTE -> ATUALIZADA")
             actual += 1
+            log.info("%s | chave atualizada", chave)
         else:
             datos[chave] = info
             print("    >> OK: chave NOVA -> INSERTADA")
             ins += 1
+            log.info("%s | chave nova inserida", chave)
 
         if not ok:
             parc += 1
@@ -864,6 +936,7 @@ def main(argv=None):
 
         salvar_json(datos, json_path)
         print(f"    >> JSON salvado em {json_path}")
+        log.info("%s | JSON salvo em %s", pdf.relative_to(raiz), json_path)
 
     # ---- resumo final ----
     print()
@@ -876,6 +949,9 @@ def main(argv=None):
     print(f"  Sem alteracao         : {sin_cambio}")
     print(f"  Parciais (DV invalido): {parc}")
     print(f"  Falhas / omitidas     : {len(fallos)}")
+    log.info("RESUMO: pdfs=%d inseridas=%d atualizadas=%d sem_alteracao=%d "
+             "parciais=%d falhas=%d",
+             len(pdfs), ins, actual, sin_cambio, parc, len(fallos))
     if parciales:
         print("-" * 78)
         print(" Detalhe de PDFs salvados PARCIALMENTE (status: parcial):")
@@ -890,6 +966,8 @@ def main(argv=None):
             print(f"      motivo: {motivo}")
     print("=" * 78)
     print(f"JSON final: {json_path}  ({len(datos)} chaves de acesso)")
+    log.info("==== FIM DA EXTRACAO (JSON final: %s, %d chaves) ====",
+             json_path, len(datos))
 
     # ---- reporte de normalizacion numerica ----
     if revision_total:
