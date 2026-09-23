@@ -348,17 +348,21 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
     linhas.sort(key=lambda l: l[0]["y"])
 
     # linha do cabecalho da tabela (com fallbacks p/ variantes de DANFE/OCR)
+    # 'CODIGO' ou 'CODPRODUTO' (o OCR costuma ler assim em DANFEs de calcario)
+    def _tem_codigo(txt):
+        return "CODIGO" in txt or "CODPRODUTO" in txt or "CODPROD" in txt
+
     cab = None
     cab_crit = None
     for l in linhas:
         txt = " ".join(e["texto"] for e in l).upper()
-        if "CODIGO" in txt and "CFOP" in txt and "VLR UNIT" in txt.replace("VLRUNIT", "VLR UNIT"):
+        if _tem_codigo(txt) and "CFOP" in txt and "VLR UNIT" in txt.replace("VLRUNIT", "VLR UNIT"):
             cab, cab_crit = l, "1. CODIGO+CFOP+VLR UNIT"
             break
     if cab is None:
         for l in linhas:
             txt = " ".join(e["texto"] for e in l).upper()
-            if "CODIGO" in txt and "CFOP" in txt:
+            if _tem_codigo(txt) and "CFOP" in txt:
                 cab, cab_crit = l, "2. CODIGO+CFOP"
                 break
     if cab is None:
@@ -367,13 +371,13 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         # falta e CODIGO + DESCRICAO (ou so CODIGO) na tabela de produtos.
         for l in linhas:
             txt = " ".join(e["texto"] for e in l).upper()
-            if "CODIGO" in txt and ("DESCRICAO" in txt or "DESCRIPCION" in txt):
+            if _tem_codigo(txt) and ("DESCRICAO" in txt or "DESCRIPCION" in txt):
                 cab, cab_crit = l, "3. CODIGO+DESCRICAO (sem CFOP no cab)"
                 break
     if cab is None:
         for l in linhas:
             txt = " ".join(e["texto"] for e in l).upper()
-            if "CODIGO" in txt:
+            if _tem_codigo(txt):
                 cab, cab_crit = l, "4. CODIGO somente (fallback final)"
                 break
     if cab is None:
@@ -384,22 +388,25 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
     log.info("produtos: cabecalho detectado pelo criterio '%s'", cab_crit)
 
     NOMES = {
-        "codigo": "codigo",
+        "codigo": "codigo", "codproduto": "codigo",
         "descricao do produto": "descricao",
         "descricao do": "descricao",
         "descricao": "descricao",
-        "ncmsh": "ncm", "ncm": "ncm",
-        "orig/cst": "origem_cst", "origicst": "origem_cst",
+        "ncmsh": "ncm", "ncm": "ncm", "nomsi": "ncm",
+        "orig/cst": "origem_cst", "origicst": "origem_cst", "cst": "origem_cst",
         "cfop": "cfop",
-        "unid": "unidade",
-        "qtde": "quantidade",
+        "unid": "unidade", "unidade": "unidade", "unti": "unidade",
+        "qtde": "quantidade", "otde": "quantidade", "qtdb": "quantidade",
         "vlr unit": "valor_unitario", "vlrunit": "valor_unitario",
-        "vlrunt": "valor_unitario",
-        "desc": "desconto",
+        "vlrunt": "valor_unitario", "valorunitario": "valor_unitario",
+        "desc": "desconto", "desu": "desconto",
         "vlr total": "valor_total", "vlrtotal": "valor_total",
-        "bc icms": "bc_icms",
+        "valortotal": "valor_total",
+        "bc icms": "bc_icms", "basecalc": "bc_icms",
         "vlr icms": "valor_icms", "vlricms": "valor_icms",
+        "valoricms": "valor_icms", "gcicms": "valor_icms",
         "vlr ipi": "valor_ipi", "vlripi": "valor_ipi", "vlrtpi": "valor_ipi",
+        "valoripi": "valor_ipi",
         "aliquot": "aliquota", "aliouota": "aliquota", "alicuota": "aliquota",
     }
     # Coleta as colunas de TODA a regiao (nao so da linha do cabecalho):
@@ -448,10 +455,16 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
             if nome:
                 linha.setdefault(nome, []).append(e["texto"])
         celulas = {k: " ".join(v) for k, v in linha.items()}
-        # inicio de produto: e preciso CODIGO + DESCRICAO juntos. Apenas
-        # 'cfop' nao basta: a continuacao da descricao de um produto pode
-        # vir na mesma linha que o cfop e nao pode abrir um produto novo.
-        eh_dado = "codigo" in celulas and "descricao" in celulas
+        # inicio de produto: CODIGO + DESCRICAO juntos. Em layouts/OCR que
+        # separam o codigo em outra banda de y (ex.: calcario), abre-se tambem
+        # com DESCRICAO + QUANTIDADE, mas SEMPRE que ainda nao haja um produto
+        # em construcao - senao a continuacao do nome ('Granulado' em nota de 2
+        # linhas) viraria um segundo produto fantasma.
+        eh_dado = (
+            ("codigo" in celulas and "descricao" in celulas)
+            or (atual is None
+                and "descricao" in celulas and "quantidade" in celulas)
+        )
         if eh_dado:
             if atual is not None:
                 produtos.append(atual)
@@ -663,8 +676,16 @@ def extrair_infos(itens, arquivo_rel):
 
     # ---- produtos ----
     ini_y = fin_y = None
-    e1 = achar_rotulo(itens, ["dadosdoproduto", "datosdoproduto",
-                              "dadosdelproducto"])
+    # alguns DANFEs (ex.: calcario) rotulam a secao no plural: 'DADOS DOS
+    # PRODUTOS/SERVICOS', 'DADOS DO PRODUTO/SERVICO' etc. - por isso varias
+    # variantes (singular/plural) sao procuradas
+    e1 = achar_rotulo(itens, [
+        "dadosdoproduto", "dadosdoprodutos", "dadosdosprodutos",
+        "dadosdoprodutoservicos", "dadosdoprodutosservicos",
+        "dadosdosprodutoservicos", "dadosdosprodutosservicos",
+        "dadosdoprodutoservicio", "dadosdosprodutoservicio",
+        "datosdoproduto", "datosdoprodutos", "dadosdelproducto",
+    ])
     e2 = achar_rotulo(itens, ["dadosadicionais", "datosadicionais"])
     if e1:
         ini_y = e1["y"] + 8  # excluir o titulo "DADOS DO PRODUTO" da tabela
