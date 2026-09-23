@@ -342,7 +342,7 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         l.sort(key=lambda t: t["x"])
     linhas.sort(key=lambda l: l[0]["y"])
 
-    # linha do cabecalho da tabela
+    # linha do cabecalho da tabela (com fallbacks p/ variantes de DANFE/OCR)
     cab = None
     for l in linhas:
         txt = " ".join(e["texto"] for e in l).upper()
@@ -356,6 +356,21 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
                 cab = l
                 break
     if cab is None:
+        # alguns emissores nao imprimem a coluna CFOP no cabecalho; outros PDFs
+        # tem o cabecalho espalhado por varias linhas pelo OCR. O que nunca
+        # falta e CODIGO + DESCRICAO (ou so CODIGO) na tabela de produtos.
+        for l in linhas:
+            txt = " ".join(e["texto"] for e in l).upper()
+            if "CODIGO" in txt and ("DESCRICAO" in txt or "DESCRIPCION" in txt):
+                cab = l
+                break
+    if cab is None:
+        for l in linhas:
+            txt = " ".join(e["texto"] for e in l).upper()
+            if "CODIGO" in txt:
+                cab = l
+                break
+    if cab is None:
         return []
 
     NOMES = {
@@ -364,24 +379,38 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         "descricao do": "descricao",
         "descricao": "descricao",
         "ncmsh": "ncm", "ncm": "ncm",
-        "orig/cst": "origem_cst",
+        "orig/cst": "origem_cst", "origicst": "origem_cst",
         "cfop": "cfop",
         "unid": "unidade",
         "qtde": "quantidade",
         "vlr unit": "valor_unitario", "vlrunit": "valor_unitario",
+        "vlrunt": "valor_unitario",
         "desc": "desconto",
         "vlr total": "valor_total", "vlrtotal": "valor_total",
         "bc icms": "bc_icms",
         "vlr icms": "valor_icms", "vlricms": "valor_icms",
-        "vlr ipi": "valor_ipi", "vlripi": "valor_ipi",
-        "aliquot": "aliquota",
+        "vlr ipi": "valor_ipi", "vlripi": "valor_ipi", "vlrtpi": "valor_ipi",
+        "aliquot": "aliquota", "aliouota": "aliquota", "alicuota": "aliquota",
     }
+    # Coleta as colunas de TODA a regiao (nao so da linha do cabecalho):
+    # o OCR as vezes espalha o cabecalho por varias linhas entrelacadas com a
+    # primeira linha de dados. Tokens de dados reais (numeros, nomes) nao
+    # casam com estes rotulos, entao nao ha risco de pegar valor como coluna.
     colunas = []
-    for e in cab:
+    titulos = set()   # objetos que sao rotulos de coluna (nunca valores)
+    nomes_vistos = set()
+    for e in sorted(regiao, key=lambda t: (t["y"], t["x"])):
         ct = compacta(e["texto"])
+        # um rotulo de coluna nao tem digitos: com isso, textos como
+        # 'Lote:IMP197022-Qtde:37' nao viram uma coluna 'quantidade' fantasma
+        if any(c.isdigit() for c in ct):
+            continue
         for k, v in NOMES.items():
             if k and compacta(k) in ct:
-                colunas.append({"x": e["x"], "nome": v})
+                if v not in nomes_vistos:
+                    colunas.append({"x": e["x"], "nome": v})
+                    nomes_vistos.add(v)
+                titulos.add(id(e))
                 break
 
     def coluna_para(cx):
@@ -400,11 +429,16 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
             continue
         linha = {}
         for e in l:
+            if id(e) in titulos:
+                continue  # rotulo de coluna, nao e valor
             nome = coluna_para(e["x"])
             if nome:
                 linha.setdefault(nome, []).append(e["texto"])
         celulas = {k: " ".join(v) for k, v in linha.items()}
-        eh_dado = "cfop" in celulas or ("codigo" in celulas and "descricao" in celulas)
+        # inicio de produto: e preciso CODIGO + DESCRICAO juntos. Apenas
+        # 'cfop' nao basta: a continuacao da descricao de um produto pode
+        # vir na mesma linha que o cfop e nao pode abrir um produto novo.
+        eh_dado = "codigo" in celulas and "descricao" in celulas
         if eh_dado:
             if atual is not None:
                 produtos.append(atual)
@@ -416,6 +450,13 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
                               for k, v in celulas.items())
                 if es_nota:
                     notas_vistas = True
+                    # a obs nao entra na descricao, mas pode estar na MESMA
+                    # linha que valores numericos (OCR agrupou tudo) - entao
+                    # aproveitamos apenas as demais colunas da linha
+                    for k, v in celulas.items():
+                        if k == "descricao":
+                            continue
+                        atual[k] = (atual.get(k, "") + " " + v).strip()
                 else:
                     for k, v in celulas.items():
                         atual[k] = (atual.get(k, "") + " " + v).strip()
