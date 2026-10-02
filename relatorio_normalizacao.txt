@@ -1,26 +1,26 @@
 ==============================================================================
  REPORTE DE NORMALIZACION NUMERICA - NOTAS FISCALES BR
- Generado : 23/09/2026 12:01:01
+ Generado : 25/09/2026 13:59:28
  Regla    : '.' milhar | ',' decimal | 2 digitos -> decimal, 3 -> milhar
             Campos guardados SOLO como numero (sin milhar).
 ==============================================================================
 
  RESUMEN GENERAL
 ------------------------------------------------------------------------------
-   ok            :   43
-   limpio        :    7
-   recuperado    :    3
+   ok            :   44
+   limpio        :    6
+   recuperado    :    2
    reubicado     :    1
    no_parseable  :    7
    fuera_rango   :    1
-   vacio         :   34
+   vacio         :   33
 
  RESUMEN POR CAMPO (estado: cantidad)
 ------------------------------------------------------------------------------
    valor_da_nota  : ok=3, vacio=5
    peso_bruto     : ok=3, vacio=5
    peso_liquido   : fuera_rango=1, ok=2, vacio=5
-   quantidade     : ok=5, recuperado=3, vacio=3
+   quantidade     : ok=6, recuperado=2, vacio=2
    valor_unitario : limpio=2, ok=5, reubicado=1, vacio=1
    desconto       : ok=1, vacio=7
    valor_total    : ok=8
@@ -30,7 +30,6 @@
    aliquota       : no_parseable=4, vacio=4
    codigo         : limpio=1
    cfop           : limpio=2
-   unidade        : limpio=1
 
  ANOMALIAS QUE REQUIEREN REVISION MANUAL
 ------------------------------------------------------------------------------
@@ -45,7 +44,6 @@
    [  9] 8662.pdf | producto 1 quantidade      | 'desde valor_unitario' -> 48.0 | recuperado | cantidad recuperada desde valor_unitario
    [ 10] 8694.pdf | nota      peso_liquido    | '133601609' -> - | fuera_rango | valor 133601609 fuera del rango plausible [0.0, 10000000.0] para 'peso_liquido'
    [ 11] 8696.pdf | producto 1 aliquota        | '0,0017,000,00' -> - | no_parseable | no se puede interpretar de forma fiable
-   [ 12] 8696.pdf | producto 1 quantidade      | 'desde unidade' -> 36.0 | recuperado | cantidad recuperada desde unidade
 
  DETALLE POR NOTA (crudo -> numero)
 ------------------------------------------------------------------------------
@@ -142,7 +140,7 @@
      nota      valor_da_nota   | - -> -                       | vacio 
      nota      peso_bruto      | - -> -                       | vacio 
      nota      peso_liquido    | - -> -                       | vacio 
-     producto 1 quantidade      | - -> -                       | vacio 
+     producto 1 quantidade      | '36,0000' -> 36.0            | ok 
      producto 1 valor_unitario  | '5.821,0925' -> 5821.0925    | ok 
      producto 1 desconto        | - -> -                       | vacio 
      producto 1 valor_total     | '209.559,33' -> 209559.33    | ok 
@@ -150,8 +148,6 @@
      producto 1 valor_icms      | '2.094,76' -> 2094.76        | ok 
      producto 1 valor_ipi       | - -> -                       | vacio 
      producto 1 aliquota        | '0,0017,000,00' -> -         | no_parseable <--
-     producto 1 quantidade      | 'desde unidade' -> 36.0      | recuperado <--
-     producto 1 unidade         | 'TON 36,0000' -> 'TON'       | limpio 
      producto 1 codigo          | 'P015 DADOSADICIONAIS' -> 'P015' | limpio 
 ==============================================================================
-FIN DEL REPORTE (96 valores procesados, 12 anomalias)
+FIN DEL REPORTE (94 valores procesados, 11 anomalias)

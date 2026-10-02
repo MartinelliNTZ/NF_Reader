@@ -22,6 +22,7 @@ extraidos e guardados como PARCIAIS, com o motivo em
 """
 
 import argparse
+import difflib
 import json
 import os
 import re
@@ -171,10 +172,11 @@ def ler_paginas_ocr(caminho, engine, dpi):
 
 # rotulos que NUNCA sao "valores" (excluidos ao buscar o valor ao lado)
 ROTULOS_EXCLUIR = {
-    "nomerazaosocial", "razaosocial", "destinatarioremetente",
+    "nomerazaosocial", "razaosocial", "social", "destinatarioremetente",
     "cnpjcpf", "cnpj", "datadeemissao", "datadeentradasaida",
     "datadeentradasaid", "dataderecebimento", "endereco", "municipio",
     "bairro", "cep", "uf", "pais", "fonefax", "fone", "inscricaoestadual",
+    "inscricao", "estadual", "hora",
     "inscestadualsubtributaria", "serie", "valordanota",
     "naturezadaoperacao", "naturaleza", "protdeautorizacao", "protocolo",
     "chavedeacesso", "formadepagamento", "formapagamento", "valortroco",
@@ -198,21 +200,89 @@ ROTULOS_EXCLUIR = {
 def achar_rotulo(itens, rotulos, y_min=0, y_max=1e18, pagina=None):
     """Faz match por substring do compacto de cada token de texto."""
     alvos = [compacta(r) for r in rotulos]
+    cands = []
     for e in itens:
         if not (y_min <= e["y"] <= y_max):
             continue
         if pagina is not None and e["pagina"] != pagina:
             continue
+        cands.append(e)
+    for e in cands:
         ct = compacta(e["texto"])
         for alvo in alvos:
             if alvo and alvo in ct:
                 return e
+    # Segunda passada: rotulos partidos em varios tokens da mesma linha
+    # (ex.: "PESO" + "BRUTO", "VALOR" + "TOTAL" + "DA" + "NOTA").
+    return achar_rotulo_multitoken(cands, alvos)
+
+
+def _juntar_linhas(cands, dy_max=16, gap_max=180):
+    """Agrupa tokens da mesma linha em ordem de x (para match de rotulos)."""
+    linhas = []
+    for e in sorted(cands, key=lambda t: (t["pagina"], t["y"], t["x"])):
+        if linhas:
+            ult = linhas[-1][-1]
+            if (e["pagina"] == ult["pagina"]
+                    and abs(e["y"] - ult["y"]) <= dy_max
+                    and e["x"] - ult["x"] <= gap_max):
+                linhas[-1].append(e)
+                continue
+        linhas.append([e])
+    return linhas
+
+
+def achar_rotulo_multitoken(cands, alvos):
+    """Match de rotulo unindo tokens adjacentes da mesma linha.
+
+    'cands' sao os tokens ja filtrados (janela/pagina) e 'alvos' os rotulos
+    ja compactados. Devolve o primeiro token do trecho que casou (ou None).
+    Complementa achar_rotulo, que so casa rotulos inteiros em um unico token.
+    """
+    for linha in _juntar_linhas(cands):
+        # compactos por token com posicoes no concatenado
+        partes = [compacta(e["texto"]) for e in linha]
+        concat = "".join(partes)
+        for alvo in alvos:
+            if not alvo or alvo not in concat:
+                continue
+            # encontra a ocorrencia e mapeia de volta ao token de origem
+            pos = concat.find(alvo)
+            acc = 0
+            for tok, part in zip(linha, partes):
+                if acc <= pos < acc + len(part) or (pos < acc <= pos + len(alvo)):
+                    return tok
+                acc += len(part)
+    # 3) fuzzy (typos do emissor / OCR, ex.: 'ADICIOINAIS'): janela deslizante
+    # com no maximo 1 erro, ainda na mesma linha de tokens
+    for linha in _juntar_linhas(cands):
+        partes = [compacta(e["texto"]) for e in linha]
+        concat = "".join(partes)
+        for alvo in alvos:
+            if len(alvo) < 6:
+                continue
+            n = len(alvo)
+            for w in (n - 1, n, n + 1):
+                if w < 6 or w > len(concat):
+                    continue
+                for i in range(len(concat) - w + 1):
+                    if concat[i] != alvo[0]:
+                        continue
+                    if difflib.SequenceMatcher(
+                            None, concat[i:i + w], alvo).ratio() < 0.9:
+                        continue
+                    acc = 0
+                    for tok, part in zip(linha, partes):
+                        if acc <= i < acc + len(part) or (
+                                i < acc <= i + n):
+                            return tok
+                        acc += len(part)
     return None
 
 
-def valor_ao_lado(itens, rotulo, padrao, margem=45, abre_lado=False,
-                  y_min=None, y_max=None, pagina=None, lado="direita"):
-    """Procura o valor na mesma linha (ao lado) ou na linha de abaixo."""
+def _token_valor(itens, rotulo, padrao, margem=45, abre_lado=False,
+                 y_min=None, y_max=None, pagina=None, lado="direita"):
+    """Procura o TOKEN do valor na mesma linha (ao lado) ou na linha de baixo."""
     x0 = rotulo["x"]
     y0 = rotulo["y"]
     cand = []
@@ -241,15 +311,72 @@ def valor_ao_lado(itens, rotulo, padrao, margem=45, abre_lado=False,
     cand.sort(key=lambda t: (abs(t[2]["x"] - x0) + 20 * abs(t[2]["y"] - y0),
                              abs(t[2]["x"] - x0)))
     for _dy, _dx, e in cand:
+        if e is rotulo:
+            # o proprio rotulo nunca e o valor dele (ex.: 'NOME/RAZÃO SOCIAL')
+            continue
         ct = compacta(e["texto"])
         if any(ct.startswith(r) for r in ROTULOS_EXCLUIR):
             continue
-        m = re.search(padrao, e["texto"])
-        if m:
-            if m.lastindex:
-                return m.group(1).strip()
-            return m.group(0).strip()
+        if re.search(padrao, e["texto"]):
+            return e
     return None
+
+
+def valor_ao_lado(itens, rotulo, padrao, margem=45, abre_lado=False,
+                  y_min=None, y_max=None, pagina=None, lado="direita"):
+    """Procura o valor na mesma linha (ao lado) ou na linha de abaixo."""
+    e = _token_valor(itens, rotulo, padrao, margem, abre_lado=abre_lado,
+                     y_min=y_min, y_max=y_max, pagina=pagina, lado=lado)
+    if not e:
+        return None
+    m = re.search(padrao, e["texto"])
+    if m.lastindex:
+        return m.group(1).strip()
+    return m.group(0).strip()
+
+
+def _linha_de(e, itens, dy=8, gap_max=220):
+    """Texto dos tokens da MESMA linha de 'e' no segmento continuo (por x).
+
+    Corta quando o gap horizontal entre tokens excede 'gap_max' - assim
+    colunas vizinhas (ex.: CPF apos o nome) nao se misturam.
+    """
+    msm = [t for t in itens
+           if t["pagina"] == e["pagina"] and abs(t["y"] - e["y"]) <= dy]
+    msm.sort(key=lambda t: t["x"])
+    segmentos, atual = [], []
+    for t in msm:
+        if atual and t["x"] - atual[-1]["x"] > gap_max:
+            segmentos.append(atual)
+            atual = []
+        atual.append(t)
+    if atual:
+        segmentos.append(atual)
+    for seg in segmentos:
+        if any(t is e for t in seg):
+            return " ".join(t["texto"] for t in seg).strip()
+    return e["texto"].strip()
+
+
+def pegar_texto_linha(itens, rotulos, padrao, margem=45, y_min=0, y_max=1e18,
+                      pagina=None, lado="direita", dy=8, gap_max=220):
+    """Rotulo -> token-valor -> texto da linha inteira (rotulos em N tokens).
+
+    Usado para campos compostos por varios tokens no PDF texto-embebido
+    (nome do destinatario, endereco, razao social do emitente).
+    """
+    rot = achar_rotulo(itens, rotulos, y_min, y_max, pagina)
+    if not rot:
+        return None
+    anc = _token_valor(itens, rot, padrao, margem, y_min=y_min, y_max=y_max,
+                       pagina=pagina, lado=lado)
+    if not anc:
+        return None
+    txt = _linha_de(anc, itens, dy=dy, gap_max=gap_max)
+    m = re.search(padrao, txt)
+    if m:
+        return (m.group(1) if m.lastindex else m.group(0)).strip()
+    return txt or None
 
 
 def pegar_valor(itens, rotulos, padrao, margem=45, y_min=0, y_max=1e18,
@@ -349,19 +476,23 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
 
     # linha do cabecalho da tabela (com fallbacks p/ variantes de DANFE/OCR)
     # 'CODIGO' ou 'CODPRODUTO' (o OCR costuma ler assim em DANFEs de calcario)
+    def _sem_ac(txt):
+        # remove acentos/maiusculas: 'CÓDIGO' -> 'CODIGO', 'DESCRIÇÃO' -> ...
+        return normaliza(txt).upper()
+
     def _tem_codigo(txt):
         return "CODIGO" in txt or "CODPRODUTO" in txt or "CODPROD" in txt
 
     cab = None
     cab_crit = None
     for l in linhas:
-        txt = " ".join(e["texto"] for e in l).upper()
+        txt = _sem_ac(" ".join(e["texto"] for e in l))
         if _tem_codigo(txt) and "CFOP" in txt and "VLR UNIT" in txt.replace("VLRUNIT", "VLR UNIT"):
             cab, cab_crit = l, "1. CODIGO+CFOP+VLR UNIT"
             break
     if cab is None:
         for l in linhas:
-            txt = " ".join(e["texto"] for e in l).upper()
+            txt = _sem_ac(" ".join(e["texto"] for e in l))
             if _tem_codigo(txt) and "CFOP" in txt:
                 cab, cab_crit = l, "2. CODIGO+CFOP"
                 break
@@ -370,13 +501,13 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         # tem o cabecalho espalhado por varias linhas pelo OCR. O que nunca
         # falta e CODIGO + DESCRICAO (ou so CODIGO) na tabela de produtos.
         for l in linhas:
-            txt = " ".join(e["texto"] for e in l).upper()
+            txt = _sem_ac(" ".join(e["texto"] for e in l))
             if _tem_codigo(txt) and ("DESCRICAO" in txt or "DESCRIPCION" in txt):
                 cab, cab_crit = l, "3. CODIGO+DESCRICAO (sem CFOP no cab)"
                 break
     if cab is None:
         for l in linhas:
-            txt = " ".join(e["texto"] for e in l).upper()
+            txt = _sem_ac(" ".join(e["texto"] for e in l))
             if _tem_codigo(txt):
                 cab, cab_crit = l, "4. CODIGO somente (fallback final)"
                 break
@@ -397,11 +528,13 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         "cfop": "cfop",
         "unid": "unidade", "unidade": "unidade", "unti": "unidade",
         "qtde": "quantidade", "otde": "quantidade", "qtdb": "quantidade",
+        "quant": "quantidade",
         "vlr unit": "valor_unitario", "vlrunit": "valor_unitario",
         "vlrunt": "valor_unitario", "valorunitario": "valor_unitario",
+        "vr": "valor_unitario", "unit": "valor_unitario",
         "desc": "desconto", "desu": "desconto",
         "vlr total": "valor_total", "vlrtotal": "valor_total",
-        "valortotal": "valor_total",
+        "valortotal": "valor_total", "valor": "valor_total",
         "bc icms": "bc_icms", "basecalc": "bc_icms",
         "vlr icms": "valor_icms", "vlricms": "valor_icms",
         "valoricms": "valor_icms", "gcicms": "valor_icms",
@@ -566,8 +699,9 @@ def extrair_infos(itens, arquivo_rel):
         REG_DATA)
     info["hora_entrada_saida"] = pegar_valor(
         itens, ["horadeentrada/said", "horadeentrada"], r"\d{2}:\d{2}")
-    info["valor_da_nota"] = pegar_valor(itens, ["valordanota", "valordalanota"],
-                                        REG_VALOR)
+    info["valor_da_nota"] = pegar_valor(
+        itens, ["valordanota", "valordalanota", "valortotaldanota"],
+        REG_VALOR)
     naturaleza = pegar_valor(
         itens, ["natureza daoperacao", "natureza"],
         r"(.{10,90})", margem=70, y_max=900)
@@ -599,57 +733,88 @@ def extrair_infos(itens, arquivo_rel):
                           e["texto"], re.I)
             and not re.search(r"\d", e["texto"])]
     if cand:
-        cand.sort(key=lambda e: e["y"])
-        emitente["razao_social"] = cand[0]["texto"].strip(" .-–—,/")
+        # o emitente fica ABAIXO da canhoto (que tambem pode ter um 'LTDA'
+        # de destinatario) e acima do bloco do destinatario (y>800): o
+        # candidato de maior y no topo da pagina e o do emitente
+        cand.sort(key=lambda e: e["y"], reverse=True)
+        # une os tokens da mesma linha ('CALCARIO' 'OURO' 'BRANCO' 'LTDA')
+        linha_txt = _linha_de(cand[0], itens)
+        if not re.search(r"\d", linha_txt) and \
+                re.search(r"S\.?\s*A\.?$|L\.?\s*T\.?\s*D\.?\s*A\b|S\.R\.L",
+                          linha_txt, re.I):
+            emitente["razao_social"] = linha_txt.strip(" .-–—,/")
+        else:
+            emitente["razao_social"] = cand[0]["texto"].strip(" .-–—,/")
     ie_em = pegar_valor(itens, ["inscricaoestadual"], r"(\d{6,12})",
                         y_min=0, y_max=900)
     emitente["inscricao_estadual"] = ie_em
     info["emitente"] = emitente
     # ---- destinatario ----
-    Y_DEST = (915, 1230)
+    # janela classica (915..1230) primeiro: em layouts OCR o rótulo
+    # 'CNPJ/CPF' do EMITENTE fica logo acima e a janela ampliada o pegaria.
+    # Se nao achar nada, amplia para 780..1230 (DANFEs de 2024 rotulam o
+    # bloco do destinatario ja em y~833)
+    Y_JANELAS = ((915, 1230), (780, 1230))
     dest = {}
-    dest["nome"] = pegar_valor(
-        itens, ["nomerazaosocial"], r"(.{2,60})", y_min=Y_DEST[0],
-        y_max=Y_DEST[1], margem=60)
-    dest["cnpj_cpf"] = pegar_valor(
-        itens, ["cnpjcpf"], REG_CNPJ + r"|" + REG_CPF,
-        y_min=Y_DEST[0], y_max=Y_DEST[1], margem=60)
+
+    def _em_dest(chamar, *args, **kwargs):
+        for y0, y1 in Y_JANELAS:
+            v = chamar(*args, **kwargs, y_min=y0, y_max=y1)
+            if v:
+                return v
+        return None
+
+    dest["nome"] = _em_dest(
+        pegar_texto_linha, itens, ["nomerazaosocial"], r"(.{2,60})",
+        margem=60)
+    if not dest["nome"]:
+        dest["nome"] = _em_dest(
+            pegar_valor, itens, ["nomerazaosocial"], r"(.{2,60})",
+            margem=60)
+    dest["cnpj_cpf"] = _em_dest(
+        pegar_valor, itens, ["cnpjcpf"], REG_CNPJ + r"|" + REG_CPF,
+        margem=60)
     if not dest["cnpj_cpf"]:
         m = re.search(REG_CNPJ + r"|" + REG_CPF, compacto_total)
         dest["cnpj_cpf"] = m.group(0) if m else None
-    dest["endereco"] = pegar_valor(
-        itens, ["endereco"], r"(.{5,90})", y_min=Y_DEST[0],
-        y_max=Y_DEST[1], margem=60)
+    dest["endereco"] = _em_dest(
+        pegar_texto_linha, itens, ["endereco"], r"(.{5,90})", margem=60)
     if not dest["endereco"]:
         m = re.search(r"endereco\s*([A-Z0-9.,À-ú\- ]{5,90})", compacto_total)
         dest["endereco"] = m.group(1) if m else None
-    dest["municipio"] = pegar_valor(
-        itens, ["municipio"], r"([A-Za-zÀ-ú]{3,30})", y_min=Y_DEST[0],
-        y_max=Y_DEST[1])
-    dest["uf"] = pegar_valor(
-        itens, ["uf"], r"([A-Za-zÀ-ú]{2,6})", y_min=Y_DEST[0],
-        y_max=Y_DEST[1])
+    # Guardas anti-lixo OCR: endereco nunca e so digitos (CPF/data
+    # capturados por engano quando o bloco destinatario vem falhado)
+    # nem mera repeticao do nome do destinatario.
+    if dest["endereco"]:
+        _so_dig = "".join(c for c in dest["endereco"] if c.isdigit())
+        _letras = "".join(c for c in dest["endereco"] if c.isalpha())
+        if not _letras and len(_so_dig) >= 6:
+            dest["endereco"] = None
+        elif (dest.get("nome") and dest["endereco"]
+                and compacta(dest["endereco"]) == compacta(dest["nome"])):
+            dest["endereco"] = None
+    dest["municipio"] = _em_dest(
+        pegar_valor, itens, ["municipio"], r"([A-Za-zÀ-ú]{3,30})")
+    dest["uf"] = _em_dest(
+        pegar_valor, itens, ["uf"], r"([A-Za-zÀ-ú]{2,6})")
     if isinstance(dest["uf"], str) and len(dest["uf"]) >= 2:
         # "MTBrasil" ou "MTB" -> "MT"
         dest["uf"] = re.sub(r"^([A-Z]{2}).*", r"\1", dest["uf"])
-    dest["cep"] = pegar_valor(
-        itens, ["cep"], r"(\d{2,3}[\.\-]?\d{3}[\.\-]?\d{3})",
-        y_min=Y_DEST[0], y_max=Y_DEST[1])
+    dest["cep"] = _em_dest(
+        pegar_valor, itens, ["cep"], r"(\d{2,3}[\.\-]?\d{3}[\.\-]?\d{3})")
     if not dest["cep"]:
         m = re.search(r"cep[\.:]?\s*(\d{5,8})", compacto_total)
         dest["cep"] = m.group(1) if m else None
-    dest["pais"] = pegar_valor(
-        itens, ["pais"], r"([A-Za-zÀ-ú]{4,15})", y_min=Y_DEST[0],
-        y_max=Y_DEST[1])
+    dest["pais"] = _em_dest(
+        pegar_valor, itens, ["pais"], r"([A-Za-zÀ-ú]{4,15})")
     if isinstance(dest["pais"], str):
         # "MTBrasil" -> "Brasil" (estado+pais colados)
         dest["pais"] = re.sub(r"^[A-Z]{2}(?=[A-ZÀ-Ú])", "", dest["pais"])
-    dest["telefono"] = pegar_valor(
-        itens, ["fone/fax", "fone"], r"([(]?\d{2,5}[)]?[\d\- ]{5,18})",
-        y_min=Y_DEST[0], y_max=Y_DEST[1])
-    dest["inscricao_estadual"] = pegar_valor(
-        itens, ["inscricaoestadual"], r"(\d{6,12})", y_min=Y_DEST[0],
-        y_max=Y_DEST[1])
+    dest["telefono"] = _em_dest(
+        pegar_valor, itens, ["fone/fax", "fone"],
+        r"([(]?\d{2,5}[)]?[\d\- ]{5,18})")
+    dest["inscricao_estadual"] = _em_dest(
+        pegar_valor, itens, ["inscricaoestadual"], r"(\d{6,12})")
     info["destinatario"] = dest
 
     # ---- transportadora ----
@@ -667,12 +832,22 @@ def extrair_infos(itens, arquivo_rel):
         y_min=Y_TRANS[0], y_max=Y_TRANS[1], margem=60)
     info["transportadora"] = transp
 
+    # janela ampla (labels a ~1780-1802 em alguns DANFEs); fallback sem
+    # janela para layouts com a caixa de volumes em outra altura
     info["peso_bruto"] = pegar_valor(
         itens, ["pesobruto"], r"([0-9][0-9.,]{0,14})",
-        y_min=1640, y_max=1760, margem=60, lado="ambos")
+        y_min=1640, y_max=1900, margem=60, lado="ambos")
     info["peso_liquido"] = pegar_valor(
         itens, ["pesoliquido"], r"([0-9][0-9.,]{0,14})",
-        y_min=1640, y_max=1760, margem=60, lado="ambos")
+        y_min=1640, y_max=1900, margem=60, lado="ambos")
+    if not info["peso_bruto"]:
+        info["peso_bruto"] = pegar_valor(
+            itens, ["pesobruto"], r"([0-9][0-9.,]{0,14})",
+            margem=60, lado="ambos")
+    if not info["peso_liquido"]:
+        info["peso_liquido"] = pegar_valor(
+            itens, ["pesoliquido"], r"([0-9][0-9.,]{0,14})",
+            margem=60, lado="ambos")
 
     # ---- produtos ----
     ini_y = fin_y = None

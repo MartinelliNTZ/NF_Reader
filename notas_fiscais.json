@@ -69,9 +69,9 @@
     "numero_nota": "8645",
     "serie": "N",
     "data_emissao": "18/07/2022",
-    "data_entrada_saida": null,
+    "data_entrada_saida": "18/07/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": null,
+    "valor_da_nota": 215380.4,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidade terceiros",
     "protocolo_autorizacao": "151220049750958",
     "qr": null,
@@ -96,8 +96,8 @@
       "cnpj_cpf": null,
       "placa": null
     },
-    "peso_bruto": null,
-    "peso_liquido": null,
+    "peso_bruto": 0,
+    "peso_liquido": 37000.0,
     "produtos": [
       {
         "codigo": "P015",
@@ -118,7 +118,7 @@
     "texto_ocr": "[p1 y=25 x=1266] WNI\n[p1 y=68 x=1284] Documento Auxiliarda\n[p1 y=101 x=1283] NotaFiscal Eletronica\n[p1 y=155 x=1249] 0-ENTRADA\n[p1 y=173 x=411] INPEKFERTILIZANTESS.A.\n[p1 y=192 x=1223] 1-SAIDA\n[p1 y=212 x=1933] C1IAVEDEACESS051220723704333000601550010000086451309928634\n[p1 y=252 x=1284] 8645\n[p1 y=256 x=1169] N°\n[p1 y=263 x=628] Rua ElenitaCastroCardoso,150.Quadra26Lote8BSala01-Vila\n[p1 y=274 x=1938] CONSULTADEAUTENTICIDADENOPORTALNACIONALDANF-E\n[p1 y=298 x=251] Auroral\n[p1 y=301 x=1204] SERIE1\n[p1 y=305 x=1935] WWW.NFE.FAZENDA.GOV.BR/PORTAL\n[p1 y=332 x=601] Rondonopolis-MT-CEP:78.740-038-FONE:(41)3527-5745\n[p1 y=334 x=1937] OUNOSITEDASEFAZAUTORIZADORA\n[p1 y=348 x=1235] FOLHA1/1\n[p1 y=439 x=322] NATUREZADAOPERACAO\n[p1 y=465 x=2138] 151220049750958 18/07/202208:53:52\n[p1 y=469 x=600] Vendademercadoriaadquiridaourecebidade terceiros\n[p1 y=470 x=1601] PROT.DEAUTORIZACAO\n[p1 y=504 x=302] CRT(Codigo de Regime\n[p1 y=504 x=1238] INSCRICAOESTADUAL.\n[p1 y=504 x=1737] INSC.ESTADUALSUBST.TRIBUTARIA\n[p1 y=506 x=2012] CNPJICPF\n[p1 y=530 x=361] 3-Regime Normal\n[p1 y=531 x=1228] 137656289\n[p1 y=532 x=2146] 23.704.333/0006-01\n[p1 y=583 x=355] DESTINATARIO/REMETENTE\n[p1 y=610 x=303] NOME/RAZAOSOCIAL\n[p1 y=615 x=1731] CNPJ/CPF\n[p1 y=615 x=2249] DATADE EMISSAO\n[p1 y=641 x=419] CELSOGRIESANGEOUTRO\n[p1 y=646 x=1826] 234.122.240-49\n[p1 y=648 x=2282] 18/07/2022\n[p1 y=681 x=247] ENDERECO\n[p1 y=686 x=1971] CEP\n[p1 y=687 x=2277] DAJADEENTRADASAIDA\n[p1 y=688 x=1542] BAIRRO\n[p1 y=710 x=574] RODOVIARODBR364KM106+4KMAESQUERDA,SN\n[p1 y=714 x=1597] ZONARURAL\n[p1 y=714 x=2037] 78.770-000\n[p1 y=744 x=242] MUNICIPIO\n[p1 y=747 x=902] UF\n[p1 y=748 x=998] PAIS\n[p1 y=749 x=1457] FONE/FAX\n[p1 y=751 x=1867] INSCRICAO ESTADUAL\n[p1 y=751 x=2279] HORADEENTRADASAID\n[p1 y=771 x=280] AltoGarcas\n[p1 y=774 x=926] MT\n[p1 y=775 x=1014] Brasil\n[p1 y=777 x=1513] (66)3423-4956\n[p1 y=777 x=1835] 132227452\n[p1 y=811 x=334] FORMADEPAGAMENTO\n[p1 y=844 x=457] FORMAPAGAMENTO\n[p1 y=847 x=1015] VALOR\n[p1 y=849 x=1575] FORMAPAGAMENTO\n[p1 y=850 x=2141] VALOR\n[p1 y=881 x=465] Outros-Outros\n[p1 y=884 x=1008] 215.380,40\n[p1 y=920 x=1296] VALORTROCO\n[p1 y=989 x=308] CALCULOIMPOSTO\n[p1 y=1017 x=333] BASEDECALCULODOICMS\n[p1 y=1019 x=696] VALORCOICMS\n[p1 y=1021 x=1270] BASEDECALCULODOICMSDESUBSTITUICAO\n[p1 y=1023 x=1744] VALORDOICMSDESUBSTITUICAO\n[p1 y=1024 x=2131] VALORTOTALDOSPRODUTOS\n[p1 y=1046 x=490] 12.664,37\n[p1 y=1047 x=936] 2.152,94\n[p1 y=1054 x=1489] 0,00\n[p1 y=1055 x=1921] 0,00\n[p1 y=1056 x=2305] 215.380,40\n[p1 y=1084 x=287] VALORDOFRETE\n[p1 y=1085 x=568] VALORDOSEGURO\n[p1 y=1087 x=798] DESCONTO\n[p1 y=1088 x=1286] OUTRASDESPESASACESSORIASVALORTOTALDOIPI\n[p1 y=1093 x=1789] VLRAPROXDOSTRIBUTOS\n[p1 y=1093 x=2095] VALORTOTALDANOTA\n[p1 y=1108 x=409] 0.00\n[p1 y=1109 x=691] 0.00\n[p1 y=1111 x=950] 0.00\n[p1 y=1115 x=1312] 0.00\n[p1 y=1115 x=1595] 0.00\n[p1 y=1118 x=2305] 215.380.40\n[p1 y=1158 x=483] TRANSPORTADORVOLUMESTRANSPORTADOS\n[p1 y=1187 x=263] RAZAO SOCIAL\n[p1 y=1188 x=1103] FRETEPORCONTA\n[p1 y=1193 x=1526] CODIGOANTT\n[p1 y=1195 x=1799] PLACADOVEICULO\n[p1 y=1195 x=1976] UF\n[p1 y=1196 x=2069] CNPJ\n[p1 y=1217 x=429] FRIBONTRANSPORTESLTDA\n[p1 y=1223 x=1782] MKW-3662\n[p1 y=1224 x=1233] REMETENTE\n[p1 y=1227 x=2258] 10.280.806/0001-34\n[p1 y=1227 x=1994] SC\n[p1 y=1258 x=252] ENDERECO\n[p1 y=1262 x=1240] MUNICIPIO\n[p1 y=1268 x=1984] UF\n[p1 y=1268 x=2161] INSCRICAO ESTADUAL\n[p1 y=1287 x=618] RUARIOPRETO781PARQUEINDUSTRIALFABRICIO\n[p1 y=1295 x=1289] Rondonopolis\n[p1 y=1298 x=1997] MT\n[p1 y=1299 x=2324] 133601609\n[p1 y=1324 x=260] QUANTIDADE\n[p1 y=1327 x=505] ESPECIE\n[p1 y=1330 x=1009] MARCA\n[p1 y=1332 x=1551] NUMERACAO\n[p1 y=1334 x=2005] PESO BRUTO\n[p1 y=1337 x=2268] PESOLIQUIDO\n[p1 y=1366 x=879] BIGBAG\n[p1 y=1374 x=1886] 0\n[p1 y=1376 x=2320] 37.000,000\n[p1 y=1421 x=371] DADOSDOPRODUTOSERVICOS\n[p1 y=1453 x=255] CODIGO\n[p1 y=1453 x=2349] ALIQUOTA\n[p1 y=1455 x=468] DESCRICAODOPRODUTO\n[p1 y=1457 x=1056] ORIGICST\n[p1 y=1459 x=926] NCMSH\n[p1 y=1459 x=1252] UND\n[p1 y=1460 x=1502] VLRUNT\n[p1 y=1461 x=1620] DESC\n[p1 y=1462 x=1747] VLRTOTAL\n[p1 y=1463 x=1882] VTRIB\n[p1 y=1463 x=1998] BCICMS\n[p1 y=1464 x=2117] VLRICMS\n[p1 y=1465 x=2238] VLRIPI\n[p1 y=1477 x=2348] ICMSIPI\n[p1 y=1498 x=567] FosfatoMonoamonico11%N-52%P205-\n[p1 y=1499 x=210] P015\n[p1 y=1501 x=1056] 6/20\n[p1 y=1502 x=1157] 5102\n[p1 y=1502 x=1251] TON\n[p1 y=1503 x=1372] 37,0000\n[p1 y=1503 x=1511] 5.821.0919\n[p1 y=1505 x=924] 31054000\n[p1 y=1505 x=1767] 215.380.40\n[p1 y=1506 x=2129] 2.152.94\n[p1 y=1506 x=2004] 12.664.37\n[p1 y=1508 x=2325] 0.0017,000.00\n[p1 y=1525 x=391] Granulado\n[p1 y=1556 x=584] Obs:FERT.MINERALSIMPLES.APLICACAO\n[p1 y=1586 x=401] VIASOLO.:\n[p1 y=1630 x=470] Lote:IMP197022-Qtde:37:\n[p1 y=1679 x=553] Lote(s):Reg.MAPA:PR0015695000026.\n[p1 y=2443 x=306] DADOSADICIONAIS\n[p1 y=2478 x=364] INFORMACOESCOMPLEMENTARES\n[p1 y=2489 x=1639] RESERVADOAOFISCO\n[p1 y=2514 x=759] LOTEIMP197022/9829-DATADEFABRICACAO16/07/2022-VALIDADEDE12MESESAPARTIR\n[p1 y=2571 x=514] Destinatario:Amazenar em local seco,cobertoe arejado:\n[p1 y=2599 x=670] IPInaotributadoconformeDecreto89502016capitulo31da secaoVILei10925art1\n[p1 y=2629 x=713] de23/07/2004reduzaaliquota0dePIS/COFINSReducaodaBCdoICMSconformeDecreto\n[p1 y=2658 x=654] n932/2021（DOEde05052021)ConvenioICMS26/2021de12demarcode2021",
     "origem_texto": "ocr",
     "status_extracao": "parcial",
-    "motivo_extracao_parcial": "campos nucleares ausentes: valor_da_nota, destinatario.nome, destinatario.cnpj_cpf"
+    "motivo_extracao_parcial": "campos nucleares ausentes: destinatario.nome, destinatario.cnpj_cpf"
   },
   "51220723704333000601550010000086461530470545": {
     "arquivo": "8646.pdf",
@@ -131,7 +131,7 @@
     "data_emissao": "18/07/2022",
     "data_entrada_saida": "18/07/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": null,
+    "valor_da_nota": 215380.4,
     "natureza_da_operacao": "Vendademercadoria adquiridaourecebidade terceiros",
     "protocolo_autorizacao": "15122004975648518",
     "qr": "NF-eemitidapeloOobj-NFE-http:/www.oobj.com.br",
@@ -156,7 +156,7 @@
       "cnpj_cpf": null,
       "placa": null
     },
-    "peso_bruto": null,
+    "peso_bruto": 0,
     "peso_liquido": null,
     "produtos": [
       {
@@ -180,7 +180,7 @@
     "texto_ocr": "[p1 y=21 x=1268] UAINIL\n[p1 y=64 x=1285] Documento Auxiliarda\n[p1 y=96 x=1283] NotaFiscal Eletronica\n[p1 y=151 x=1248] 0-ENTRADA\n[p1 y=166 x=410] INPEKFERTILIZANTESS.A\n[p1 y=189 x=1220] 1-SAIDA\n[p1 y=212 x=1575] CHIAVEDEACESSOS\n[p1 y=216 x=2039] 51220723704333000601550010000086461530470545\n[p1 y=255 x=1284] 8646\n[p1 y=259 x=1167] N°\n[p1 y=263 x=628] RuaElenitaCastroCardoso,150.Quadra26Lote8BSala01-Vila\n[p1 y=280 x=1934] CONSULTADEAUTENTICIDADENOPORTALNACIONALDANF-E\n[p1 y=297 x=249] Auroral\n[p1 y=304 x=1203] SERIE1\n[p1 y=311 x=1932] WWW.NFE.FAZENDA.GOV.BR/PORTAL\n[p1 y=332 x=601] Rondonopolis-MT-CEP:78.740-038-FONE:(41)3527-5745\n[p1 y=340 x=1933] OUNOSITEDASEFAZAUTORIZADORA\n[p1 y=351 x=1235] FOLHA1/1\n[p1 y=434 x=322] NATUREZADAOPERACAO\n[p1 y=466 x=601] Vendademercadoria adquiridaourecebidade terceiros\n[p1 y=469 x=1598] PROT.DE AUTORIZACAO\n[p1 y=469 x=2135] 15122004975648518/07/202209:05:11\n[p1 y=498 x=304] CRT(Codigo deRegime\n[p1 y=499 x=1234] INSCRICAOESTADUAL\n[p1 y=506 x=1733] INSC.ESTADUALSUBST.TRIBUTARIA\n[p1 y=507 x=2009] CNPJ/CPF\n[p1 y=523 x=360] 3-RegimeNormal\n[p1 y=526 x=1225] 137656289\n[p1 y=534 x=2141] 23.704.333/0006-01\n[p1 y=576 x=355] DESTINATARIO/REMETENTE\n[p1 y=603 x=301] NOME/RAZAOSOCIAL\n[p1 y=616 x=1726] CNPJ/CPF\n[p1 y=621 x=2244] DATADE EMISSAO\n[p1 y=636 x=418] CELSOGRIESANGEOUTRO\n[p1 y=648 x=1820] 234.122.240-49\n[p1 y=653 x=2278] 18/07/2022\n[p1 y=674 x=245] ENDERECO\n[p1 y=687 x=1540] BAIRRO\n[p1 y=689 x=1964] CEP\n[p1 y=692 x=2274] DATADEENTRADA/SAIDA\n[p1 y=705 x=572] RODOVIAR0DBR364KM106+4KMAESQUERDA,SN\n[p1 y=714 x=1593] ZONARURAL\n[p1 y=719 x=2032] 78.770-000\n[p1 y=738 x=241] MUNICIPIO\n[p1 y=744 x=897] UF\n[p1 y=745 x=995] PAIS\n[p1 y=748 x=1453] FONE/FAX\n[p1 y=752 x=1862] INSCRICAOESTADUAL\n[p1 y=756 x=2272] HORADEENTRADA/SAID\n[p1 y=765 x=277] AltoGarcas\n[p1 y=770 x=930] MT\n[p1 y=771 x=1015] Brasil\n[p1 y=776 x=1510] (66)3423-4956\n[p1 y=779 x=1832] 132227452\n[p1 y=806 x=334] FORMADEPAGAMENTO\n[p1 y=839 x=454] FORMAPAGAMENTO\n[p1 y=843 x=1012] VALOR\n[p1 y=847 x=1571] FORMAPAGAMENTO\n[p1 y=852 x=2134] VALOR\n[p1 y=874 x=462] Outros-Outros\n[p1 y=879 x=1005] 215.380,40\n[p1 y=917 x=1291] VALORTROCO\n[p1 y=979 x=305] CALCULOIMPOSTO\n[p1 y=1005 x=327] BASEDECALCULODOICMS\n[p1 y=1009 x=692] VALORDOICMS\n[p1 y=1016 x=1743] VALORDOICMSDESUBSTITUICAO\n[p1 y=1021 x=2124] VALORTOTALDOSPRODUTOS\n[p1 y=1035 x=485] 12.664,37\n[p1 y=1038 x=932] 2.152,94\n[p1 y=1045 x=1484] 0,00\n[p1 y=1048 x=1915] 0,00\n[p1 y=1052 x=2303] 215.380,40\n[p1 y=1072 x=286] VALORDOFRETE\n[p1 y=1073 x=566] VALORDOSEGURO\n[p1 y=1078 x=796] DESCONTO\n[p1 y=1079 x=1281] OUTRASDESPESASACESSORIASVALORTOTALDOIPI\n[p1 y=1086 x=1783] VLRAPROXDOSTRIBUTOS\n[p1 y=1088 x=2086] VALORTOTALDANOTA\n[p1 y=1099 x=408] 0.00\n[p1 y=1101 x=688] 0.00\n[p1 y=1103 x=946] 0.00\n[p1 y=1108 x=1307] 0.00\n[p1 y=1110 x=1590] 0.00\n[p1 y=1117 x=2303] 215.380.40\n[p1 y=1150 x=480] TRANSPORTADORVOLUMESTRANSPORTADOS\n[p1 y=1180 x=259] RAZAOSOCIAL\n[p1 y=1187 x=1099] FRETEPORCONTA\n[p1 y=1193 x=1521] CODIGOANTT\n[p1 y=1195 x=1794] PLACADOVEICULO\n[p1 y=1197 x=2063] CNPJ\n[p1 y=1198 x=1969] UF\n[p1 y=1211 x=426] FRIBONTRANSPORTESLTDA\n[p1 y=1223 x=1227] REMETENTE\n[p1 y=1227 x=1775] MCQ-8228\n[p1 y=1228 x=1988] SC\n[p1 y=1231 x=2256] 10.280.806/0001-34\n[p1 y=1253 x=251] ENDERECO\n[p1 y=1264 x=1236] MUNICIPIO\n[p1 y=1270 x=1974] UF\n[p1 y=1273 x=2155] INSCRICAOESTADUAL\n[p1 y=1283 x=615] RUARIOPRETO781PARQUEINDUSTRIALFABRICIO\n[p1 y=1293 x=1284] Rondonopolis\n[p1 y=1299 x=1991] MT\n[p1 y=1303 x=2322] 133601609\n[p1 y=1318 x=257] QUANTIDADE\n[p1 y=1319 x=500] ESPECIE\n[p1 y=1325 x=1004] MARCA\n[p1 y=1331 x=1544] NUMERACAO\n[p1 y=1335 x=1999] PESO BRUTO\n[p1 y=1338 x=2257] PESOLIOUIDO\n[p1 y=1362 x=874] BIGBAG\n[p1 y=1372 x=1881] 0\n[p1 y=1377 x=2314] 37.000,000\n[p1 y=1413 x=370] DADOSDOPRODUTO/SERVICOS\n[p1 y=1445 x=252] CODIGO\n[p1 y=1449 x=465] DESCRICAODOPRODUTO\n[p1 y=1453 x=921] NCMSH\n[p1 y=1453 x=1051] ORIG-CST\n[p1 y=1455 x=1151] CFOP\n[p1 y=1455 x=2346] ALIQUOTAS\n[p1 y=1456 x=1247] UNID\n[p1 y=1459 x=1369] QTDE\n[p1 y=1459 x=1499] VLRLNIT\n[p1 y=1459 x=1614] DESC\n[p1 y=1461 x=1742] VLRTOTAL\n[p1 y=1462 x=1875] VTRIB.\n[p1 y=1465 x=1991] BCICMS\n[p1 y=1465 x=2110] VLRICMS\n[p1 y=1466 x=2230] VLRIPI\n[p1 y=1479 x=2345] ICMSTIPI\n[p1 y=1494 x=564] FosfatoMonoamonico11%N-52%P2O5-\n[p1 y=1497 x=208] P015\n[p1 y=1500 x=1051] 6/20\n[p1 y=1500 x=1151] 5102\n[p1 y=1500 x=1247] TON\n[p1 y=1501 x=1369] 37.0000\n[p1 y=1502 x=921] 31054000\n[p1 y=1504 x=1505] 5.821,0919\n[p1 y=1506 x=1761] 215.380.40\n[p1 y=1509 x=1996] 12.664.37\n[p1 y=1509 x=2124] 2.152.94\n[p1 y=1511 x=2321] 0.0017.000.00\n[p1 y=1524 x=389] Granulado\n[p1 y=1556 x=579] Obs:FERT.MINERALSIMPLES.APLICACAO\n[p1 y=1586 x=398] VIASOLO.:\n[p1 y=1630 x=465] Lote:IMP197022-QIde:37:\n[p1 y=1681 x=548] Lote(s):Reg.MAPA:PR0015695000026.\n[p1 y=2445 x=299] DADOSADICIONAIS\n[p1 y=2481 x=358] INFORMACOESCOMPLEMENTARES\n[p1 y=2497 x=1630] RESERVADO AOFISCO\n[p1 y=2519 x=751] LOTEIMP197022/2022-DATADEFABRICACAO18/07/2022-VALIDADEDE12MESESAPARTIR\n[p1 y=2576 x=605] MEA6867DadosDestinatario:Armazenarem local seco,cobertoearejado:\n[p1 y=2602 x=661] IPInaotributadoconformeDecreto89502016capitulo31dasecaoV1Lei10925art1\n[p1 y=2633 x=707] de23/07/2004reduzAaliquota0dePIS/COFINSReducaodaBCdoICMSconformeDecreto\n[p1 y=2659 x=646] n932/2021(DOEde05.05.2021)ConvenioICMS26/2021de 12de marcode2021\n[p1 y=2955 x=414] NF-eemitidapeloOobj-NFE-http:/www.oobj.com.br",
     "origem_texto": "ocr",
     "status_extracao": "parcial",
-    "motivo_extracao_parcial": "campos nucleares ausentes: valor_da_nota, destinatario.nome, destinatario.cnpj_cpf"
+    "motivo_extracao_parcial": "campos nucleares ausentes: destinatario.nome, destinatario.cnpj_cpf"
   },
   "15122072370433300060155001000008647196957361": {
     "arquivo": "8647.pdf",
@@ -254,7 +254,7 @@
     "data_emissao": "18/07/2022",
     "data_entrada_saida": "18/07/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": null,
+    "valor_da_nota": 215380.4,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidadeterceiros",
     "protocolo_autorizacao": "151220049846256",
     "qr": "NF-eemitidapeloOobj-NFE-http://www.oobi.com.br",
@@ -266,13 +266,13 @@
     "destinatario": {
       "nome": null,
       "cnpj_cpf": null,
-      "endereco": "23412224049",
+      "endereco": null,
       "municipio": null,
       "uf": null,
       "cep": "78740038",
       "pais": null,
-      "telefono": null,
-      "inscricao_estadual": null
+      "telefono": "(66)3423-4956",
+      "inscricao_estadual": "132227452"
     },
     "transportadora": {
       "razao_social": null,
@@ -316,7 +316,7 @@
     "data_emissao": "20/07/2022",
     "data_entrada_saida": "20/07/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": null,
+    "valor_da_nota": 283538.88,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidadeterceiros",
     "protocolo_autorizacao": "15122005057598820",
     "qr": "NF-eemitidapeloOobj-NFE-http:/www.oobj.com,br",
@@ -341,8 +341,8 @@
       "cnpj_cpf": null,
       "placa": null
     },
-    "peso_bruto": null,
-    "peso_liquido": null,
+    "peso_bruto": 0,
+    "peso_liquido": 48000.0,
     "produtos": [
       {
         "codigo": "P015",
@@ -389,7 +389,7 @@
     "destinatario": {
       "nome": "CELSOGRIESANGEOUTRO",
       "cnpj_cpf": "234.122.240-49",
-      "endereco": "CELSOGRIESANGEOUTRO",
+      "endereco": null,
       "municipio": null,
       "uf": "MT",
       "cep": "78.795-000",
@@ -438,7 +438,7 @@
     "data_emissao": "01/08/2022",
     "data_entrada_saida": "01/08/2022",
     "hora_entrada_saida": null,
-    "valor_da_nota": null,
+    "valor_da_nota": 209559.33,
     "natureza_da_operacao": "Vendademercadoriaadquiridaourecebidade terceiros",
     "protocolo_autorizacao": "15122005364728401",
     "qr": "NF-eemitidapeloOobj-NFE-http://www.oobj.com.br",
@@ -463,7 +463,7 @@
       "cnpj_cpf": null,
       "placa": null
     },
-    "peso_bruto": null,
+    "peso_bruto": 0,
     "peso_liquido": null,
     "produtos": [
       {
@@ -473,12 +473,12 @@
         "origem_cst": "6/20",
         "cfop": "5102",
         "unidade": "TON",
+        "quantidade": 36.0,
         "valor_unitario": 5821.0925,
         "valor_total": 209559.33,
         "bc_icms": 12322.09,
         "valor_icms": 2094.76,
         "aliquota": null,
-        "quantidade": 36.0,
         "desconto": null,
         "valor_ipi": null
       }
@@ -487,6 +487,6 @@
     "texto_ocr": "[p1 y=48 x=1326] DocumentoAuxiliarda\n[p1 y=81 x=1324] NotaFiscal Eletronica\n[p1 y=132 x=1284] 0-ENTRADA\n[p1 y=147 x=476] INPEKEERTILIZANTESS.A\n[p1 y=168 x=1264] 1-SAIDA\n[p1 y=187 x=1590] CHAVEDEACESSO\n[p1 y=188 x=2037] 51220823704333000601550010000086961991321798\n[p1 y=226 x=1320] 8696\n[p1 y=229 x=1212] No\n[p1 y=235 x=690] RuaElenitaCastroCardoso,150,Quadra26Lote8BSala01-Vila\n[p1 y=248 x=1948] CONSULTADEAUTENTICIDADENOPORTALNACIONALDANF-E\n[p1 y=268 x=321] Auroral\n[p1 y=274 x=1246] SERIE1\n[p1 y=278 x=1947] WWW.NFE.FAZENDA.GOV.BR/PORTAL\n[p1 y=301 x=662] Rondonopolis-MT-CEP:78.740-038-FONE:（41)3527-5745\n[p1 y=306 x=1948] OUNOSITEDASEFAZAUTORIZADORA\n[p1 y=318 x=1236] FOLHA\n[p1 y=318 x=1317] 1/1\n[p1 y=398 x=388] NATUREZADAOPERACAO\n[p1 y=430 x=660] Vendademercadoriaadquiridaourecebidade terceiros\n[p1 y=430 x=2142] 15122005364728401/08/202214:04:15\n[p1 y=432 x=1625] PROT.DEAUTORIZACAO\n[p1 y=461 x=371] CRT(Codigo de Regime\n[p1 y=465 x=1278] INSCRICAOESTADUAL\n[p1 y=467 x=1753] INSC.ESTADUALSUBST.TRIBUTARIA\n[p1 y=467 x=2021] CNPJ/CPF\n[p1 y=488 x=426] 3-RegimeNormal\n[p1 y=491 x=1267] 137656289\n[p1 y=493 x=2145] 23.704.333/0006-01\n[p1 y=536 x=421] DESTINATARIO/REMETENTE\n[p1 y=561 x=370] NOME/RAZAOSOCIAL\n[p1 y=570 x=1749] CNPJ/CPF\n[p1 y=570 x=2245] DATADEEMISSAO\n[p1 y=590 x=482] CELSOGRIESANGEOUTRO\n[p1 y=597 x=1838] 234.122.240-49\n[p1 y=600 x=2277] 01/08/2022\n[p1 y=627 x=317] ENDERECO\n[p1 y=635 x=2276] DATADEENTRADASAIDA\n[p1 y=635 x=1978] CEP\n[p1 y=637 x=1570] BAIRRO\n[p1 y=657 x=633] RODOVIARODBR364KM106+4KMAESQUERDA.SN\n[p1 y=664 x=1620] ZONARURAL\n[p1 y=665 x=2041] 78.770-000\n[p1 y=692 x=312] MUNICIPIO\n[p1 y=695 x=950] UF\n[p1 y=696 x=1045] PAIS\n[p1 y=698 x=1486] FONE/FAX\n[p1 y=698 x=2276] HORADEENTRADA/SAIDA\n[p1 y=699 x=1877] INSCRICAOESTADUAL\n[p1 y=718 x=346] AltoGarcas\n[p1 y=721 x=979] MT\n[p1 y=721 x=1058] Brasil\n[p1 y=722 x=1847] 132227452\n[p1 y=723 x=1540] (66)3423-4956\n[p1 y=757 x=400] FORMADEPAGAMENTO\n[p1 y=789 x=518] FORMAPAGAMENTO\n[p1 y=791 x=1060] VALOR\n[p1 y=793 x=1598] FORMAPAGAMENTO\n[p1 y=795 x=2140] VALOR\n[p1 y=822 x=524] Outros-Outros\n[p1 y=826 x=1054] 209.559,33\n[p1 y=860 x=1329] VALORTROCO\n[p1 y=925 x=373] CALCULOIMPOSTO\n[p1 y=951 x=394] BASEDECALCULODOICMS\n[p1 y=955 x=750] VALORDOICMS\n[p1 y=956 x=1305] BASEDECALCULODOICMSDESUBSTITUICAO\n[p1 y=959 x=1760] VALORDOICMSDESUBSTITUICAO\n[p1 y=960 x=2129] VALORTOTALDOSPRODUTOS\n[p1 y=982 x=548] 12.322,09\n[p1 y=984 x=981] 2.094,76\n[p1 y=988 x=1514] 0,00\n[p1 y=989 x=2302] 209.559,33\n[p1 y=989 x=1928] 0,00\n[p1 y=1020 x=352] VALORDOFRETE\n[p1 y=1022 x=848] DESCONTO\n[p1 y=1024 x=625] VALORDOSEGURO\n[p1 y=1024 x=1319] OUTRASDESPESASACESSORIASVALORTOTALDOIPI\n[p1 y=1027 x=1801] VLRAPROXDOSTRIBUTOS\n[p1 y=1028 x=2096] VALORTOTALDANOTA\n[p1 y=1046 x=472] 0.00\n[p1 y=1047 x=743] 0.00\n[p1 y=1048 x=993] 0.00\n[p1 y=1051 x=1343] 0.00\n[p1 y=1052 x=2304] 209.559.33\n[p1 y=1053 x=1615] 0.00\n[p1 y=1094 x=542] TRANSPORTADORVOLUMESTRANSPORTADOS\n[p1 y=1122 x=328] RAZAOSOCIAL\n[p1 y=1124 x=1141] FRETEPOR CONTA\n[p1 y=1129 x=1548] CODIGOANTT\n[p1 y=1130 x=2070] CNPJ\n[p1 y=1131 x=1811] PLACADOVEICULO\n[p1 y=1131 x=1980] n\n[p1 y=1150 x=489] FRIBONTRANSPORTESLTDA\n[p1 y=1158 x=1267] REMETENTE\n[p1 y=1160 x=1788] MLY-7248\n[p1 y=1160 x=1996] SC\n[p1 y=1160 x=2257] 10.280.806/0001-34\n[p1 y=1190 x=319] ENDERECO\n[p1 y=1195 x=1277] MUNICIPIO\n[p1 y=1197 x=2156] INSCRICAOESTADUAL\n[p1 y=1198 x=1986] UF\n[p1 y=1216 x=672] RUARIOPRETO781PARQUEINDUSTRIALFABRICIO\n[p1 y=1223 x=1322] Rondonopolis\n[p1 y=1225 x=1999] MT\n[p1 y=1226 x=2319] 133601609\n[p1 y=1251 x=326] QUANTIDADE\n[p1 y=1253 x=561] ESPECIE\n[p1 y=1256 x=1051] MARCA\n[p1 y=1260 x=2009] PESO BRUTO\n[p1 y=1260 x=1575] NUMERACAO\n[p1 y=1262 x=2258] PESOLIQUIDO\n[p1 y=1295 x=926] BIGBAG\n[p1 y=1299 x=1894] 0\n[p1 y=1301 x=2311] 36.000,000\n[p1 y=1346 x=433] DADOSDOPRODUTO/SERVICOS\n[p1 y=1376 x=2347] ALIQUOTAS\n[p1 y=1378 x=322] CODIGO\n[p1 y=1381 x=524] DESCRICAODOPRODUTO\n[p1 y=1383 x=968] NCM/SH\n[p1 y=1383 x=1098] ORIG/CST\n[p1 y=1383 x=1194] CFOP\n[p1 y=1384 x=1285] UNID\n[p1 y=1384 x=1525] VLRUNIT\n[p1 y=1386 x=1402] QTDB\n[p1 y=1386 x=1638] DESC\n[p1 y=1386 x=1761] VLRTOTAL\n[p1 y=1389 x=1890] VTRIB\n[p1 y=1389 x=2002] BCICMS\n[p1 y=1389 x=2116] VLRICMS\n[p1 y=1389 x=2230] VLRIPI\n[p1 y=1401 x=2343] ICMSIPI\n[p1 y=1424 x=624] FosfatoMonoamonico11%N-52%P205-\n[p1 y=1425 x=278] P015\n[p1 y=1427 x=1194] 5102\n[p1 y=1427 x=1098] 6/20\n[p1 y=1427 x=1285] TON\n[p1 y=1428 x=1401] 36,0000\n[p1 y=1428 x=1532] 5.821,0925\n[p1 y=1430 x=2128] 2.094,76\n[p1 y=1430 x=970] 31054000\n[p1 y=1430 x=1778] 209.559,33\n[p1 y=1430 x=2005] 12.322,09\n[p1 y=1432 x=2319] 0,0017,000,00\n[p1 y=1449 x=452] Granulado\n[p1 y=1480 x=566] Obs:FERT.MINERALSIMPLES,\n[p1 y=1507 x=533] APLICACAOVIASOLO:\n[p1 y=1549 x=527] Lote:IMP197022-Qtde:36;\n[p1 y=1597 x=610] Lote(s):Reg.MAPA:PR 0015695 000026.\n[p1 y=2337 x=365] DADOSADICIONAIS\n[p1 y=2371 x=423] INFORMACOESCOMPLEMENTARES\n[p1 y=2379 x=1654] RESERVADOAOFISCO\n[p1 y=2403 x=794] LOTEIMP197022-DATADEFABRICACAO01/08/2022-VALIDADEDE12MESESAPARTIRDA\n[p1 y=2459 x=694] QIY-6756/7066DadosDestinatario:Armazenaremlocal seco,cobertoearejado;\n[p1 y=2486 x=719] IPinaotributadoconformeDecreto89502016capitulo31dasecaoV1Lei10925art1\n[p1 y=2515 x=761] de23/07/2004reduzaaliquota0dePIS/COFINSReducaodaBCdoICMSconformeDecreto\n[p1 y=2542 x=707] n932/2021（DOEde05.05.2021)ConvenioICMS26/2021,de12demarcode2021\n[p1 y=2829 x=479] NF-eemitidapeloOobj-NFE-http://www.oobj.com.br\n[p1 y=3081 x=702] INTERSITESISTEMASLTDA-geral@intersite.com.br-(67)3047-2020\n[p1 y=3111 x=598] ValorAprox.Tributos:R$118,44-16,45%FonteIBPT",
     "origem_texto": "ocr",
     "status_extracao": "parcial",
-    "motivo_extracao_parcial": "campos nucleares ausentes: valor_da_nota, destinatario.nome, destinatario.cnpj_cpf"
+    "motivo_extracao_parcial": "campos nucleares ausentes: destinatario.nome, destinatario.cnpj_cpf"
   }
 }

@@ -1224,7 +1224,7 @@ class AplicacaoNotasFiscais(QObject):
             ) as arquivo:
                 leitor = csv.reader(
                     arquivo,
-                    delimiter=";",
+                    delimiter=",",
                 )
 
                 conteudo = list(

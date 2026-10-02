@@ -7,8 +7,14 @@ Uso:
     python core/generar_csv.py [--json notas_fiscales.json] [--csv notas_fiscales.csv]
                                [--incluir-ocr]
 
-Formato de saida (pensado para abrir em Excel com locale pt-BR):
-    - Separador   : ';' (punto e coma).
+Formato de saida (validado com Excel COM nesta maquina):
+    - Separador   : ',' (list separator da maquina/locale; Excel pt-BR
+      reconhece a virgula ao abrir).
+    - Decimais    : ponto (215380.4 vira NUMERO no Excel; com virgula o
+      valor seria lido como TEXTO).
+    - Numeros longos: puros digitos com >=12 caracteres ou com zero a
+      esquerda saem como formula ="..." (texto fiel, sem notacao
+      cientifica e sem perder zeros - ex.: a chave de 44 digitos).
     - Codificacion: UTF-8 con BOM (caracteres especiais corretos em Excel).
     - Salto       : CRLF.
     - Uma FILA por cada PRODUTO da nota (formato longo). Se a nota nao tem
@@ -97,25 +103,44 @@ def _obtener(diccionario, ruta):
     return actual
 
 
+def _como_texto_literal(valor):
+    """Envolve em formula de texto =\"...\" para preservar o valor fiel.
+
+    Numeros longos (>=12 digitos puros) viram notacao cientifica no Excel e
+    inteiros com zero a esquerda perdem os zeros - a formula resolve os
+    dois casos mantendo o conteudo identico ao extraido (chave de 44
+    digitos, protocolos, etc.).
+    """
+    s = str(valor)
+    if s.isdigit() and (len(s) >= 12 or (len(s) > 1 and s.startswith("0"))):
+        return '="' + s + '"'
+    return s
+
+
 def _celda(valor):
-    """Convierte un valor do JSON a texto de celda."""
+    """Convierte un valor del JSON a texto de celda (ver regras abaixo)."""
     if valor is None:
         return ""
     if valor is True:
         return "SI"
     if valor is False:
         return "NAO"
-    if isinstance(valor, (int, float)) and not isinstance(valor, bool):
+    if isinstance(valor, (int, float)):
         return _numero_a_texto(valor)
-    return str(valor)
+    # texto: chave de acesso / digitos longos preservados como ="..."
+    return _como_texto_literal(valor)
 
 
 def _numero_a_texto(valor):
-    """Numero en formato pt-BR sin separador de milhar: 215380,4 / 37000."""
+    """Numero -> digitos sem separador de milhar e con PONTO decimal.
+
+    Ex.: 215380.4 / 37000 - Excel parseia como NUMERO (com ',' viraria
+    texto neste CSV de delimitor ',' ja validado).
+    """
     f = float(valor)
     if f == int(f) and abs(f) < 1e15:
         return str(int(f))
-    return f"{f:.12g}".replace(".", ",")
+    return f"{f:.12g}"
 
 
 def carregar_json(ruta):
@@ -150,7 +175,9 @@ def construir_filas(datos, incluir_ocr=False):
 
 def guardar_csv(csv_path, cabeceras, filas):
     with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
-        writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL,
+        # ',' = list separator da maquina (validado com Excel COM);
+        # decimais ja chegam com ponto em _celda
+        writer = csv.writer(f, delimiter=",", quoting=csv.QUOTE_MINIMAL,
                             lineterminator="\r\n")
         writer.writerow(cabeceras)
         writer.writerows(filas)
