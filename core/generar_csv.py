@@ -90,6 +90,29 @@ COLUMNAS_PRODUCTO = [
     ("produto_alicuota",       "aliquota"),
 ]
 
+# Campos marcados por padrao no grid/filtro de colunas da interface.
+# O restante das colunas (nota + produto) fica desmarcado por padrao.
+CAMPOS_PREDEFINIDOS = frozenset({
+    "chave_de_acesso",
+    "peso_bruto",
+    "peso_liquido",
+    "produto_item",
+    "produto_codigo",
+    "produto_descricao",
+})
+
+
+def listar_colunas():
+    """Lista ordenada (nota + produto) dos campos selecionaveis do CSV.
+
+    Usada pela interface para montar o grid de checkboxes na mesma ordem em
+    que as colunas sao escritas no CSV.
+    """
+    return [
+        titulo
+        for titulo, _ruta in (COLUMNAS_NOTA + COLUMNAS_PRODUCTO)
+    ]
+
 
 def _obtener(diccionario, ruta):
     """Le un valor anidado com notacion 'a.b.c'."""
@@ -148,10 +171,25 @@ def carregar_json(ruta):
         return json.load(f)
 
 
-def construir_filas(datos, incluir_ocr=False):
-    """Devolve (cabeceras, filas). Uma fila por produto de cada nota."""
-    cabeceras = [titulo for titulo, _ruta in COLUMNAS_NOTA]
-    cabeceras += [titulo for titulo, _ruta in COLUMNAS_PRODUCTO]
+def construir_filas(datos, incluir_ocr=False, colunas=None):
+    """Devolve (cabeceras, filas). Uma fila por produto de cada nota.
+
+    colunas: colecao de titulos a manter (filtro de dados da interface).
+             None (por omissao) mantem TODAS as colunas.
+    """
+    filtro = set(colunas) if colunas is not None else None
+
+    columnas_nota = [
+        col for col in COLUMNAS_NOTA
+        if filtro is None or col[0] in filtro
+    ]
+    columnas_producto = [
+        col for col in COLUMNAS_PRODUCTO
+        if filtro is None or col[0] in filtro
+    ]
+
+    cabeceras = [titulo for titulo, _ruta in columnas_nota]
+    cabeceras += [titulo for titulo, _ruta in columnas_producto]
     if incluir_ocr:
         cabeceras.append("texto_ocr")
 
@@ -161,8 +199,8 @@ def construir_filas(datos, incluir_ocr=False):
         if not isinstance(produtos, list) or not produtos:
             produtos = [{}]
         for item, prod in enumerate(produtos, 1):
-            fila = [_celda(_obtener(nota, ruta)) for _titulo, ruta in COLUMNAS_NOTA]
-            for _titulo, ruta in COLUMNAS_PRODUCTO:
+            fila = [_celda(_obtener(nota, ruta)) for _titulo, ruta in columnas_nota]
+            for _titulo, ruta in columnas_producto:
                 if ruta is None:
                     fila.append(str(item))
                 else:

@@ -40,6 +40,7 @@ from PySide6.QtWidgets import (
     QPlainTextEdit,
     QProgressBar,
     QPushButton,
+    QScrollArea,
     QSpinBox,
     QSplitter,
     QStatusBar,
@@ -49,6 +50,17 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+try:  # executado como pacote: core.ui_main
+    from .generar_csv import (
+        CAMPOS_PREDEFINIDOS,
+        listar_colunas,
+    )
+except ImportError:  # executado diretamente: python core/ui_main.py
+    from generar_csv import (
+        CAMPOS_PREDEFINIDOS,
+        listar_colunas,
+    )
 
 
 # =============================================================================
@@ -265,12 +277,27 @@ class JanelaPrincipal(QMainWindow):
 
         painel_opcoes = QFrame()
         painel_opcoes.setObjectName("painelOpcoes")
-        painel_opcoes.setMinimumWidth(270)
-        painel_opcoes.setMaximumWidth(360)
+        painel_opcoes.setMinimumWidth(280)
+        painel_opcoes.setMaximumWidth(380)
 
-        layout_opcoes = QVBoxLayout(painel_opcoes)
-        layout_opcoes.setContentsMargins(14, 14, 14, 14)
-        layout_opcoes.setSpacing(12)
+        # Toda a coluna de opcoes fica dentro de um QScrollArea: assim o
+        # painel nunca excede a altura minima da janela e os widgets nao se
+        # sobrepoem (o botao Executar fica fixo, fora da area de rolagem).
+        layout_painel_opcoes = QVBoxLayout(painel_opcoes)
+        layout_painel_opcoes.setContentsMargins(10, 10, 10, 10)
+        layout_painel_opcoes.setSpacing(8)
+
+        self.rolagem_opcoes = QScrollArea()
+        self.rolagem_opcoes.setObjectName("rolagemOpcoes")
+        self.rolagem_opcoes.setWidgetResizable(True)
+        self.rolagem_opcoes.setFrameShape(QFrame.Shape.NoFrame)
+
+        self.conteudo_opcoes = QWidget()
+        self.conteudo_opcoes.setObjectName("conteudoOpcoes")
+
+        layout_opcoes = QVBoxLayout(self.conteudo_opcoes)
+        layout_opcoes.setContentsMargins(3, 3, 3, 3)
+        layout_opcoes.setSpacing(10)
 
         titulo_opcoes = QLabel("⚙️ Opções de extração")
         titulo_opcoes.setObjectName("tituloSecao")
@@ -313,6 +340,56 @@ class JanelaPrincipal(QMainWindow):
         layout_opcoes.addSpacing(8)
 
         # ---------------------------------------------------------------------
+        # Filtro de campos (grid de checkboxes)
+        # ---------------------------------------------------------------------
+
+        titulo_campos = QLabel("🧩 Campos do CSV")
+        titulo_campos.setObjectName("tituloSecao")
+        layout_opcoes.addWidget(titulo_campos)
+
+        linha_botoes_campos = QHBoxLayout()
+        linha_botoes_campos.setSpacing(6)
+
+        self.botao_marcar_todos_campos = QPushButton("Marcar todos")
+        self.botao_marcar_todos_campos.clicked.connect(
+            self._marcar_todos_campos
+        )
+
+        self.botao_limpar_campos = QPushButton("Limpar")
+        self.botao_limpar_campos.clicked.connect(
+            self._limpar_campos
+        )
+
+        linha_botoes_campos.addWidget(self.botao_marcar_todos_campos)
+        linha_botoes_campos.addWidget(self.botao_limpar_campos)
+        layout_opcoes.addLayout(linha_botoes_campos)
+
+        self.moldura_campos = QFrame()
+        self.moldura_campos.setObjectName("molduraCampos")
+        self.moldura_campos.setToolTip(
+            "Marque os campos que devem aparecer no CSV gerado."
+        )
+
+        grade_campos = QGridLayout(self.moldura_campos)
+        grade_campos.setContentsMargins(10, 10, 10, 10)
+        grade_campos.setHorizontalSpacing(8)
+        grade_campos.setVerticalSpacing(3)
+
+        # Um checkbox por campo disponivel; os padrao ja vem marcados.
+        self.checkboxes_campos: dict[str, QCheckBox] = {}
+
+        for indice, campo in enumerate(listar_colunas()):
+            caixa = QCheckBox(campo)
+            caixa.setChecked(campo in CAMPOS_PREDEFINIDOS)
+            caixa.setToolTip(
+                "Coluna do CSV: " + campo
+            )
+            grade_campos.addWidget(caixa, indice, 0)
+            self.checkboxes_campos[campo] = caixa
+
+        layout_opcoes.addWidget(self.moldura_campos)
+
+        # ---------------------------------------------------------------------
         # Estado da pasta
         # ---------------------------------------------------------------------
 
@@ -340,6 +417,9 @@ class JanelaPrincipal(QMainWindow):
 
         layout_opcoes.addStretch(1)
 
+        self.rolagem_opcoes.setWidget(self.conteudo_opcoes)
+        layout_painel_opcoes.addWidget(self.rolagem_opcoes, 1)
+
         self.botao_executar = QPushButton(
             "▶ Executar processamento"
         )
@@ -348,7 +428,7 @@ class JanelaPrincipal(QMainWindow):
             self.processamento_solicitado.emit
         )
 
-        layout_opcoes.addWidget(self.botao_executar)
+        layout_painel_opcoes.addWidget(self.botao_executar)
 
         splitter.addWidget(painel_opcoes)
 
@@ -538,6 +618,26 @@ class JanelaPrincipal(QMainWindow):
             self.campo_pasta.text().strip()
         )
 
+    @Slot()
+    def _marcar_todos_campos(self) -> None:
+        """Marca todos os campos do grid (incluir tudo no CSV)."""
+        for caixa in self.checkboxes_campos.values():
+            caixa.setChecked(True)
+
+    @Slot()
+    def _limpar_campos(self) -> None:
+        """Desmarca todos os campos do grid (CSV sem colunas)."""
+        for caixa in self.checkboxes_campos.values():
+            caixa.setChecked(False)
+
+    def campos_csv_selecionados(self) -> list[str]:
+        """Campos marcados no grid, na ordem das colunas do CSV."""
+        return [
+            campo
+            for campo in listar_colunas()
+            if self.checkboxes_campos[campo].isChecked()
+        ]
+
     def obter_configuracao(self) -> dict:
         """Retorna somente os valores escolhidos pelo usuário."""
         return {
@@ -555,6 +655,7 @@ class JanelaPrincipal(QMainWindow):
                 self.checkbox_texto_ocr_csv.isChecked()
             ),
             "dpi": self.campo_dpi.value(),
+            "campos_csv": self.campos_csv_selecionados(),
         }
 
     # =========================================================================
@@ -596,6 +697,9 @@ class JanelaPrincipal(QMainWindow):
         self.checkbox_apenas_adicionar.setEnabled(habilitado)
         self.checkbox_texto_ocr_csv.setEnabled(habilitado)
         self.campo_dpi.setEnabled(habilitado)
+        self.botao_marcar_todos_campos.setEnabled(habilitado)
+        self.botao_limpar_campos.setEnabled(habilitado)
+        self.moldura_campos.setEnabled(habilitado)
 
         if processando:
             self.botao_executar.setText(
@@ -996,6 +1100,23 @@ class JanelaPrincipal(QMainWindow):
             QCheckBox::indicator:checked {
                 background-color: #D4AF37;
                 border: 1px solid #F1D66E;
+            }
+
+            QScrollArea#rolagemOpcoes {
+                background: transparent;
+                border: none;
+            }
+
+            QFrame#molduraCampos {
+                background-color: #121415;
+                border: 1px solid #443A18;
+                border-radius: 6px;
+            }
+
+            QFrame#molduraCampos QCheckBox {
+                color: #DCCB8E;
+                font-size: 11px;
+                spacing: 6px;
             }
 
             QProgressBar {

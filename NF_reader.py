@@ -234,6 +234,7 @@ def processar_pasta(
     incluir_texto_ocr_csv=False,
     dpi=300,
     apenas_adicionar=True,
+    campos_csv=None,
     callback_progresso: CallbackProgresso = None,
     callback_status: CallbackStatus = None,
     callback_aviso: CallbackAviso = None,
@@ -266,6 +267,9 @@ def processar_pasta(
     rastreio_log.info("pipeline | PDFs=%d OCR=%s incluir_ocr_csv=%s dpi=%d apenas_adicionar=%s",
                       len(arquivos_pdf), usar_ocr, incluir_texto_ocr_csv, dpi,
                       apenas_adicionar)
+    rastreio_log.info("pipeline | filtro de campos (%s): %s",
+                      "todos" if campos_csv is None else len(campos_csv),
+                      "todos" if campos_csv is None else list(campos_csv))
 
     if not arquivos_pdf:
         rastreio_log.warning("pipeline | nenhum PDF encontrado em %s", pasta_raiz)
@@ -518,6 +522,7 @@ def processar_pasta(
     cabecalhos, linhas = construir_linhas(
         dados,
         incluir_ocr=incluir_texto_ocr_csv,
+        colunas=campos_csv,
     )
 
     salvar_csv(
@@ -647,6 +652,11 @@ class TrabalhadorProcessamento(QObject):
                     self.configuracao[
                         "apenas_adicionar"
                     ]
+                ),
+                campos_csv=(
+                    self.configuracao.get(
+                        "campos_csv"
+                    )
                 ),
                 callback_progresso=(
                     self.progresso.emit
@@ -880,6 +890,16 @@ class AplicacaoNotasFiscais(QObject):
         configuracao["pasta"] = str(
             pasta
         )
+
+        if not configuracao.get("campos_csv"):
+            self.janela.mostrar_aviso(
+                "Nenhum campo selecionado",
+                (
+                    "Marque ao menos um campo no grid "
+                    "\"Campos do CSV\" para gerar o CSV."
+                ),
+            )
+            return
 
         self.ultimo_resultado = None
 
