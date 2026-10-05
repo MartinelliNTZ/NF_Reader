@@ -2,6 +2,8 @@
 """
 Normalizacion de valores numericos extraidos con OCR de Notas Fiscais
 brasilenas (DANFE). Convencion BR: '.' = separador de MILHAR, ',' = DECIMAL.
+Tambien acepta el patron americano invertido (',' = milhar, '.' = decimal),
+detectado automaticamente (ex.: "1,234.56" -> 1234.56).
 
 Objetivo (pedido del usuario):
   - Guardar SOLO el numero (int/float), sin separador de milhar ni texto
@@ -129,6 +131,20 @@ def _parsear_una(token):
         return None
     tiene_punto = "." in s
     tiene_coma = "," in s
+
+    # 0) padrao AMERICANO explicito: virgula = separador de MILHAR e ponto =
+    # decimal (ex.: "1,234.56" -> 1234.56). So acontece quando a virgula vem
+    # ANTES do ponto; os grupos a esquerda do ponto devem ser de milhar (3
+    # digitos). A maioria das notas e pt-BR (ponto=milhar, virgula=decimal),
+    # mas emissores/softwares americanos invertem os separadores.
+    if tiene_punto and tiene_coma and s.rfind(",") < s.rfind("."):
+        entera_us = s[:s.rfind(".")]
+        dec_us = s[s.rfind(".") + 1:]
+        grupos = entera_us.split(",")
+        if (entera_us.replace(",", "").isdigit() and dec_us.isdigit()
+                and all(len(g) == 3 for g in grupos[1:])
+                and 1 <= len(grupos[0]) <= 3):
+            return _construir(entera_us.replace(",", ""), dec_us, ".")
 
     # 1) separadores mezclados
     if tiene_punto and tiene_coma:
@@ -448,6 +464,13 @@ if __name__ == "__main__":
         ("0,00", 0.0),
         ("0,00|17.000,0", 0.0),           # IPI 0 con resto OCR
         ("48,0000 5.907,0600", 5907.06),  # qtde+precio juntos -> precio
+        # padrao americano (virgula = milhar, ponto = decimal)
+        ("1,234.56", 1234.56),
+        ("1,234,567.89", 1234567.89),
+        ("1,234.5", 1234.5),
+        ("1,234.567", 1234.567),
+        ("1234.56", 1234.56),
+        ("12.34", 12.34),
         (None, None),
         ("", None),
     ]

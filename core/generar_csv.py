@@ -7,11 +7,11 @@ Uso:
     python core/generar_csv.py [--json notas_fiscales.json] [--csv notas_fiscales.csv]
                                [--incluir-ocr]
 
-Formato de saida (validado com Excel COM nesta maquina):
-    - Separador   : ',' (list separator da maquina/locale; Excel pt-BR
-      reconhece a virgula ao abrir).
-    - Decimais    : ponto (215380.4 vira NUMERO no Excel; com virgula o
-      valor seria lido como TEXTO).
+Formato de saida (padrao Excel pt-BR):
+    - Separador   : ';' (ponto e virgula, padrao brasileiro; o Excel pt-BR
+      abre o arquivo ja em colunas).
+    - Decimais    : virgula (215380.4 vira "215380,4" e o Excel le como
+      NUMERO; nunca ha separador de milhar).
     - Numeros longos: puros digitos com >=12 caracteres ou com zero a
       esquerda saem como formula ="..." (texto fiel, sem notacao
       cientifica e sem perder zeros - ex.: a chave de 44 digitos).
@@ -67,6 +67,7 @@ COLUMNAS_NOTA = [
     ("transportadora_placa",          "transportadora.placa"),
     ("peso_bruto",                    "peso_bruto"),
     ("peso_liquido",                  "peso_liquido"),
+    ("volume_litros",                 "volume_litros"),
     ("dados_adicionais",              "dados_adicionais"),
 ]
 
@@ -94,8 +95,11 @@ COLUMNAS_PRODUCTO = [
 # O restante das colunas (nota + produto) fica desmarcado por padrao.
 CAMPOS_PREDEFINIDOS = frozenset({
     "chave_de_acesso",
+    "arquivo",
+    "data_emissao",
     "peso_bruto",
     "peso_liquido",
+    "volume_litros",
     "produto_item",
     "produto_codigo",
     "produto_descricao",
@@ -155,15 +159,19 @@ def _celda(valor):
 
 
 def _numero_a_texto(valor):
-    """Numero -> digitos sem separador de milhar e con PONTO decimal.
+    """Numero -> digitos sem separador de milhar e com VIRGULA decimal.
 
-    Ex.: 215380.4 / 37000 - Excel parseia como NUMERO (com ',' viraria
-    texto neste CSV de delimitor ',' ja validado).
+    Ex.: 215380.4 -> "215380,4" / 37000 -> "37000" / 2948.7221 -> "2948,7221".
+    O Excel pt-BR interpreta a virgula como decimal e o numero (sem milhar)
+    como NUMERO.
     """
     f = float(valor)
     if f == int(f) and abs(f) < 1e15:
         return str(int(f))
-    return f"{f:.12g}"
+    texto = f"{f:.12g}"
+    # decimal com virgula (padrao brasileiro); nunca adiciona separador de
+    # milhar (o valor ja chega do JSON sem milhar, com ponto decimal)
+    return texto.replace(".", ",")
 
 
 def carregar_json(ruta):
@@ -213,9 +221,9 @@ def construir_filas(datos, incluir_ocr=False, colunas=None):
 
 def guardar_csv(csv_path, cabeceras, filas):
     with open(csv_path, "w", newline="", encoding="utf-8-sig") as f:
-        # ',' = list separator da maquina (validado com Excel COM);
-        # decimais ja chegam com ponto em _celda
-        writer = csv.writer(f, delimiter=",", quoting=csv.QUOTE_MINIMAL,
+        # ';' = separador padrao do Excel pt-BR; decimais ja chegam com
+        # virgula em _celda (sem separador de milhar)
+        writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL,
                             lineterminator="\r\n")
         writer.writerow(cabeceras)
         writer.writerows(filas)

@@ -410,6 +410,15 @@ UNIDADES = {
     "BIGBAG", "DZ", "FD", "BB", "DOSE", "HA", "ML", "T", "MIL", "G",
 }
 
+# unidade de VOLUME (litros): quando a nota nao traz "PESO LIQUIDO" - caso
+# tipico dos combustiveis (gasolina, diesel, ARLA), que nao passam por
+# balanca - o volume total em litros passa a ocupar a MESMA coluna
+# "peso_liquido" (sem criar uma coluna nova de volume).
+UNIDADES_VOLUME = {"L", "LT", "LTS", "LTR", "LITRO", "LITROS"}
+# so estas variantes contam na varredura crua de tokens do OCR: exige-se uma
+# unidade com 2+ letras para nao transformar um "L" solto de OCR em volume.
+_ROTULOS_VOLUME = {"LT", "LTS", "LTR", "LITRO", "LITROS"}
+
 RX_NCM = re.compile(r"^\d{8}$")
 RX_CFOP = re.compile(r"^[1-7]\d{3}$")
 RX_ORIGEM = re.compile(r"^\d{1,3}/\d{1,2}$")
@@ -1005,6 +1014,113 @@ def _valores_num(token):
     return vals
 
 
+def _candidatos_numero(valor):
+    """Leituras plausiveis de um valor (token OCR cru ou numero ja normalizado).
+
+    '963,899' e ambiguo: pode ser 963,899 (3 decimais - tipico de quantidade em
+    litros) ou 963899 (milhar). Devolve as duas para que o desempate seja feito
+    pela relacao quantidade * valor_unitario = valor_total.
+    """
+    if valor is None or isinstance(valor, bool):
+        return []
+    if isinstance(valor, (int, float)):
+        return [float(valor)]
+    if not isinstance(valor, str) or not valor.strip():
+        return []
+    return [float(v) for v in _valores_num(valor.strip())]
+
+
+def _litros_do_produto(prod):
+    """Volume (litros) de UM produto medido em unidade de volume; None se nao.
+
+    Para quantidade ambigua ('963,899') usa valor_unitario e valor_total para
+    escolher a leitura cujo produto bate com o total; sem essa pista fica com a
+    menor leitura (o volume de uma carga cabe em milhares, nao em milhoes).
+    """
+    if not isinstance(prod, dict):
+        return None
+    und = prod.get("unidade")
+    if not isinstance(und, str) or und.strip().upper() not in UNIDADES_VOLUME:
+        return None
+    cands = [c for c in _candidatos_numero(prod.get("quantidade")) if c > 0]
+    if not cands:
+        return None
+    if len(cands) == 1:
+        return cands[0]
+    unit = _candidatos_numero(prod.get("valor_unitario"))
+    total = _candidatos_numero(prod.get("valor_total"))
+    if unit and total and unit[0] > 0:
+        return min(cands, key=lambda q: abs(q * unit[0] - total[0]))
+    return min(cands)
+
+
+def _litros_por_produtos(produtos):
+    """Soma o volume (litros) dos produtos medidos em unidade de volume."""
+    total = 0.0
+    achou = False
+    for prod in produtos or []:
+        q = _litros_do_produto(prod)
+        if q is None:
+            continue
+        total += q
+        achou = True
+    return total if achou else None
+
+
+def _litros_por_itens(itens):
+    """Plano B: soma volumes em litros varrendo os tokens crus do OCR.
+
+    Usado quando a tabela de produtos nao pode ser lida (ex.: cabecalho com
+    "COD." que nao casa com o criterio do cabecalho). Para cada token que e
+    EXATAMENTE uma unidade de volume ('LT', 'LITROS', ...) pega o numero
+    imediatamente a direita na MESMA linha (coluna QUANTIDADE do DANFE) e exige
+    casa decimal - assim nao confunde com codigos/CFOP/NCM vizinhos.
+    """
+    if not itens:
+        return None
+    total = 0.0
+    achou = False
+    for e in itens:
+        if compacta(e["texto"]).upper() not in _ROTULOS_VOLUME:
+            continue
+        melhor = None
+        for t in itens:
+            if t["pagina"] != e["pagina"] or abs(t["y"] - e["y"]) > 14:
+                continue
+            dx = t["x"] - e["x"]
+            if not (0 < dx <= 260):
+                continue
+            tok = t["texto"].strip()
+            if not RX_NUM_OCR.match(tok) or ("." not in tok and "," not in tok):
+                continue
+            if melhor is None or dx < melhor[0]:
+                melhor = (dx, tok)
+        if melhor is None:
+            continue
+        cands = [c for c in _candidatos_numero(melhor[1]) if c > 0]
+        if not cands:
+            continue
+        total += min(cands)
+        achou = True
+    return total if achou else None
+
+
+def completar_volume_litros(info, itens):
+    """Calcula o VOLUME total em litros e guarda em 'volume_litros'.
+
+    Independe de 'peso_liquido': notas de combustivel (gasolina, diesel,
+    ARLA) nao passam por balanca - o rotulo PESO LIQUIDO fica vazio (ou com
+    lixo de OCR) - mas a QUANTIDADE em litros e confiavel. O resultado fica
+    numa coluna propria ('volume_litros'), sem misturar litros com peso.
+    """
+    litros = _litros_por_produtos(info.get("produtos"))
+    if litros is None:
+        litros = _litros_por_itens(itens)
+    info["volume_litros"] = round(litros, 4) if litros else None
+    if litros:
+        log.info("volume total em litros: %.4f", litros)
+
+
 def _produto_de_pares(pares):
     """Monta um produto a partir de tokens (x, texto) sem usar cabecalho."""
     prod = {}
@@ -1470,6 +1586,9 @@ def extrair_infos(itens, arquivo_rel):
                      len(alt))
             produtos = alt
     info["produtos"] = produtos
+
+    # volume total em litros (combustiveis nao tem balanca; litros != peso)
+    completar_volume_litros(info, itens)
 
     # ---- dados adicionais ----
     dados_extra = []
