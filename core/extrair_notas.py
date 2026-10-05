@@ -72,6 +72,8 @@ REG_DATA = r"\d{2}/\d{2}/\d{4}"
 REG_CNPJ = r"\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
 REG_CPF = r"\d{3}\.\d{3}\.\d{3}-\d{2}"
 REG_VALOR = r"\d{1,3}(?:\.\d{3})*,\d{2}"
+# variante tolerante: OCR troca a virgula decimal por ponto ("11.284.80")
+REG_VALOR_TOL = r"\d{1,3}(?:[.,]\d{3})*[.,]\d{2}"
 
 
 def validar_chave(chave):
@@ -173,7 +175,7 @@ def ler_paginas_ocr(caminho, engine, dpi):
 # rotulos que NUNCA sao "valores" (excluidos ao buscar o valor ao lado)
 ROTULOS_EXCLUIR = {
     "nomerazaosocial", "razaosocial", "social", "destinatarioremetente",
-    "cnpjcpf", "cnpj", "datadeemissao", "datadeentradasaida",
+    "cnpjcpf", "cnpicpf", "cnpi", "cnpj", "cpfcnpj", "datadeemissao", "datadeentradasaida",
     "datadeentradasaid", "dataderecebimento", "endereco", "municipio",
     "bairro", "cep", "uf", "pais", "fonefax", "fone", "inscricaoestadual",
     "inscricao", "estadual", "hora",
@@ -397,6 +399,288 @@ def _janela_valida(digitos, limite=44):
     return None
 
 
+# ---------------------------------------------------------------------------
+# Classificacao de tokens de produto (independente de cabecalho) e reparo de
+# chave - cobre varios layouts/emissores de DANFE e erros tipicos de OCR.
+# ---------------------------------------------------------------------------
+
+UNIDADES = {
+    "TON", "TONS", "TN", "KG", "KGL", "KGS", "KGSC", "UN", "UND", "UNID",
+    "UNI", "PC", "PCS", "L", "LT", "M", "M2", "M3", "SC", "CX", "GL", "BAG",
+    "BIGBAG", "DZ", "FD", "BB", "DOSE", "HA", "ML", "T", "MIL", "G",
+}
+
+RX_NCM = re.compile(r"^\d{8}$")
+RX_CFOP = re.compile(r"^[1-7]\d{3}$")
+RX_ORIGEM = re.compile(r"^\d{1,3}/\d{1,2}$")
+RX_CST = re.compile(r"^\d{2,3}$")
+RX_CODIGO = re.compile(r"^[A-Za-z]{1,4}\d{2,8}$")
+RX_NUM_OCR = re.compile(r"^\d[\d.,]*$")
+
+# mapa de confusoes tipicas de OCR dentro de codigos alfanumericos
+_OCR_DIG = str.maketrans({"O": "0", "o": "0", "I": "1", "i": "1", "l": "1",
+                          "S": "5", "s": "5", "B": "8", "Z": "2", "G": "6"})
+
+# marcadores que encerram a descricao do produto (lixo de OCR/secoes)
+_CORTES_DESCRICAO = (
+    "obs", "origem", "icms", "inscricao", "calculodo", "informacoes",
+    "reservado", "dadosadicionais", "valortotal", "base", "lote",
+    "b.c", "bc.", "reg.min", "regmapa", "aplicacao", "viasolo",
+)
+
+
+def corrigir_codigo(texto):
+    """Corrige confusoes de OCR em codigos ('PO15'/'POIS' -> 'P015')."""
+    if not isinstance(texto, str):
+        return texto
+    t = texto.strip()
+    if RX_CODIGO.match(t):
+        return t
+    if not re.fullmatch(r"[A-Za-z0-9]{2,12}", t):
+        return t
+    cand = t.translate(_OCR_DIG)
+    if cand != t and RX_CODIGO.match(cand):
+        return cand
+    return t
+
+
+def quebrar_token(texto):
+    """Separa um token que o OCR juntou ('31042090|020|5102TN')."""
+    t = str(texto).strip()
+    if not t:
+        return []
+    blocos = t.split("|") if "|" in t else [t]
+    partes = []
+    for b in blocos:
+        b = b.strip()
+        if not b:
+            continue
+        m = re.fullmatch(r"(\d{4,8})([A-Za-z]{1,5})", b)
+        if m:
+            partes.extend([m.group(1), m.group(2)])
+            continue
+        m = re.fullmatch(r"([A-Za-z]{1,5})(\d{4,8})", b)
+        if m:
+            partes.extend([m.group(1), m.group(2)])
+            continue
+        # NCM + origem/CST + CFOP + unidade colados ("310420900205102TN")
+        m = re.fullmatch(r"(\d{8})(\d{1,3})(\d{4})([A-Za-z]{1,5})", b)
+        if m:
+            partes.extend([m.group(1), m.group(2), m.group(3), m.group(4)])
+            continue
+        partes.append(b)
+    return partes
+
+
+def campo_por_padrao(token):
+    """Deduz a que coluna pertence um token (sem usar o cabecalho)."""
+    t = str(token).strip()
+    up = t.upper()
+    if RX_NCM.match(t):
+        return "ncm"
+    if RX_CFOP.match(t):
+        return "cfop"
+    if RX_ORIGEM.match(t):
+        return "origem_cst"
+    if up in UNIDADES:
+        return "unidade"
+    if RX_CODIGO.match(t):
+        return "codigo"
+    if RX_CST.match(t):
+        return "origem_cst"
+    return None
+
+
+def limpar_descricao(texto):
+    """Remove lixo de OCR/secoes que o OCR anexou a descricao do produto."""
+    if not isinstance(texto, str):
+        return texto
+    t = re.sub(r"\s+", " ", texto).strip()
+    baixo = t.lower()
+    corte = len(t)
+    for marca in _CORTES_DESCRICAO:
+        i = baixo.find(marca)
+        if 0 <= i < corte:
+            corte = i
+    t = t[:corte].strip(" .,;:-")
+    return t or None
+
+
+def realinhar_produto(prod):
+    """Separa celulas que o OCR juntou e preenche campos que ficaram vazios.
+
+    Casos observados: origem_cst='6/20 5102 TON' (CFOP+unidade colados),
+    unidade='5102 TON', codigo='P015 DADOSADICIONAIS'.
+    """
+    if not isinstance(prod, dict):
+        return prod
+    sobra = []
+
+    # 1) campos de texto: mantem o token que casa com o padrao do campo
+    for campo, rx in (("codigo", RX_CODIGO), ("ncm", RX_NCM),
+                      ("cfop", RX_CFOP), ("origem_cst", RX_ORIGEM)):
+        bruto = prod.get(campo)
+        if bruto in (None, ""):
+            continue
+        toks = []
+        for parte in quebrar_token(bruto):
+            toks.extend(parte.split())
+        # token escolhido no texto original (antes de corrigir confusoes OCR)
+        escolhido = next((t for t in toks if rx.match(t)), None)
+        valor = escolhido
+        if campo == "codigo":
+            valor = corrigir_codigo(escolhido) if escolhido else None
+            if not (valor and RX_CODIGO.match(valor)) and toks:
+                cand = corrigir_codigo(toks[0])
+                if RX_CODIGO.match(cand):
+                    escolhido, valor = toks[0], cand
+        if valor is not None and rx.match(valor):
+            prod[campo] = valor
+            resto = list(toks)
+            if escolhido in resto:
+                resto.remove(escolhido)
+            sobra.extend(resto)
+        else:
+            prod[campo] = None
+            sobra.extend(toks)
+
+    # 2) unidade: aceita apenas unidades conhecidas
+    bruto = prod.get("unidade")
+    if bruto not in (None, ""):
+        toks = []
+        for parte in quebrar_token(bruto):
+            toks.extend(parte.split())
+        bom = next((t for t in toks if t.upper() in UNIDADES), None)
+        prod["unidade"] = bom.upper() if bom else None
+        if bom:
+            toks.remove(bom)
+        sobra.extend(toks)
+
+    # 3) redistribui a sobra para os campos que ficaram vazios
+    for t in sobra:
+        campo = campo_por_padrao(t)
+        if campo and prod.get(campo) in (None, ""):
+            prod[campo] = corrigir_codigo(t) if campo == "codigo" else t
+
+    # 4) quantidade + valor unitario que ficaram no MESMO campo
+    for campo in ("quantidade", "valor_unitario"):
+        bruto = prod.get(campo)
+        if not isinstance(bruto, str):
+            continue
+        toks = [p for p in re.split(r"\s+", bruto.strip()) if p]
+        if len(toks) < 2:
+            continue
+        nums = [normalizar_numero(t) for t in toks]
+        nums = [n for n in nums if n is not None]
+        if len(nums) >= 2:
+            nums.sort()
+            prod["quantidade"] = nums[0]
+            prod["valor_unitario"] = nums[-1]
+
+    prod["descricao"] = limpar_descricao(prod.get("descricao"))
+    return prod
+
+
+def _produto_suspeito(prod):
+    """True quando o OCR juntou varias celulas num unico campo do produto.
+
+    Sinal tipico de que a extracao guiada pelo cabecalho (ou o realinhamento)
+    nao conseguiu separar colunas - nesse caso a extracao por conteudo e
+    preferivel.
+    """
+    if not isinstance(prod, dict):
+        return True
+    for campo in ("codigo", "quantidade", "unidade", "valor_unitario",
+                  "valor_total", "aliquota", "origem_cst", "cfop",
+                  "bc_icms", "valor_icms", "valor_ipi", "desconto"):
+        v = prod.get(campo)
+        if isinstance(v, str) and " " in v.strip():
+            return True
+    cod = prod.get("codigo")
+    if isinstance(cod, str) and len(cod) > 15:
+        return True
+    und = prod.get("unidade")
+    if isinstance(und, str) and len(und) > 5:
+        return True
+    return False
+
+
+def _produto_ruim(prod):
+    """True quando o produto extraido pelo cabecalho deve ceder ao fallback.
+
+    Alem das celulas coladas (_produto_suspeito), considera 'ruim' quando a
+    quantidade ou o valor total nao podem sequer ser convertidos em numero.
+    """
+    if _produto_suspeito(prod):
+        return True
+    for campo in ("quantidade", "valor_total"):
+        v = prod.get(campo)
+        if isinstance(v, (int, float)):
+            continue
+        if not isinstance(v, str) or normalizar_numero(v) is None:
+            return True
+    return False
+
+
+def _dv_chave(base43):
+    soma = 0
+    peso = 2
+    for d in reversed(base43):
+        soma += int(d) * peso
+        peso = peso + 1 if peso < 9 else 2
+    dv = 11 - (soma % 11)
+    return "0" if dv >= 10 else str(dv)
+
+
+def _cnpjs_do_texto(itens):
+    achados = []
+    for e in itens:
+        for m in re.finditer(REG_CNPJ, e["texto"]):
+            d = re.sub(r"\D", "", m.group(0))
+            if len(d) == 14 and d not in achados:
+                achados.append(d)
+    return achados
+
+
+def _reparar_ou_reconstruir(digitos, cnpjs):
+    """Recupera uma chave valida a partir de um trecho com erro de OCR.
+
+    1) procura uma janela de 44 digitos cujo DV passe apos corrigir 1 digito;
+    2) se o trecho estiver deslocado (digito a mais/a menos), remonta a chave
+       usando o CNPJ do emitente, a serie e o numero que ja aparecem nela.
+    """
+    if not digitos:
+        return None
+    for i in range(len(digitos) - 43):
+        janela = digitos[i:i + 44]
+        for j in range(44):
+            for d in "0123456789":
+                if d == janela[j]:
+                    continue
+                cand = janela[:j] + d + janela[j + 1:]
+                if not validar_chave(cand):
+                    continue
+                if cnpjs and cand[6:20] not in cnpjs:
+                    continue
+                return cand
+    for cnpj in cnpjs:
+        ini = 0
+        while True:
+            i = digitos.find(cnpj, ini)
+            if i < 0:
+                break
+            ini = i + 1
+            if i < 6:
+                continue
+            resto = digitos[i + 14:]
+            if len(resto) < 23 or resto[:2] != "55":
+                continue
+            base = digitos[i - 6:i] + cnpj + resto[:23]
+            if len(base) == 43 and base.isdigit():
+                return base + _dv_chave(base)
+    return None
+
+
 def extrair_chave_acesso(itens):
     """Localiza a chave de acesso (44 digitos) junto ao rotulo CHAVE DE ACESSO.
 
@@ -411,6 +695,8 @@ def extrair_chave_acesso(itens):
         if "chavedeacesso" in ct or "chavedacesso" in ct or ct.startswith("chav"):
             rotulos_achados.append(e)
 
+    cnpjs = _cnpjs_do_texto(itens)
+
     # 1) junto ao rotulo (mesma fila e filas adjacentes)
     for e in rotulos_achados:
         vizinhos = [t for t in itens
@@ -419,6 +705,12 @@ def extrair_chave_acesso(itens):
         janela = _janela_valida(dig)
         if janela:
             return janela, True
+        # 1b) DV invalido por erro de OCR: corrige 1 digito ou remonta a chave
+        # usando o CNPJ do emitente (a chave contem esse CNPJ nos digitos 7..20)
+        reparada = _reparar_ou_reconstruir(dig, cnpjs)
+        if reparada:
+            log.info("chave: recuperada por reparo de DV/CNPJ -> %s", reparada)
+            return reparada, True
 
     # 2) plano B: fila por fila
     if not rotulos_achados:
@@ -445,6 +737,10 @@ def extrair_chave_acesso(itens):
         vizinhos = [t for t in itens
                     if abs(t["y"] - e["y"]) <= 50 and abs(t["x"] - e["x"]) <= 850]
         dig = "".join(re.findall(r"\d", "".join(t["texto"] for t in vizinhos)))
+        reparada = _reparar_ou_reconstruir(dig, cnpjs)
+        if reparada:
+            log.info("chave: recuperada (DV invalido) -> %s", reparada)
+            return reparada, True
         for i in range(len(dig) - 43):
             k = dig[i:i + 44]
             if len(k) == 44 and not validar_chave(k):
@@ -481,7 +777,13 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         return normaliza(txt).upper()
 
     def _tem_codigo(txt):
-        return "CODIGO" in txt or "CODPRODUTO" in txt or "CODPROD" in txt
+        # variantes de OCR/emissor para 'CODIGO' / 'CODPRODUTO'
+        for frag in ("CODIGO", "CODPRODUTO", "CODPROD", "CODIGOPRODUTO",
+                     "COD PROD", "CDIGO", "COOIGO", "CODIGOPROD",
+                     "CODIGO DO PRODUTO", "CODPRODUTO/SERVICO"):
+            if frag in txt:
+                return True
+        return False
 
     cab = None
     cab_crit = None
@@ -541,6 +843,16 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
         "vlr ipi": "valor_ipi", "vlripi": "valor_ipi", "vlrtpi": "valor_ipi",
         "valoripi": "valor_ipi",
         "aliquot": "aliquota", "aliouota": "aliquota", "alicuota": "aliquota",
+        # variantes OCR / layouts alternativos (calcario, KCL, etc.)
+        "codproduto": "codigo", "codprod": "codigo",
+        "codigoproduto": "codigo", "codigodoproduto": "codigo",
+        "und": "unidade", "unds": "unidade",
+        "qtd": "quantidade", "qde": "quantidade", "qt": "quantidade",
+        "quantidade": "quantidade",
+        "descricaodoproduto": "descricao", "descricaoproduto": "descricao",
+        "descricaodosprodutos": "descricao",
+        "ncm sh": "ncm", "ncmsh": "ncm",
+        "orig cst": "origem_cst", "origem": "origem_cst",
     }
     # Coleta as colunas de TODA a regiao (nao so da linha do cabecalho):
     # o OCR as vezes espalha o cabecalho por varias linhas entrelacadas com a
@@ -631,6 +943,9 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
     if atual is not None:
         produtos.append(atual)
 
+    # ---- realinhamento de celulas que o OCR juntou ----
+    produtos = [realinhar_produto(p) for p in produtos]
+
     # ---- rastreio do resultado ----
     log.info("produtos: %d item(ns) extraido(s)", len(produtos))
     for i, p in enumerate(produtos, 1):
@@ -645,6 +960,198 @@ def extrair_produtos(itens, y_ini, y_fim, pagina):
                      i, p.get("codigo"), desc[:90], p.get("ncm"),
                      p.get("unidade"), p.get("quantidade"),
                      p.get("valor_unitario"), p.get("valor_total"))
+    return produtos
+
+
+# rotulos de coluna (compactos) que nunca sao valores de produto
+_ROTULOS_COLUNA = (
+    "codigo", "codproduto", "codprod", "descricao", "produto", "ncm", "ncmsh",
+    "origem", "cst", "cfop", "unidade", "unid", "und", "quantidade", "qtde",
+    "qtd", "vlr", "valor", "unit", "total", "icms", "ipi", "aliquota",
+    "desconto", "base", "vtrib", "vlrunt", "vlrtotal", "quant",
+    # variantes com erros tipicos de OCR em cabecalhos de tabela
+    "discrica", "descr", "servh", "servic", "odprod", "oprod", "dosprodutos",
+    "doproduto",
+)
+
+
+def _decimais(token):
+    """Numero de digitos apos o ultimo separador do token OCR."""
+    return len(re.split(r"[.,]", token)[-1])
+
+
+def _valores_num(token):
+    """Interpretacoes plausiveis de um token numerico do OCR.
+
+    '48.000'/'48,000' pode ser 48000 (milhar) ou 48.0 (3 decimais): devolve as
+    duas para que a relacao valor_total = quantidade * valor_unitario escolha
+    a correta. Tokens com mais de um separador tem interpretacao unica.
+    """
+    vals = []
+    v = normalizar_numero(token)
+    if v is not None:
+        vals.append(v)
+    m = re.fullmatch(r"(\d{1,3})[.,](\d{3})", token)
+    if m:
+        alt = float(f"{m.group(1)}.{m.group(2)}")
+        if alt not in vals:
+            vals.append(alt)
+    # ultimo grupo com 1 digito: OCR dropou o ultimo decimal ("11.342.4")
+    m2 = re.fullmatch(r"(\d{1,3}(?:[.,]\d{3})*)[.,](\d)", token)
+    if m2:
+        alt = normalizar_numero(f"{m2.group(1)}.{m2.group(2)}0")
+        if alt is not None and alt not in vals:
+            vals.append(alt)
+    return vals
+
+
+def _produto_de_pares(pares):
+    """Monta um produto a partir de tokens (x, texto) sem usar cabecalho."""
+    prod = {}
+    numeros = []
+    letras = []
+    for x, txt in sorted(pares):
+        for part in quebrar_token(txt):
+            campo = campo_por_padrao(part)
+            if campo and prod.get(campo) in (None, ""):
+                prod[campo] = (corrigir_codigo(part)
+                               if campo == "codigo" else part)
+                continue
+            if (RX_NUM_OCR.match(part) and "." not in part and "," not in part
+                    and len(part) >= 6 and prod.get("codigo") in (None, "")):
+                prod["codigo"] = part
+                continue
+            # aceita tambem tokens com ate 2 letras OCR coladas na cauda
+            # ("11.342.4d", "47,2600s"), mas so se parecerem valor monetario
+            mnum = re.fullmatch(r"(\d[\d.,]*)[A-Za-z]{0,2}", part)
+            numerico = bool(mnum) and (
+                "." in mnum.group(1) or "," in mnum.group(1)
+                or len(mnum.group(1)) <= 6)
+            vals = _valores_num(mnum.group(1)) if numerico else []
+            if vals:
+                numeros.append((x, part, vals))
+            elif any(c.isalpha() for c in part):
+                letras.append((x, part))
+    if letras:
+        prod["descricao"] = " ".join(t for _, t in sorted(letras))
+    _atribuir_numeros(prod, numeros)
+    return prod
+
+
+def _atribuir_numeros(prod, numeros):
+    """Atribui quantidade/valor unitario/total usando t ~= quantidade * unit.
+
+    'numeros' e uma lista de (x, token, [valores_plausiveis]); a relacao
+    valor_total = quantidade * valor_unitario desempata interpretacoes
+    ambiguas do OCR (ex.: '48.000' -> 48.0 e nao 48000).
+    """
+    cand = []
+    for idx, (_x, tok, vals) in enumerate(numeros):
+        for v in vals:
+            cand.append((idx, v, _decimais(tok)))
+    n = len(cand)
+    melhor = None
+    for a in range(n):
+        ia, q, da = cand[a]
+        if q <= 0:
+            continue
+        for b in range(n):
+            ib, u, db = cand[b]
+            if ib == ia or u <= 0:
+                continue
+            alvo = q * u
+            for c in range(n):
+                ic, v, dc = cand[c]
+                if ic in (ia, ib) or v <= 0:
+                    continue
+                if abs(v - alvo) <= max(0.02, alvo * 0.002):
+                    score = da + db + dc
+                    if melhor is None or score > melhor[0]:
+                        melhor = (score, a, b, c)
+    if melhor:
+        _, a, b, c = melhor
+        prod["quantidade"] = cand[a][1]
+        prod["valor_unitario"] = cand[b][1]
+        prod["valor_total"] = cand[c][1]
+        usados = {cand[a][0], cand[b][0], cand[c][0]}
+    else:
+        usados = set()
+        simples = sorted((num[2][0], i) for i, num in enumerate(numeros)
+                         if num[2])
+        if simples:
+            q, i0 = simples[0]
+            prod["quantidade"] = q
+            usados.add(i0)
+            if len(simples) >= 2:
+                v, il = simples[-1]
+                prod["valor_total"] = v
+                usados.add(il)
+            if len(simples) >= 3:
+                u, im = simples[1]
+                prod["valor_unitario"] = u
+                usados.add(im)
+    resto = [num[2][0] for i, num in enumerate(numeros)
+             if i not in usados and num[2]]
+    for campo, v in zip(("bc_icms", "valor_icms", "valor_ipi"), resto):
+        if prod.get(campo) in (None, ""):
+            prod[campo] = v
+    return prod
+
+
+def extrair_produtos_conteudo(itens, y_ini, y_fim, pagina):
+    """Fallback: extrai produtos SEM depender do cabecalho da tabela.
+
+    Usado quando o cabecalho da tabela fica ilegivel no OCR (ex.: DANFEs do
+    emissor ADM/KCL). Classifica cada token por padrao e usa a relacao
+    valor_total ~= quantidade * valor_unitario para desambiguar os numeros.
+    """
+    regiao = [e for e in itens
+              if y_ini <= e["y"] <= y_fim and e["pagina"] == pagina]
+    if not regiao:
+        return []
+    linhas = []
+    for e in sorted(regiao, key=lambda t: (t["y"], t["x"])):
+        encaixado = False
+        for l in linhas:
+            if abs(l[0]["y"] - e["y"]) <= 28:
+                l.append(e)
+                encaixado = True
+                break
+        if not encaixado:
+            linhas.append([e])
+    for l in linhas:
+        l.sort(key=lambda t: t["x"])
+    linhas.sort(key=lambda l: l[0]["y"])
+
+    produtos = []
+    for l in linhas:
+        pares = []
+        textos = []
+        for e in l:
+            ct = compacta(e["texto"])
+            if not ct:
+                continue
+            if not any(c.isdigit() for c in ct) and \
+                    any(k in ct for k in _ROTULOS_COLUNA):
+                continue  # rotulo de coluna
+            pares.append((e["x"], e["texto"]))
+            textos.append(e["texto"])
+        if not pares:
+            continue
+        n_nums = sum(1 for _, t in pares
+                     if re.search(r"\d", t) and re.search(r"[.,]\d", t))
+        tem_ncm = any(RX_NCM.match(p) for _, t in pares
+                      for p in quebrar_token(t))
+        if n_nums >= 2 or tem_ncm:
+            produtos.append(_produto_de_pares(pares))
+        elif produtos:
+            extra = " ".join(t for t in textos if any(c.isalpha() for c in t))
+            if extra:
+                atual = produtos[-1]
+                atual["descricao"] = ((atual.get("descricao") or "") + " "
+                                      + extra).strip()
+    for p in produtos:
+        realinhar_produto(p)
     return produtos
 
 
@@ -683,13 +1190,33 @@ def extrair_infos(itens, arquivo_rel):
             numero = m.group(1)
     info["numero_nota"] = numero
 
-    serie = pegar_valor(itens, ["serie"], r"([A-Za-z0-9\-]{1,6})", y_max=900)
+    # A serie esta embutida na chave de acesso (posicoes 23..25). Quando a
+    # chave passa no DV, essa e a fonte mais confiavel; caso contrario usa-se
+    # o rotulo 'SERIE' do OCR (que sofre com confusoes 'No'/'CONSUL').
+    serie = None
+    if chave_valida and len(chave) == 44 and chave.isdigit():
+        # confia na serie da chave so se o CNPJ embutido (digitos 7..20) for o
+        # do emitente: chaves "validas por acidente" (OCR deslocado) dao serie
+        # errada em 13016.pdf, 2199.pdf etc.
+        if chave[6:20] in _cnpjs_do_texto(itens):
+            serie = str(int(chave[22:25]))
     if not serie:
-        for e in itens:
-            ct = compacta(e["texto"])
-            if ct.startswith("serie") and len(ct) > 5:
-                serie = e["texto"][5:].strip()
-                break
+        serie = pegar_valor(itens, ["serie"], r"(\d{1,4})", y_max=900)
+        if not serie:
+            for e in itens:
+                ct = compacta(e["texto"])
+                if ct.startswith("serie"):
+                    m = re.search(r"(\d{1,4})", e["texto"])
+                    if m:
+                        serie = m.group(1)
+                        break
+    if isinstance(serie, str):
+        # valores so com letras ('No'/'CONSUL') nao sao serie: mantem digitos
+        if serie.isdigit():
+            serie = str(int(serie))
+        else:
+            m = re.search(r"(\d+)", serie)
+            serie = str(int(m.group(1))) if m else None
     info["serie"] = serie
 
     info["data_emissao"] = pegar_valor(itens, ["datadeemissao", "datadeemission"],
@@ -702,6 +1229,17 @@ def extrair_infos(itens, arquivo_rel):
     info["valor_da_nota"] = pegar_valor(
         itens, ["valordanota", "valordalanota", "valortotaldanota"],
         REG_VALOR)
+    if not info["valor_da_nota"]:
+        # OCR trocou a virgula decimal por ponto ("11.284.80"): padrao
+        # tolerante sobre os mesmos rotulos (sem 'produtos', senao o rotulo
+        # 'VALOR TOTAL DOS PRODUTOS' roubaria o match do 'VALOR TOTAL DA NOTA')
+        info["valor_da_nota"] = pegar_valor(
+            itens, ["valordanota", "valordalanota", "valortotaldanota"],
+            REG_VALOR_TOL)
+    if not info["valor_da_nota"]:
+        # ultimo recurso: total dos produtos
+        info["valor_da_nota"] = pegar_valor(
+            itens, ["valortotaldosprodutos"], REG_VALOR_TOL)
     naturaleza = pegar_valor(
         itens, ["natureza daoperacao", "natureza"],
         r"(.{10,90})", margem=70, y_max=900)
@@ -750,11 +1288,17 @@ def extrair_infos(itens, arquivo_rel):
     emitente["inscricao_estadual"] = ie_em
     info["emitente"] = emitente
     # ---- destinatario ----
-    # janela classica (915..1230) primeiro: em layouts OCR o rótulo
-    # 'CNPJ/CPF' do EMITENTE fica logo acima e a janela ampliada o pegaria.
-    # Se nao achar nada, amplia para 780..1230 (DANFEs de 2024 rotulam o
-    # bloco do destinatario ja em y~833)
-    Y_JANELAS = ((915, 1230), (780, 1230))
+    # A altura do bloco do destinatario varia com o layout (MAP ~780-950,
+    # ADM/KCL ~650-900, CALCARIO ~490-800). O cabecalho 'DESTINATARIO/
+    # REMETENTE' existe em todos; ancorar a janela nele evita capturar o
+    # bloco da transportadora (que fica logo abaixo) nas janelas fixas.
+    # Depois tentam-se as janelas classicas (915..1230) e a ampliada
+    # (780..1230, DANFEs de 2024) como plano B.
+    Y_JANELAS = []
+    rot_dest = achar_rotulo(itens, ["destinatarioremetente", "destinatario"])
+    if rot_dest:
+        Y_JANELAS.append((rot_dest["y"] - 5, rot_dest["y"] + 420))
+    Y_JANELAS.extend(((915, 1230), (780, 1230)))
     dest = {}
 
     def _em_dest(chamar, *args, **kwargs):
@@ -771,9 +1315,41 @@ def extrair_infos(itens, arquivo_rel):
         dest["nome"] = _em_dest(
             pegar_valor, itens, ["nomerazaosocial"], r"(.{2,60})",
             margem=60)
+    if not dest["nome"] and rot_dest:
+        # OCR pode destruir o rotulo 'NOME/RAZAO SOCIAL' ('NOMERALAO SCCIAL');
+        # o nome do destinatario e o primeiro texto da coluna da esquerda
+        # logo abaixo do cabecalho do bloco.
+        for e in sorted(itens, key=lambda t: (t["y"], t["x"])):
+            if not (rot_dest["y"] + 5 < e["y"] <= rot_dest["y"] + 140):
+                continue
+            if e["x"] > 900:
+                continue
+            ct = compacta(e["texto"])
+            if len(ct) < 3 or not any(c.isalpha() for c in ct):
+                continue
+            if any(ct.startswith(r) for r in ROTULOS_EXCLUIR):
+                continue
+            if any(k in ct for k in ("nome", "endereco", "municipio", "cep",
+                                     "fone", "inscricao", "natureza", "cnp")):
+                continue
+            dest["nome"] = e["texto"].strip()
+            break
     dest["cnpj_cpf"] = _em_dest(
-        pegar_valor, itens, ["cnpjcpf"], REG_CNPJ + r"|" + REG_CPF,
+        pegar_valor, itens,
+        ["cnpjcpf", "cnpicpf", "cnpjicpf", "cnpi", "cpfcnpj"],
+        REG_CNPJ + r"|" + REG_CPF,
         margem=60)
+    if not dest["cnpj_cpf"]:
+        # OCR pode destruir o rotulo 'CNPJ/CPF': usa o primeiro CNPJ/CPF da
+        # janela do destinatario (o do emitente fica acima do cabecalho).
+        y0, y1 = Y_JANELAS[0]
+        for e in sorted(itens, key=lambda t: (t["y"], t["x"])):
+            if not (y0 <= e["y"] <= y1):
+                continue
+            m = re.search(REG_CNPJ + r"|" + REG_CPF, e["texto"])
+            if m:
+                dest["cnpj_cpf"] = m.group(0)
+                break
     if not dest["cnpj_cpf"]:
         m = re.search(REG_CNPJ + r"|" + REG_CPF, compacto_total)
         dest["cnpj_cpf"] = m.group(0) if m else None
@@ -871,7 +1447,8 @@ def extrair_infos(itens, arquivo_rel):
     if not e2:
         log.debug("campos: rotulo 'DADOS ADICIONAIS' nao encontrado")
     produtos = []
-    if ini_y and fin_y and ini_y < fin_y:
+    regiao_ok = bool(ini_y and fin_y and ini_y < fin_y)
+    if regiao_ok:
         for pag in paginas:
             produtos.extend(extrair_produtos(itens, ini_y, fin_y, pag))
         log.info("produtos: total combinado (paginas) = %d", len(produtos))
@@ -879,6 +1456,19 @@ def extrair_infos(itens, arquivo_rel):
         log.warning("produtos: regiao de produtos invalida "
                     "(e1=%s e2=%s ini_y=%s fin_y=%s)",
                     bool(e1), bool(e2), ini_y, fin_y)
+    # Plano B: cabecalho da tabela ilegivel no OCR (ex.: DANFEs ADM/KCL) ou
+    # celulas que continuaram coladas apos o realinhamento -> extrai por
+    # conteudo, classificando cada token pelo padrao (nao usa o cabecalho).
+    if not produtos or any(_produto_ruim(p) for p in produtos):
+        lo = ini_y if regiao_ok else 0.0
+        hi = fin_y if regiao_ok else 1e18
+        alt = []
+        for pag in paginas:
+            alt.extend(extrair_produtos_conteudo(itens, lo, hi, pag))
+        if alt and not any(_produto_suspeito(p) for p in alt):
+            log.info("produtos: extracao por conteudo (fallback) = %d item(ns)",
+                     len(alt))
+            produtos = alt
     info["produtos"] = produtos
 
     # ---- dados adicionais ----
@@ -1002,6 +1592,14 @@ def processar_pdf(caminho, raiz, engine, dpi):
     info["origem_texto"] = origem
     # ---- normalizacion numerica BR ('.' milhar, ',' decimal) ----
     revision = normalizar_campos_numericos(info)
+    # Fallback: quando o campo 'valor da nota' sai ilegivel no OCR mas os
+    # totais dos produtos foram lidos, usa a soma (notas com 1 item).
+    if not info.get("valor_da_nota"):
+        totais = [p.get("valor_total") for p in (info.get("produtos") or [])
+                  if isinstance(p.get("valor_total"), (int, float))]
+        if len(totais) == 1:
+            info["valor_da_nota"] = totais[0]
+            log.info("%s | valor_da_nota recuperado do total do produto", rel)
     status, motivo_parcial = avaliar_completude(info, ok)
     info["status_extracao"] = status
     if motivo_parcial:
