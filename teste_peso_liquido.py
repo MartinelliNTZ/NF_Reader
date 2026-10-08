@@ -19,10 +19,12 @@ if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
 from core.extrair_notas import (  # noqa: E402
+    REG_PESO,
     _litros_por_itens,
     _litros_por_produtos,
     completar_volume_litros,
     extrair_infos,
+    pegar_valor_peso,
 )
 
 FALHAS = []
@@ -172,12 +174,68 @@ def test_integracao_extrair_infos():
     checar("peso_liquido permanece vazio", info.get("peso_liquido"), None)
 
 
+def test_pegar_valor_peso_coluna_abaixo():
+    """Caso real 8649.pdf: o peso esta na fila de BAIXO, na mesma coluna do
+    rotulo - a inscricao estadual da transportadora ('254783430'), que fica
+    35px ACIMA e 63px a direita do rotulo, nao pode ser lida como peso."""
+    print(" TESTE pegar_valor_peso (coluna de baixo - caso 8649.pdf)")
+    itens = [
+        {"texto": "NUMERACAO", "x": 1542, "y": 1374, "pagina": 1},
+        {"texto": "254783430", "x": 2321, "y": 1360, "pagina": 1},
+        {"texto": "PESOBRUTO", "x": 1992, "y": 1386, "pagina": 1},
+        {"texto": "PESOLIOUIDO", "x": 2258, "y": 1395, "pagina": 1},
+        {"texto": "0", "x": 1875, "y": 1424, "pagina": 1},
+        {"texto": "37.000,000", "x": 2314, "y": 1436, "pagina": 1},
+    ]
+    checar("peso_bruto = '0' (nao '254783430')",
+           pegar_valor_peso(itens, ["pesobruto"], REG_PESO, margem=60,
+                            y_min=1200, y_max=1640), "0")
+    checar("peso_liquido = '37.000,000' (nao '254783430')",
+           pegar_valor_peso(itens, ["pesoliquido", "pesoliq"], REG_PESO,
+                            margem=60, y_min=1200, y_max=1640), "37.000,000")
+
+    # variante de OCR do rotulo (Q lido como O) na fila classica (~1660)
+    itens_ocr = [
+        {"texto": "PESO LIOUIDO", "x": 2271, "y": 1328, "pagina": 1},
+        {"texto": "133601609", "x": 2329, "y": 1289, "pagina": 1},
+        {"texto": "48.000,000", "x": 2323, "y": 1365, "pagina": 1},
+    ]
+    checar("rotulo 'PESO LIOUIDO' -> valor da coluna de baixo",
+           pegar_valor_peso(itens_ocr, ["pesoliquido", "pesoliq"], REG_PESO,
+                            margem=60, y_min=1200, y_max=1640), "48.000,000")
+
+    # abreviatura 'PESO LIQ.' (alvo curto): casada pelo rotulo compactado
+    itens_abrev = [
+        {"texto": "PESO LIQ.", "x": 1992, "y": 1386, "pagina": 1},
+        {"texto": "36.000,00", "x": 2050, "y": 1430, "pagina": 1},
+    ]
+    checar("abreviatura 'PESO LIQ.' reconhecida",
+           pegar_valor_peso(itens_abrev, ["pesoliquido", "pesoliq"], REG_PESO),
+           "36.000,00")
+
+    # layout em que o valor fica AO LADO do rotulo (mesma fila): sem numero
+    # na coluna de baixo, o criterio generico continua valendo
+    itens_lado = [
+        {"texto": "PESO LIQUIDO", "x": 1992, "y": 1386, "pagina": 1},
+        {"texto": "37.000,000", "x": 2150, "y": 1382, "pagina": 1},
+    ]
+    checar("valor ao lado do rotulo (mesma fila)",
+           pegar_valor_peso(itens_lado, ["pesoliquido", "pesoliq"], REG_PESO),
+           "37.000,000")
+
+    # sem rotulo -> None
+    checar("sem rotulo -> None",
+           pegar_valor_peso([{"texto": "0", "x": 1875, "y": 1424,
+                              "pagina": 1}], ["pesoliquido"], REG_PESO), None)
+
+
 def main():
     print("-" * 60)
     test_litros_por_produtos()
     test_litros_por_itens()
     test_completar_volume_litros()
     test_integracao_extrair_infos()
+    test_pegar_valor_peso_coluna_abaixo()
     print("-" * 60)
     if FALHAS:
         print(f" FALHAS: {len(FALHAS)} -> {FALHAS}")

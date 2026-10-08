@@ -74,6 +74,9 @@ REG_CPF = r"\d{3}\.\d{3}\.\d{3}-\d{2}"
 REG_VALOR = r"\d{1,3}(?:\.\d{3})*,\d{2}"
 # variante tolerante: OCR troca a virgula decimal por ponto ("11.284.80")
 REG_VALOR_TOL = r"\d{1,3}(?:[.,]\d{3})*[.,]\d{2}"
+# peso (bruto/liquido) impresso no bloco VOLUMES TRANSPORTADOS do DANFE:
+# aceita "0", "37.000,000", "36.000,00", "48000" ...
+REG_PESO = r"([0-9][0-9.,]{0,14})"
 
 
 def validar_chave(chave):
@@ -388,6 +391,66 @@ def pegar_valor(itens, rotulos, padrao, margem=45, y_min=0, y_max=1e18,
         return None
     return valor_ao_lado(itens, e, padrao, margem, y_min=y_min,
                          y_max=y_max, pagina=pagina, lado=lado)
+
+
+def pegar_valor_peso(itens, rotulos, padrao, margem=60, y_min=None,
+                     y_max=None, pagina=None, dy_abaixo=140, dx_coluna=220):
+    """Peso no bloco VOLUMES TRANSPORTADOS: prioriza a COLUNA do rotulo.
+
+    Nesse bloco do DANFE os rotulos ficam numa fila (QUANTIDADE, ESPECIE,
+    MARCA, NUMERACAO, PESO BRUTO, PESO LIQUIDO) e cada valor e impresso na
+    fila de BAIXO, alinhado com o proprio rotulo - as vezes deslocado ~120px
+    (nos DANFEs deste lote o '0' do peso bruto sai ~118px a esquerda do
+    rotulo e o peso liquido ~50px a direita).
+
+    O criterio generico de valor_ao_lado (|dx| + 20*|dy|) dava prioridade a
+    um numero da fila de CIMA que fica perto do rotulo - tipicamente a
+    inscricao estadual da transportadora ('254783430', '133601609', ~35px
+    ACIMA e ~60px a direita do rotulo) - e o peso real acabava descartado
+    por cair fora da faixa plausivel (0..10.000.000), deixando o campo
+    vazio (caso da nota 8649.pdf).
+
+    Aqui a coluna manda: primeiro um numero ABAIXO do rotulo com
+    |dx| <= dx_coluna (vence o de menor |dx|); na ausencia dele vale o
+    criterio generico, preservando os layouts em que o valor e impresso ao
+    lado do rotulo, na mesma fila.
+    """
+    rot = achar_rotulo(itens, rotulos, y_min or 0, y_max or 1e18, pagina)
+    if not rot:
+        return None
+    x0, y0 = rot["x"], rot["y"]
+    abaixo = []
+    for e in itens:
+        if e is rot or (pagina is not None and e["pagina"] != pagina):
+            continue
+        if y_min is not None and e["y"] < y_min:
+            continue
+        if y_max is not None and e["y"] > y_max:
+            continue
+        dy = e["y"] - y0
+        if not 2 < dy <= dy_abaixo:
+            continue
+        dx = e["x"] - x0
+        if abs(dx) > dx_coluna:
+            continue
+        ct = compacta(e["texto"])
+        if any(ct.startswith(r) for r in ROTULOS_EXCLUIR):
+            continue
+        if not re.search(padrao, e["texto"]):
+            continue
+        abaixo.append((abs(dx), dy, e))
+    if abaixo:
+        abaixo.sort(key=lambda t: (t[0], t[1]))
+        e = abaixo[0][2]
+        m = re.search(padrao, e["texto"])
+        valor = (m.group(1) if m.lastindex else m.group(0)).strip()
+        log.info("peso: rotulo %r (x=%.0f y=%.0f) -> valor da coluna de baixo "
+                 "%r (dx=%.0f dy=%.0f)", rot["texto"], x0, y0, valor,
+                 e["x"] - x0, e["y"] - y0)
+        return valor
+    # sem numero alinhado abaixo do rotulo: criterio generico (mesma fila)
+    return valor_ao_lado(itens, rot, padrao, margem, y_min=y_min,
+                         y_max=y_max, pagina=pagina, lado="ambos")
 
 
 def _janela_valida(digitos, limite=44):
@@ -1524,22 +1587,28 @@ def extrair_infos(itens, arquivo_rel):
         y_min=Y_TRANS[0], y_max=Y_TRANS[1], margem=60)
     info["transportadora"] = transp
 
-    # janela ampla (labels a ~1780-1802 em alguns DANFEs); fallback sem
-    # janela para layouts com a caixa de volumes em outra altura
-    info["peso_bruto"] = pegar_valor(
-        itens, ["pesobruto"], r"([0-9][0-9.,]{0,14})",
-        y_min=1640, y_max=1900, margem=60, lado="ambos")
-    info["peso_liquido"] = pegar_valor(
-        itens, ["pesoliquido"], r"([0-9][0-9.,]{0,14})",
-        y_min=1640, y_max=1900, margem=60, lado="ambos")
-    if not info["peso_bruto"]:
-        info["peso_bruto"] = pegar_valor(
-            itens, ["pesobruto"], r"([0-9][0-9.,]{0,14})",
-            margem=60, lado="ambos")
-    if not info["peso_liquido"]:
-        info["peso_liquido"] = pegar_valor(
-            itens, ["pesoliquido"], r"([0-9][0-9.,]{0,14})",
-            margem=60, lado="ambos")
+    # Bloco VOLUMES TRANSPORTADOS: os rotulos (PESO BRUTO / PESO LIQUIDO) e
+    # os valores ficam em FILAS separadas e a caixa muda de altura com o
+    # layout (neste lote aparece em ~1660, ~1680, ~1330, ~1260...). Tenta-se
+    # a janela classica (1640-1900), a banda intermediaria (1200-1640, ex.:
+    # 8645/8646/8649/8662/8696) e, por fim, a pagina inteira - e em todas
+    # elas o valor e procurado na COLUNA de baixo do rotulo
+    # (pegar_valor_peso), o que evita ler a inscricao estadual da
+    # transportadora ('254783430' / '133601609', que fica logo ACIMA do
+    # rotulo) como se fosse peso.
+    JANELAS_PESO = ((1640, 1900), (1200, 1640), (None, None))
+    for campo, rotulos in (("peso_bruto", ["pesobruto"]),
+                           ("peso_liquido", ["pesoliquido", "pesoliq"])):
+        valor = None
+        for y0, y1 in JANELAS_PESO:
+            valor = pegar_valor_peso(itens, rotulos, REG_PESO, margem=60,
+                                     y_min=y0, y_max=y1)
+            if valor:
+                log.info("%s: janela y=%s..%s -> %r", campo, y0, y1, valor)
+                break
+        if not valor:
+            log.warning("%s: NAO encontrado (janelas %s)", campo, JANELAS_PESO)
+        info[campo] = valor
 
     # ---- produtos ----
     ini_y = fin_y = None

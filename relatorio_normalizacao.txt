@@ -1,49 +1,39 @@
 ==============================================================================
  REPORTE DE NORMALIZACION NUMERICA - NOTAS FISCALES BR
- Generado : 25/09/2026 13:59:28
+ Generado : 08/10/2026 12:18:03
  Regla    : '.' milhar | ',' decimal | 2 digitos -> decimal, 3 -> milhar
             Campos guardados SOLO como numero (sin milhar).
 ==============================================================================
 
  RESUMEN GENERAL
 ------------------------------------------------------------------------------
-   ok            :   44
-   limpio        :    6
-   recuperado    :    2
-   reubicado     :    1
-   no_parseable  :    7
-   fuera_rango   :    1
-   vacio         :   33
+   ok            :   64
+   limpio        :    1
+   recuperado    :    0
+   reubicado     :    0
+   no_parseable  :    3
+   fuera_rango   :    0
+   vacio         :   36
 
  RESUMEN POR CAMPO (estado: cantidad)
 ------------------------------------------------------------------------------
-   valor_da_nota  : ok=3, vacio=5
-   peso_bruto     : ok=3, vacio=5
-   peso_liquido   : fuera_rango=1, ok=2, vacio=5
-   quantidade     : ok=6, recuperado=2, vacio=2
-   valor_unitario : limpio=2, ok=5, reubicado=1, vacio=1
-   desconto       : ok=1, vacio=7
-   valor_total    : ok=8
-   bc_icms        : ok=8
-   valor_icms     : ok=8
-   valor_ipi      : limpio=1, no_parseable=3, vacio=4
-   aliquota       : no_parseable=4, vacio=4
-   codigo         : limpio=1
-   cfop           : limpio=2
+   valor_da_nota  : ok=8
+   peso_bruto     : ok=8
+   peso_liquido   : ok=8
+   quantidade     : ok=10
+   valor_unitario : ok=8, vacio=2
+   desconto       : vacio=10
+   valor_total    : ok=10
+   bc_icms        : ok=6, vacio=4
+   valor_icms     : ok=6, vacio=4
+   valor_ipi      : limpio=1, no_parseable=2, vacio=7
+   aliquota       : no_parseable=1, vacio=9
 
  ANOMALIAS QUE REQUIEREN REVISION MANUAL
 ------------------------------------------------------------------------------
    [  1] 8643.pdf | producto 1 valor_ipi       | '0.0017,000.' -> - | no_parseable | no se puede interpretar de forma fiable
-   [  2] 8645.pdf | producto 1 aliquota        | '0.0017,000.00' -> - | no_parseable | no se puede interpretar de forma fiable
-   [  3] 8645.pdf | producto 1 quantidade      | 'desde valor_unitario' -> 37.0 | recuperado | cantidad recuperada desde valor_unitario
-   [  4] 8646.pdf | producto 1 aliquota        | 'ICMSTIPI 0.0017.000.00' -> - | no_parseable | no se puede interpretar de forma fiable
-   [  5] 8646.pdf | producto 1 valor_unitario  | '5.821,0919' -> 5821.0919 | reubicado | precio unitario estaba en 'desconto'
-   [  6] 8647.pdf | producto 1 valor_ipi       | '0.0017.00' -> - | no_parseable | no se puede interpretar de forma fiable
-   [  7] 8649.pdf | producto 1 aliquota        | 'ICMSIPI 0,0017,000,00' -> - | no_parseable | no se puede interpretar de forma fiable
-   [  8] 8662.pdf | producto 1 valor_ipi       | '0.0017.000.0' -> - | no_parseable | no se puede interpretar de forma fiable
-   [  9] 8662.pdf | producto 1 quantidade      | 'desde valor_unitario' -> 48.0 | recuperado | cantidad recuperada desde valor_unitario
-   [ 10] 8694.pdf | nota      peso_liquido    | '133601609' -> - | fuera_rango | valor 133601609 fuera del rango plausible [0.0, 10000000.0] para 'peso_liquido'
-   [ 11] 8696.pdf | producto 1 aliquota        | '0,0017,000,00' -> - | no_parseable | no se puede interpretar de forma fiable
+   [  2] 8647.pdf | producto 1 valor_ipi       | '0.0017.00' -> - | no_parseable | no se puede interpretar de forma fiable
+   [  3] 8696.pdf | producto 1 aliquota        | '0,0017,000,00' -> - | no_parseable | no se puede interpretar de forma fiable
 
  DETALLE POR NOTA (crudo -> numero)
 ------------------------------------------------------------------------------
@@ -60,31 +50,37 @@
      producto 1 valor_ipi       | '0.0017,000.' -> -           | no_parseable <--
      producto 1 aliquota        | - -> -                       | vacio 
   == 8645.pdf ==
-     nota      valor_da_nota   | - -> -                       | vacio 
-     nota      peso_bruto      | - -> -                       | vacio 
-     nota      peso_liquido    | - -> -                       | vacio 
-     producto 1 quantidade      | - -> -                       | vacio 
-     producto 1 valor_unitario  | '37,0000 5.821.0919' -> 5821.0919 | limpio 
+     nota      valor_da_nota   | '215.380,40' -> 215380.4     | ok 
+     nota      peso_bruto      | '0' -> 0                     | ok 
+     nota      peso_liquido    | '37.000,000' -> 37000.0      | ok 
+     producto 1 quantidade      | 37.0 -> 37.0                 | ok 
+     producto 1 valor_unitario  | 5821.0919 -> 5821.0919       | ok 
      producto 1 desconto        | - -> -                       | vacio 
-     producto 1 valor_total     | '215.380.40' -> 215380.4     | ok 
-     producto 1 bc_icms         | '12.664.37' -> 12664.37      | ok 
-     producto 1 valor_icms      | '2.152.94' -> 2152.94        | ok 
+     producto 1 valor_total     | 215380.4 -> 215380.4         | ok 
+     producto 1 bc_icms         | 12664.37 -> 12664.37         | ok 
+     producto 1 valor_icms      | 2152.94 -> 2152.94           | ok 
      producto 1 valor_ipi       | - -> -                       | vacio 
-     producto 1 aliquota        | '0.0017,000.00' -> -         | no_parseable <--
-     producto 1 quantidade      | 'desde valor_unitario' -> 37.0 | recuperado <--
+     producto 1 aliquota        | - -> -                       | vacio 
   == 8646.pdf ==
-     nota      valor_da_nota   | - -> -                       | vacio 
-     nota      peso_bruto      | - -> -                       | vacio 
-     nota      peso_liquido    | - -> -                       | vacio 
-     producto 1 quantidade      | '37.0000' -> 37.0            | ok 
-     producto 1 valor_unitario  | - -> -                       | vacio 
-     producto 1 desconto        | '5.821,0919' -> 5821.0919    | ok 
-     producto 1 valor_total     | '215.380.40' -> 215380.4     | ok 
-     producto 1 bc_icms         | '12.664.37' -> 12664.37      | ok 
-     producto 1 valor_icms      | '2.152.94' -> 2152.94        | ok 
+     nota      valor_da_nota   | '215.380,40' -> 215380.4     | ok 
+     nota      peso_bruto      | '0' -> 0                     | ok 
+     nota      peso_liquido    | '37.000,000' -> 37000.0      | ok 
+     producto 1 quantidade      | 37.0 -> 37.0                 | ok 
+     producto 1 valor_unitario  | 5821.0919 -> 5821.0919       | ok 
+     producto 1 desconto        | - -> -                       | vacio 
+     producto 1 valor_total     | 215380.4 -> 215380.4         | ok 
+     producto 1 bc_icms         | - -> -                       | vacio 
+     producto 1 valor_icms      | - -> -                       | vacio 
      producto 1 valor_ipi       | - -> -                       | vacio 
-     producto 1 aliquota        | 'ICMSTIPI 0.0017.000.00' -> - | no_parseable <--
-     producto 1 valor_unitario  | '5.821,0919' -> 5821.0919    | reubicado <--
+     producto 1 aliquota        | - -> -                       | vacio 
+     producto 2 quantidade      | 2152.94 -> 2152.94           | ok 
+     producto 2 valor_unitario  | - -> -                       | vacio 
+     producto 2 desconto        | - -> -                       | vacio 
+     producto 2 valor_total     | 12664.37 -> 12664.37         | ok 
+     producto 2 bc_icms         | - -> -                       | vacio 
+     producto 2 valor_icms      | - -> -                       | vacio 
+     producto 2 valor_ipi       | - -> -                       | vacio 
+     producto 2 aliquota        | - -> -                       | vacio 
   == 8647.pdf ==
      nota      valor_da_nota   | '209.559,31' -> 209559.31    | ok 
      nota      peso_bruto      | '0' -> 0                     | ok 
@@ -97,37 +93,42 @@
      producto 1 valor_icms      | '2.094,76' -> 2094.76        | ok 
      producto 1 valor_ipi       | '0.0017.00' -> -             | no_parseable <--
      producto 1 aliquota        | - -> -                       | vacio 
-     producto 1 cfop            | '5102 TON' -> '5102'         | limpio 
   == 8649.pdf ==
-     nota      valor_da_nota   | - -> -                       | vacio 
-     nota      peso_bruto      | - -> -                       | vacio 
-     nota      peso_liquido    | - -> -                       | vacio 
-     producto 1 quantidade      | '37,0000' -> 37.0            | ok 
-     producto 1 valor_unitario  | '5.821,0919' -> 5821.0919    | ok 
+     nota      valor_da_nota   | '215.380,40' -> 215380.4     | ok 
+     nota      peso_bruto      | '0' -> 0                     | ok 
+     nota      peso_liquido    | '37.000,000' -> 37000.0      | ok 
+     producto 1 quantidade      | 37.0 -> 37.0                 | ok 
+     producto 1 valor_unitario  | - -> -                       | vacio 
      producto 1 desconto        | - -> -                       | vacio 
-     producto 1 valor_total     | '215.380,40' -> 215380.4     | ok 
-     producto 1 bc_icms         | 'VTRIB 12.664,37' -> 12664.37 | ok 
-     producto 1 valor_icms      | '2.152,94' -> 2152.94        | ok 
+     producto 1 valor_total     | 5821.0919 -> 5821.0919       | ok 
+     producto 1 bc_icms         | - -> -                       | vacio 
+     producto 1 valor_icms      | - -> -                       | vacio 
      producto 1 valor_ipi       | - -> -                       | vacio 
-     producto 1 aliquota        | 'ICMSIPI 0,0017,000,00' -> - | no_parseable <--
-  == 8662.pdf ==
-     nota      valor_da_nota   | - -> -                       | vacio 
-     nota      peso_bruto      | - -> -                       | vacio 
-     nota      peso_liquido    | - -> -                       | vacio 
-     producto 1 quantidade      | - -> -                       | vacio 
-     producto 1 valor_unitario  | '48,0000 5.907,0600' -> 5907.06 | limpio 
-     producto 1 desconto        | - -> -                       | vacio 
-     producto 1 valor_total     | '283.538.88' -> 283538.88    | ok 
-     producto 1 bc_icms         | '16.672.09' -> 16672.09      | ok 
-     producto 1 valor_icms      | '2.834,26' -> 2834.26        | ok 
-     producto 1 valor_ipi       | '0.0017.000.0' -> -          | no_parseable <--
      producto 1 aliquota        | - -> -                       | vacio 
-     producto 1 quantidade      | 'desde valor_unitario' -> 48.0 | recuperado <--
-     producto 1 cfop            | '5102 TON' -> '5102'         | limpio 
+     producto 2 quantidade      | 2152.94 -> 2152.94           | ok 
+     producto 2 valor_unitario  | 12664.37 -> 12664.37         | ok 
+     producto 2 desconto        | - -> -                       | vacio 
+     producto 2 valor_total     | 215380.4 -> 215380.4         | ok 
+     producto 2 bc_icms         | - -> -                       | vacio 
+     producto 2 valor_icms      | - -> -                       | vacio 
+     producto 2 valor_ipi       | - -> -                       | vacio 
+     producto 2 aliquota        | - -> -                       | vacio 
+  == 8662.pdf ==
+     nota      valor_da_nota   | '283.538,88' -> 283538.88    | ok 
+     nota      peso_bruto      | '0' -> 0                     | ok 
+     nota      peso_liquido    | '48.000,000' -> 48000.0      | ok 
+     producto 1 quantidade      | 48.0 -> 48.0                 | ok 
+     producto 1 valor_unitario  | 5907.06 -> 5907.06           | ok 
+     producto 1 desconto        | - -> -                       | vacio 
+     producto 1 valor_total     | 283538.88 -> 283538.88       | ok 
+     producto 1 bc_icms         | 16672.09 -> 16672.09         | ok 
+     producto 1 valor_icms      | 2834.26 -> 2834.26           | ok 
+     producto 1 valor_ipi       | - -> -                       | vacio 
+     producto 1 aliquota        | - -> -                       | vacio 
   == 8694.pdf ==
      nota      valor_da_nota   | '189.025,92' -> 189025.92    | ok 
      nota      peso_bruto      | '0' -> 0                     | ok 
-     nota      peso_liquido    | '133601609' -> -             | fuera_rango <--
+     nota      peso_liquido    | '32.000,000' -> 32000.0      | ok 
      producto 1 quantidade      | '32,0000' -> 32.0            | ok 
      producto 1 valor_unitario  | '5.907,0600' -> 5907.06      | ok 
      producto 1 desconto        | - -> -                       | vacio 
@@ -137,9 +138,9 @@
      producto 1 valor_ipi       | '0,00|17.000.0' -> 0.0       | limpio 
      producto 1 aliquota        | - -> -                       | vacio 
   == 8696.pdf ==
-     nota      valor_da_nota   | - -> -                       | vacio 
-     nota      peso_bruto      | - -> -                       | vacio 
-     nota      peso_liquido    | - -> -                       | vacio 
+     nota      valor_da_nota   | '209.559,33' -> 209559.33    | ok 
+     nota      peso_bruto      | '0' -> 0                     | ok 
+     nota      peso_liquido    | '36.000,000' -> 36000.0      | ok 
      producto 1 quantidade      | '36,0000' -> 36.0            | ok 
      producto 1 valor_unitario  | '5.821,0925' -> 5821.0925    | ok 
      producto 1 desconto        | - -> -                       | vacio 
@@ -148,6 +149,5 @@
      producto 1 valor_icms      | '2.094,76' -> 2094.76        | ok 
      producto 1 valor_ipi       | - -> -                       | vacio 
      producto 1 aliquota        | '0,0017,000,00' -> -         | no_parseable <--
-     producto 1 codigo          | 'P015 DADOSADICIONAIS' -> 'P015' | limpio 
 ==============================================================================
-FIN DEL REPORTE (94 valores procesados, 11 anomalias)
+FIN DEL REPORTE (104 valores procesados, 3 anomalias)
