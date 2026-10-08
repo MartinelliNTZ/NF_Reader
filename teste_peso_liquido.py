@@ -20,6 +20,8 @@ if str(RAIZ) not in sys.path:
 
 from core.extrair_notas import (  # noqa: E402
     REG_PESO,
+    ROTULOS_PESO_BRUTO,
+    ROTULOS_PESO_LIQUIDO,
     _litros_por_itens,
     _litros_por_produtos,
     completar_volume_litros,
@@ -229,6 +231,57 @@ def test_pegar_valor_peso_coluna_abaixo():
                               "pagina": 1}], ["pesoliquido"], REG_PESO), None)
 
 
+def test_rotulos_peso_ocr():
+    """Toda nomenclatura de PESO LIQUIDO que o OCR costuma produzir deve ser
+    reconhecida e o valor da coluna de baixo lido (nao a inscricao estadual
+    da transportadora, que fica logo acima do rotulo)."""
+    print(" TESTE nomenclaturas de PESO LIQUIDO (erros tipicos de OCR)")
+    variantes = [
+        "PESO LIQUIDO", "PESO LÍQUIDO", "PESO LIQUID0", "PES0 LIQUIDO",
+        "PES0 LIQUID0", "PESO LIOUIDO", "PESO LIQUlDO", "PÊSO LÍQUIDO",
+        "PESO LIQ.", "PESO LIQ", "PESO LIQDO", "PESO LIQUD0",
+        "PESO L1QUIDO", "PESO L1QUID0", "PESO LIOU1DO", "PESO LIQUIDO KG",
+        "PESO LÍQUIDO (KG)", "PESO LÍQUIDO KGS", "PESO LIQUIDOKG",
+        "PESO LlQUIDO",
+    ]
+    for rotulo in variantes:
+        itens = [
+            {"texto": rotulo, "x": 2258, "y": 1395, "pagina": 1},
+            {"texto": "254783430", "x": 2321, "y": 1360, "pagina": 1},
+            {"texto": "37.000,000", "x": 2314, "y": 1436, "pagina": 1},
+        ]
+        checar(f"peso_liquido com rotulo {rotulo!r}",
+               pegar_valor_peso(itens, ROTULOS_PESO_LIQUIDO, REG_PESO,
+                                margem=60, y_min=1200, y_max=1640),
+               "37.000,000")
+
+    # 'PESO BRUTO' nao pode casar com a lista do liquido (e vice-versa)
+    itens_bruto = [
+        {"texto": "PESO BRUTO", "x": 1992, "y": 1386, "pagina": 1},
+        {"texto": "0", "x": 1875, "y": 1424, "pagina": 1},
+    ]
+    checar("'PESO BRUTO' nao casa com a lista do liquido",
+           pegar_valor_peso(itens_bruto, ROTULOS_PESO_LIQUIDO, REG_PESO),
+           None)
+    checar("peso_bruto com rotulo 'PES0 BRUT0'",
+           pegar_valor_peso([{"texto": "PES0 BRUT0", "x": 1992, "y": 1386,
+                              "pagina": 1},
+                             {"texto": "0", "x": 1875, "y": 1424,
+                              "pagina": 1}],
+                            ROTULOS_PESO_BRUTO, REG_PESO), "0")
+
+    # rotulo partido em varios tokens pela OCR ("PESO" + "LIQUID0")
+    checar("rotulo partido em 2 tokens ('PESO' + 'LIQUID0')",
+           pegar_valor_peso([{"texto": "PESO", "x": 2250, "y": 1395,
+                              "pagina": 1},
+                             {"texto": "LIQUID0", "x": 2330, "y": 1396,
+                              "pagina": 1},
+                             {"texto": "48.000,000", "x": 2323, "y": 1436,
+                              "pagina": 1}],
+                            ROTULOS_PESO_LIQUIDO, REG_PESO,
+                            margem=60, y_min=1200, y_max=1640), "48.000,000")
+
+
 def main():
     print("-" * 60)
     test_litros_por_produtos()
@@ -236,6 +289,7 @@ def main():
     test_completar_volume_litros()
     test_integracao_extrair_infos()
     test_pegar_valor_peso_coluna_abaixo()
+    test_rotulos_peso_ocr()
     print("-" * 60)
     if FALHAS:
         print(f" FALHAS: {len(FALHAS)} -> {FALHAS}")

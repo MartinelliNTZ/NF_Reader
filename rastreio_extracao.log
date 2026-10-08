@@ -3538,3 +3538,532 @@
 2026-10-08 12:18:03 | INFO     | pipeline | 8696.pdf | chave 51220823704333000601550010000086961991321798 ATUALIZADA
 2026-10-08 12:18:03 | INFO     | pipeline | RESULTADO: pdfs=8 inseridas=0 atualizadas=8 parciais=0 falhas=0 antes=11 depois=11 duracao=68.8s
 2026-10-08 12:18:03 | INFO     | pipeline | JSON=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json CSV=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.csv
+2026-10-08 12:28:50 | INFO     | volume total em litros: 251.6991
+2026-10-08 12:28:50 | INFO     | volume total em litros: 999.0000
+2026-10-08 12:28:50 | INFO     | volume total em litros: 251.6991
+2026-10-08 12:28:50 | WARNING  | peso_bruto: NAO encontrado (janelas ((1640, 1900), (1200, 1640), (None, None)))
+2026-10-08 12:28:50 | WARNING  | peso_liquido: NAO encontrado (janelas ((1640, 1900), (1200, 1640), (None, None)))
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (8): ['codigo', 'descricao', 'ncm', 'cfop', 'unidade', 'quantidade', 'valor_unitario', 'valor_total']
+2026-10-08 12:28:50 | INFO     | produtos: 0 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 0
+2026-10-08 12:28:50 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 12:28:50 | INFO     | volume total em litros: 251.6991
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOBRUTO' (x=1992 y=1386) -> valor da coluna de baixo '0' (dx=-117 dy=38)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIOUIDO' (x=2271 y=1328) -> valor da coluna de baixo '48.000,000' (dx=52 dy=37)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQ.' (x=1992 y=1386) -> valor da coluna de baixo '36.000,00' (dx=58 dy=44)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LÍQUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUID0' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PES0 LIQUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PES0 LIQUID0' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIOUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUlDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PÊSO LÍQUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQ.' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQ' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUD0' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO L1QUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO L1QUID0' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIOU1DO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUIDO KG' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LÍQUIDO (KG)' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LÍQUIDO KGS' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUIDOKG' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LlQUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PES0 BRUT0' (x=1992 y=1386) -> valor da coluna de baixo '0' (dx=-117 dy=38)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO' (x=2250 y=1395) -> valor da coluna de baixo '48.000,000' (dx=73 dy=41)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOBRUTO' (x=2015 y=1661) -> valor da coluna de baixo '0' (dx=-118 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2276 y=1660) -> valor da coluna de baixo '37.000,000' (dx=50 dy=38)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1640..1900 -> '37.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (14): ['aliquota', 'valor_icms', 'bc_icms', 'valor_ipi', 'valor_unitario', 'valor_total', 'desconto', 'unidade', 'quantidade', 'origem_cst', 'cfop', 'ncm', 'codigo', 'descricao']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '37,0000', 'valor_unitario': '5.821,0919', 'valor_total': '215.380.40', 'bc_icms': '12.664.37', 'valor_icms': '2.152,94', 'aliquota': '0.0017,000.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO;'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37:'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695 000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='37,0000' vlr_unit='5.821,0919' vlr_total='215.380.40'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO BRUTO' (x=2005 y=1334) -> valor da coluna de baixo '0' (dx=-119 dy=40)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2268 y=1337) -> valor da coluna de baixo '37.000,000' (dx=52 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '3. CODIGO+DESCRICAO (sem CFOP no cab)'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (12): ['codigo', 'aliquota', 'descricao', 'origem_cst', 'ncm', 'unidade', 'valor_unitario', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'unidade': '5102 TON 37,0000', 'valor_unitario': '5.821.0919', 'valor_total': '215.380.40', 'bc_icms': '12.664.37', 'valor_icms': '2.152.94', 'aliquota': '0.0017,000.00'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.:'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37:'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde=None vlr_unit='5.821.0919' vlr_total='215.380.40'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO BRUTO' (x=1999 y=1335) -> valor da coluna de baixo '0' (dx=-118 dy=37)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2257 y=1338) -> valor da coluna de baixo '37.000,000' (dx=57 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '2. CODIGO+CFOP'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (13): ['codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'aliquota', 'unidade', 'quantidade', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P2O5-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '37.0000', 'desconto': '5.821,0919', 'valor_total': '215.380.40', 'aliquota': 'ICMSTIPI'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.:'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-QIde:37:'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P2O5- Granulado' ncm='31054000' und='TON' qtde='37.0000' vlr_unit=None vlr_total='215.380.40'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | produtos: extracao por conteudo (fallback) = 2 item(ns)
+2026-10-08 12:28:50 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 21220723704333000601550010000086471969573618
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO BRUTO' (x=2035 y=1666) -> valor da coluna de baixo '0' (dx=-119 dy=40)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2294 y=1665) -> valor da coluna de baixo '36.000,00' (dx=42 dy=38)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1640..1900 -> '36.000,00'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '2. CODIGO+CFOP'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (12): ['valor_ipi', 'valor_icms', 'bc_icms', 'valor_unitario', 'valor_total', 'desconto', 'quantidade', 'cfop', 'origem_cst', 'ncm', 'descricao', 'codigo']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102 TON', 'quantidade': '36.0000', 'valor_unitario': '5.821.0919', 'valor_total': '209.559,31', 'bc_icms': '12.322.09', 'valor_icms': '2.094,76', 'valor_ipi': '0.0017.00'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO;'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:36:'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='36.0000' vlr_unit='5.821.0919' vlr_total='209.559,31'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 61220723704333000601550010000086491076822486
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOBRUTO' (x=1992 y=1386) -> valor da coluna de baixo '0' (dx=-117 dy=38)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=41)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '3. CODIGO+DESCRICAO (sem CFOP no cab)'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (14): ['codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'unidade', 'quantidade', 'valor_unitario', 'desconto', 'valor_total', 'aliquota', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'PO15', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'bc_icms': 'VTRIB'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {'valor_total': '215.380,40', 'bc_icms': '12.664,37', 'valor_icms': '2.152,94', 'aliquota': '0,0017,000,00'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37;'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='PO15' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='37,0000' vlr_unit='5.821,0919' vlr_total='215.380,40'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | produtos: extracao por conteudo (fallback) = 2 item(ns)
+2026-10-08 12:28:50 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 25220723704333000601550010000086621362784278
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO BRUTO' (x=2009 y=1327) -> valor da coluna de baixo '0' (dx=-117 dy=38)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIOUIDO' (x=2271 y=1328) -> valor da coluna de baixo '48.000,000' (dx=52 dy=37)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1200..1640 -> '48.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (12): ['codigo', 'descricao', 'valor_unitario', 'ncm', 'origem_cst', 'cfop', 'unidade', 'desconto', 'valor_total', 'valor_icms', 'valor_ipi', 'bc_icms']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON 48,0000', 'valor_unitario': '5.907,0600', 'valor_total': '283.538.88', 'bc_icms': '16.672.09', 'valor_icms': '2.834,26', 'valor_ipi': '0.0017.000.0'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:48;'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR 0015695000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde=None vlr_unit='5.907,0600' vlr_total='283.538.88'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO BRUTO' (x=2010 y=1680) -> valor da coluna de baixo '0' (dx=-117 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2270 y=1680) -> valor da coluna de baixo '32.000,000' (dx=53 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1640..1900 -> '32.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (13): ['ncm', 'bc_icms', 'valor_icms', 'codigo', 'origem_cst', 'cfop', 'unidade', 'valor_unitario', 'desconto', 'valor_total', 'valor_ipi', 'descricao', 'quantidade']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'POIS', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '32,0000', 'valor_unitario': '5.907,0600', 'valor_total': '189.025.92', 'bc_icms': '11.114.72', 'valor_icms': '1.889.50', 'valor_ipi': '0,00|17.000.0'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'APLICACAOVIASOLO'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lotc:1MP197022-Q1dc:32.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lolc(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:28:50 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='32,0000' vlr_unit='5.907,0600' vlr_total='189.025.92'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESO BRUTO' (x=2009 y=1260) -> valor da coluna de baixo '0' (dx=-115 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:28:50 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2258 y=1262) -> valor da coluna de baixo '36.000,000' (dx=53 dy=39)
+2026-10-08 12:28:50 | INFO     | peso_liquido: janela y=1200..1640 -> '36.000,000'
+2026-10-08 12:28:50 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:28:50 | INFO     | produtos: colunas mapeadas (14): ['aliquota', 'codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'unidade', 'valor_unitario', 'quantidade', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:28:50 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '36,0000', 'valor_unitario': '5.821,0925', 'valor_total': '209.559,33', 'bc_icms': '12.322,09', 'valor_icms': '2.094,76', 'aliquota': '0,0017,000,00'}
+2026-10-08 12:28:50 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:28:50 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde='36,0000' vlr_unit='5.821,0925' vlr_total='209.559,33'
+2026-10-08 12:28:50 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:29:08 | INFO     | ==== INICIO DA EXTRACAO PDF->JSON ====
+2026-10-08 12:29:08 | INFO     | configuracao: raiz=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP json=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json pdfs=8
+2026-10-08 12:29:09 | INFO     | 8643.pdf | inicio de extracao
+2026-10-08 12:29:22 | INFO     | 8643.pdf | origem=ocr itens=171
+2026-10-08 12:29:22 | INFO     | 8643.pdf | chave=51220723704333000601550010000086431283821809 DV_valido=True
+2026-10-08 12:29:22 | INFO     | peso: rotulo 'PESOBRUTO' (x=2015 y=1661) -> valor da coluna de baixo '0' (dx=-118 dy=39)
+2026-10-08 12:29:22 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 12:29:22 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2276 y=1660) -> valor da coluna de baixo '37.000,000' (dx=50 dy=38)
+2026-10-08 12:29:22 | INFO     | peso_liquido: janela y=1640..1900 -> '37.000,000'
+2026-10-08 12:29:22 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:29:22 | INFO     | produtos: colunas mapeadas (13): ['valor_icms', 'bc_icms', 'valor_ipi', 'valor_unitario', 'valor_total', 'desconto', 'unidade', 'quantidade', 'origem_cst', 'cfop', 'ncm', 'codigo', 'descricao']
+2026-10-08 12:29:22 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '37,0000', 'valor_unitario': '5.821,0919', 'valor_total': '215.380.40', 'bc_icms': '12.664.37', 'valor_icms': '2.152,94', 'valor_ipi': '0.0017,000.'}
+2026-10-08 12:29:22 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:29:22 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO;'}
+2026-10-08 12:29:22 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37:'}
+2026-10-08 12:29:22 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695 000026.'}
+2026-10-08 12:29:22 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:29:22 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:29:22 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='37,0000' vlr_unit='5.821,0919' vlr_total='215.380.40'
+2026-10-08 12:29:22 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:29:22 | INFO     | 8643.pdf | extracao COMPLETA
+2026-10-08 12:29:22 | INFO     | 8643.pdf | produtos=1 status=completa
+2026-10-08 12:29:22 | INFO     | 51220723704333000601550010000086431283821809 | sem alteracao (informacao identica)
+2026-10-08 12:29:22 | INFO     | 8643.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:29:22 | INFO     | 8645.pdf | inicio de extracao
+2026-10-08 12:29:33 | INFO     | 8645.pdf | origem=ocr itens=153
+2026-10-08 12:29:33 | INFO     | 8645.pdf | chave=51220723704333000601550010000086451309928634 DV_valido=True
+2026-10-08 12:29:33 | INFO     | peso: rotulo 'PESO BRUTO' (x=2005 y=1334) -> valor da coluna de baixo '0' (dx=-119 dy=40)
+2026-10-08 12:29:33 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:29:33 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2268 y=1337) -> valor da coluna de baixo '37.000,000' (dx=52 dy=38)
+2026-10-08 12:29:33 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 12:29:33 | INFO     | produtos: cabecalho detectado pelo criterio '3. CODIGO+DESCRICAO (sem CFOP no cab)'
+2026-10-08 12:29:33 | INFO     | produtos: colunas mapeadas (12): ['codigo', 'aliquota', 'descricao', 'origem_cst', 'ncm', 'unidade', 'valor_unitario', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:29:33 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'unidade': '5102 TON 37,0000', 'valor_unitario': '5.821.0919', 'valor_total': '215.380.40', 'bc_icms': '12.664.37', 'valor_icms': '2.152.94', 'aliquota': '0.0017,000.00'}
+2026-10-08 12:29:33 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:29:33 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.:'}
+2026-10-08 12:29:33 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37:'}
+2026-10-08 12:29:33 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:29:33 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:29:33 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:29:33 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde=None vlr_unit='5.821.0919' vlr_total='215.380.40'
+2026-10-08 12:29:33 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:29:33 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 12:29:33 | INFO     | 8645.pdf | extracao COMPLETA
+2026-10-08 12:29:33 | INFO     | 8645.pdf | produtos=1 status=completa
+2026-10-08 12:29:33 | INFO     | 51220723704333000601550010000086451309928634 | sem alteracao (informacao identica)
+2026-10-08 12:29:33 | INFO     | 8645.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:29:33 | INFO     | 8646.pdf | inicio de extracao
+2026-10-08 12:29:44 | INFO     | 8646.pdf | origem=ocr itens=156
+2026-10-08 12:29:44 | INFO     | 8646.pdf | chave=51220723704333000601550010000086461530470545 DV_valido=True
+2026-10-08 12:29:44 | INFO     | peso: rotulo 'PESO BRUTO' (x=1999 y=1335) -> valor da coluna de baixo '0' (dx=-118 dy=37)
+2026-10-08 12:29:44 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:29:44 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2257 y=1338) -> valor da coluna de baixo '37.000,000' (dx=57 dy=39)
+2026-10-08 12:29:44 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 12:29:44 | INFO     | produtos: cabecalho detectado pelo criterio '2. CODIGO+CFOP'
+2026-10-08 12:29:44 | INFO     | produtos: colunas mapeadas (13): ['codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'aliquota', 'unidade', 'quantidade', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:29:44 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P2O5-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '37.0000', 'desconto': '5.821,0919', 'valor_total': '215.380.40', 'aliquota': 'ICMSTIPI'}
+2026-10-08 12:29:44 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:29:44 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.:'}
+2026-10-08 12:29:44 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-QIde:37:'}
+2026-10-08 12:29:44 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:29:44 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:29:44 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:29:44 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P2O5- Granulado' ncm='31054000' und='TON' qtde='37.0000' vlr_unit=None vlr_total='215.380.40'
+2026-10-08 12:29:44 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:29:44 | INFO     | produtos: extracao por conteudo (fallback) = 2 item(ns)
+2026-10-08 12:29:44 | INFO     | 8646.pdf | extracao COMPLETA
+2026-10-08 12:29:44 | INFO     | 8646.pdf | produtos=2 status=completa
+2026-10-08 12:29:44 | INFO     | 51220723704333000601550010000086461530470545 | sem alteracao (informacao identica)
+2026-10-08 12:29:44 | INFO     | 8646.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:29:44 | INFO     | 8647.pdf | inicio de extracao
+2026-10-08 12:29:56 | INFO     | 8647.pdf | origem=ocr itens=171
+2026-10-08 12:29:56 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 21220723704333000601550010000086471969573618
+2026-10-08 12:29:56 | INFO     | 8647.pdf | chave=21220723704333000601550010000086471969573618 DV_valido=True
+2026-10-08 12:29:56 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 21220723704333000601550010000086471969573618
+2026-10-08 12:29:56 | INFO     | peso: rotulo 'PESO BRUTO' (x=2035 y=1666) -> valor da coluna de baixo '0' (dx=-119 dy=40)
+2026-10-08 12:29:56 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 12:29:56 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2294 y=1665) -> valor da coluna de baixo '36.000,00' (dx=43 dy=38)
+2026-10-08 12:29:56 | INFO     | peso_liquido: janela y=1640..1900 -> '36.000,00'
+2026-10-08 12:29:56 | INFO     | produtos: cabecalho detectado pelo criterio '2. CODIGO+CFOP'
+2026-10-08 12:29:56 | INFO     | produtos: colunas mapeadas (12): ['valor_ipi', 'valor_icms', 'bc_icms', 'valor_unitario', 'valor_total', 'desconto', 'quantidade', 'cfop', 'origem_cst', 'ncm', 'descricao', 'codigo']
+2026-10-08 12:29:56 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102 TON', 'quantidade': '36.0000', 'valor_unitario': '5.821.0919', 'valor_total': '209.559,31', 'bc_icms': '12.322.09', 'valor_icms': '2.094,76', 'valor_ipi': '0.0017.00'}
+2026-10-08 12:29:56 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:29:56 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO;'}
+2026-10-08 12:29:56 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:36:'}
+2026-10-08 12:29:56 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:29:56 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:29:56 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:29:56 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='36.0000' vlr_unit='5.821.0919' vlr_total='209.559,31'
+2026-10-08 12:29:56 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:29:56 | INFO     | 8647.pdf | extracao COMPLETA
+2026-10-08 12:29:56 | INFO     | 8647.pdf | produtos=1 status=completa
+2026-10-08 12:29:56 | INFO     | 21220723704333000601550010000086471969573618 | sem alteracao (informacao identica)
+2026-10-08 12:29:56 | INFO     | 8647.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:29:56 | INFO     | 8649.pdf | inicio de extracao
+2026-10-08 12:30:08 | INFO     | 8649.pdf | origem=ocr itens=165
+2026-10-08 12:30:08 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 61220723704333000601550010000086491076822486
+2026-10-08 12:30:08 | INFO     | 8649.pdf | chave=61220723704333000601550010000086491076822486 DV_valido=True
+2026-10-08 12:30:08 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 61220723704333000601550010000086491076822486
+2026-10-08 12:30:08 | INFO     | peso: rotulo 'PESOBRUTO' (x=1992 y=1386) -> valor da coluna de baixo '0' (dx=-117 dy=38)
+2026-10-08 12:30:08 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:30:08 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=42)
+2026-10-08 12:30:08 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 12:30:08 | INFO     | produtos: cabecalho detectado pelo criterio '3. CODIGO+DESCRICAO (sem CFOP no cab)'
+2026-10-08 12:30:08 | INFO     | produtos: colunas mapeadas (14): ['codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'unidade', 'quantidade', 'valor_unitario', 'desconto', 'valor_total', 'aliquota', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:30:08 | DEBUG    | produtos: novo item -> {'codigo': 'PO15', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'bc_icms': 'VTRIB'}
+2026-10-08 12:30:08 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {'valor_total': '215.380,40', 'bc_icms': '12.664,37', 'valor_icms': '2.152,94', 'aliquota': '0,0017,000,00'}
+2026-10-08 12:30:08 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.'}
+2026-10-08 12:30:08 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37;'}
+2026-10-08 12:30:08 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:30:08 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:30:08 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:30:08 | INFO     | produtos: item 1 codigo='PO15' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='37,0000' vlr_unit='5.821,0919' vlr_total='215.380,40'
+2026-10-08 12:30:08 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:30:08 | INFO     | produtos: extracao por conteudo (fallback) = 2 item(ns)
+2026-10-08 12:30:08 | INFO     | 8649.pdf | extracao COMPLETA
+2026-10-08 12:30:08 | INFO     | 8649.pdf | produtos=2 status=completa
+2026-10-08 12:30:08 | INFO     | 61220723704333000601550010000086491076822486 | sem alteracao (informacao identica)
+2026-10-08 12:30:08 | INFO     | 8649.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:30:08 | INFO     | 8662.pdf | inicio de extracao
+2026-10-08 12:30:19 | INFO     | 8662.pdf | origem=ocr itens=156
+2026-10-08 12:30:19 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 25220723704333000601550010000086621362784278
+2026-10-08 12:30:19 | INFO     | 8662.pdf | chave=25220723704333000601550010000086621362784278 DV_valido=True
+2026-10-08 12:30:19 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 25220723704333000601550010000086621362784278
+2026-10-08 12:30:19 | INFO     | peso: rotulo 'PESO BRUTO' (x=2009 y=1327) -> valor da coluna de baixo '0' (dx=-116 dy=38)
+2026-10-08 12:30:19 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:30:19 | INFO     | peso: rotulo 'PESO LIOUIDO' (x=2271 y=1328) -> valor da coluna de baixo '48.000,000' (dx=52 dy=37)
+2026-10-08 12:30:19 | INFO     | peso_liquido: janela y=1200..1640 -> '48.000,000'
+2026-10-08 12:30:19 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:30:19 | INFO     | produtos: colunas mapeadas (12): ['codigo', 'valor_unitario', 'descricao', 'origem_cst', 'cfop', 'unidade', 'desconto', 'valor_total', 'valor_icms', 'ncm', 'valor_ipi', 'bc_icms']
+2026-10-08 12:30:19 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON 48,0000', 'valor_unitario': '5.907,0600', 'valor_total': '283.538.88', 'bc_icms': '16.672.09', 'valor_icms': '2.834,26', 'valor_ipi': '0.0017.000.0'}
+2026-10-08 12:30:19 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:30:19 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:48;'}
+2026-10-08 12:30:19 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR 0015695000026.'}
+2026-10-08 12:30:19 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:30:19 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:30:19 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde=None vlr_unit='5.907,0600' vlr_total='283.538.88'
+2026-10-08 12:30:19 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:30:19 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 12:30:19 | INFO     | 8662.pdf | extracao COMPLETA
+2026-10-08 12:30:19 | INFO     | 8662.pdf | produtos=1 status=completa
+2026-10-08 12:30:19 | INFO     | 25220723704333000601550010000086621362784278 | sem alteracao (informacao identica)
+2026-10-08 12:30:19 | INFO     | 8662.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:30:19 | INFO     | 8694.pdf | inicio de extracao
+2026-10-08 12:30:31 | INFO     | 8694.pdf | origem=ocr itens=170
+2026-10-08 12:30:31 | INFO     | 8694.pdf | chave=51220823704333000601550010000086941339615756 DV_valido=True
+2026-10-08 12:30:31 | INFO     | peso: rotulo 'PESO BRUTO' (x=2010 y=1680) -> valor da coluna de baixo '0' (dx=-117 dy=39)
+2026-10-08 12:30:31 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 12:30:31 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2270 y=1680) -> valor da coluna de baixo '32.000,000' (dx=53 dy=39)
+2026-10-08 12:30:31 | INFO     | peso_liquido: janela y=1640..1900 -> '32.000,000'
+2026-10-08 12:30:31 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:30:31 | INFO     | produtos: colunas mapeadas (13): ['ncm', 'bc_icms', 'valor_icms', 'cfop', 'valor_total', 'origem_cst', 'unidade', 'valor_unitario', 'desconto', 'valor_ipi', 'codigo', 'descricao', 'quantidade']
+2026-10-08 12:30:31 | DEBUG    | produtos: novo item -> {'codigo': 'POIS', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '32,0000', 'valor_unitario': '5.907,0600', 'valor_total': '189.025.92', 'bc_icms': '11.114.72', 'valor_icms': '1.889.50', 'valor_ipi': '0,00|17.000.0'}
+2026-10-08 12:30:31 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 12:30:31 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'APLICACAOVIASOLO'}
+2026-10-08 12:30:31 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lotc:1MP197022-Q1dc:32.'}
+2026-10-08 12:30:31 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lolc(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 12:30:31 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 12:30:31 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:30:31 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='32,0000' vlr_unit='5.907,0600' vlr_total='189.025.92'
+2026-10-08 12:30:31 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:30:31 | INFO     | 8694.pdf | extracao COMPLETA
+2026-10-08 12:30:31 | INFO     | 8694.pdf | produtos=1 status=completa
+2026-10-08 12:30:31 | INFO     | 51220823704333000601550010000086941339615756 | sem alteracao (informacao identica)
+2026-10-08 12:30:31 | INFO     | 8694.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:30:31 | INFO     | 8696.pdf | inicio de extracao
+2026-10-08 12:30:41 | INFO     | 8696.pdf | origem=ocr itens=159
+2026-10-08 12:30:41 | INFO     | 8696.pdf | chave=51220823704333000601550010000086961991321798 DV_valido=True
+2026-10-08 12:30:41 | INFO     | peso: rotulo 'PESO BRUTO' (x=2009 y=1260) -> valor da coluna de baixo '0' (dx=-115 dy=40)
+2026-10-08 12:30:41 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 12:30:41 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2258 y=1262) -> valor da coluna de baixo '36.000,000' (dx=53 dy=39)
+2026-10-08 12:30:41 | INFO     | peso_liquido: janela y=1200..1640 -> '36.000,000'
+2026-10-08 12:30:41 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 12:30:41 | INFO     | produtos: colunas mapeadas (14): ['aliquota', 'codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'unidade', 'valor_unitario', 'quantidade', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 12:30:41 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '36,0000', 'valor_unitario': '5.821,0925', 'valor_total': '209.559,33', 'bc_icms': '12.322,09', 'valor_icms': '2.094,76', 'aliquota': '0,0017,000,00'}
+2026-10-08 12:30:41 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 12:30:41 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde='36,0000' vlr_unit='5.821,0925' vlr_total='209.559,33'
+2026-10-08 12:30:41 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 12:30:41 | INFO     | 8696.pdf | extracao COMPLETA
+2026-10-08 12:30:41 | INFO     | 8696.pdf | produtos=1 status=completa
+2026-10-08 12:30:41 | INFO     | 51220823704333000601550010000086961991321798 | sem alteracao (informacao identica)
+2026-10-08 12:30:41 | INFO     | 8696.pdf | JSON salvo em C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json
+2026-10-08 12:30:41 | INFO     | RESUMO: pdfs=8 inseridas=0 atualizadas=0 sem_alteracao=8 parciais=0 falhas=0
+2026-10-08 12:30:41 | INFO     | ==== FIM DA EXTRACAO (JSON final: C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json, 11 chaves) ====
+2026-10-08 14:19:09 | INFO     | ==== PIPELINE NF_reader | pasta=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP
+2026-10-08 14:19:09 | INFO     | pipeline | PDFs=8 OCR=True incluir_ocr_csv=False dpi=300 apenas_adicionar=True
+2026-10-08 14:19:09 | INFO     | pipeline | filtro de campos (9): ['chave_de_acesso', 'arquivo', 'data_emissao', 'peso_bruto', 'peso_liquido', 'volume_litros', 'produto_item', 'produto_codigo', 'produto_descricao']
+2026-10-08 14:19:09 | INFO     | pipeline | JSON existente: C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json (chaves=11)
+2026-10-08 14:19:11 | INFO     | pipeline | motor OCR inicializado
+2026-10-08 14:19:11 | INFO     | pipeline | [1/8] processando 8643.pdf
+2026-10-08 14:19:11 | INFO     | 8643.pdf | inicio de extracao
+2026-10-08 14:19:36 | INFO     | 8643.pdf | origem=ocr itens=171
+2026-10-08 14:19:36 | INFO     | 8643.pdf | chave=51220723704333000601550010000086431283821809 DV_valido=True
+2026-10-08 14:19:36 | INFO     | peso: rotulo 'PESOBRUTO' (x=2015 y=1661) -> valor da coluna de baixo '0' (dx=-118 dy=39)
+2026-10-08 14:19:36 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 14:19:36 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2276 y=1660) -> valor da coluna de baixo '37.000,000' (dx=50 dy=38)
+2026-10-08 14:19:36 | INFO     | peso_liquido: janela y=1640..1900 -> '37.000,000'
+2026-10-08 14:19:36 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 14:19:36 | INFO     | produtos: colunas mapeadas (13): ['valor_icms', 'bc_icms', 'valor_ipi', 'valor_unitario', 'valor_total', 'desconto', 'unidade', 'quantidade', 'origem_cst', 'cfop', 'ncm', 'codigo', 'descricao']
+2026-10-08 14:19:36 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '37,0000', 'valor_unitario': '5.821,0919', 'valor_total': '215.380.40', 'bc_icms': '12.664.37', 'valor_icms': '2.152,94', 'valor_ipi': '0.0017,000.'}
+2026-10-08 14:19:36 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 14:19:36 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO;'}
+2026-10-08 14:19:36 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37:'}
+2026-10-08 14:19:36 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695 000026.'}
+2026-10-08 14:19:36 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:19:36 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:19:36 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='37,0000' vlr_unit='5.821,0919' vlr_total='215.380.40'
+2026-10-08 14:19:36 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:19:36 | INFO     | 8643.pdf | extracao COMPLETA
+2026-10-08 14:19:36 | INFO     | 8643.pdf | produtos=1 status=completa
+2026-10-08 14:19:36 | INFO     | pipeline | 8643.pdf | chave 51220723704333000601550010000086431283821809 ATUALIZADA
+2026-10-08 14:19:36 | INFO     | pipeline | [2/8] processando 8645.pdf
+2026-10-08 14:19:36 | INFO     | 8645.pdf | inicio de extracao
+2026-10-08 14:20:23 | INFO     | 8645.pdf | origem=ocr itens=153
+2026-10-08 14:20:23 | INFO     | 8645.pdf | chave=51220723704333000601550010000086451309928634 DV_valido=True
+2026-10-08 14:20:23 | INFO     | peso: rotulo 'PESO BRUTO' (x=2005 y=1334) -> valor da coluna de baixo '0' (dx=-119 dy=40)
+2026-10-08 14:20:23 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 14:20:23 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2268 y=1337) -> valor da coluna de baixo '37.000,000' (dx=52 dy=38)
+2026-10-08 14:20:23 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 14:20:23 | INFO     | produtos: cabecalho detectado pelo criterio '3. CODIGO+DESCRICAO (sem CFOP no cab)'
+2026-10-08 14:20:23 | INFO     | produtos: colunas mapeadas (12): ['codigo', 'aliquota', 'descricao', 'origem_cst', 'ncm', 'unidade', 'valor_unitario', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 14:20:23 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'unidade': '5102 TON 37,0000', 'valor_unitario': '5.821.0919', 'valor_total': '215.380.40', 'bc_icms': '12.664.37', 'valor_icms': '2.152.94', 'aliquota': '0.0017,000.00'}
+2026-10-08 14:20:23 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 14:20:23 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.:'}
+2026-10-08 14:20:23 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37:'}
+2026-10-08 14:20:23 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 14:20:23 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:20:23 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:20:23 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde=None vlr_unit='5.821.0919' vlr_total='215.380.40'
+2026-10-08 14:20:23 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:20:23 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 14:20:23 | INFO     | 8645.pdf | extracao COMPLETA
+2026-10-08 14:20:23 | INFO     | 8645.pdf | produtos=1 status=completa
+2026-10-08 14:20:23 | INFO     | pipeline | 8645.pdf | chave 51220723704333000601550010000086451309928634 ATUALIZADA
+2026-10-08 14:20:23 | INFO     | pipeline | [3/8] processando 8646.pdf
+2026-10-08 14:20:23 | INFO     | 8646.pdf | inicio de extracao
+2026-10-08 14:21:04 | INFO     | 8646.pdf | origem=ocr itens=156
+2026-10-08 14:21:04 | INFO     | 8646.pdf | chave=51220723704333000601550010000086461530470545 DV_valido=True
+2026-10-08 14:21:04 | INFO     | peso: rotulo 'PESO BRUTO' (x=1999 y=1335) -> valor da coluna de baixo '0' (dx=-118 dy=37)
+2026-10-08 14:21:04 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 14:21:05 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2257 y=1338) -> valor da coluna de baixo '37.000,000' (dx=57 dy=39)
+2026-10-08 14:21:05 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 14:21:05 | INFO     | produtos: cabecalho detectado pelo criterio '2. CODIGO+CFOP'
+2026-10-08 14:21:05 | INFO     | produtos: colunas mapeadas (13): ['codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'aliquota', 'unidade', 'quantidade', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 14:21:05 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P2O5-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '37.0000', 'desconto': '5.821,0919', 'valor_total': '215.380.40', 'aliquota': 'ICMSTIPI'}
+2026-10-08 14:21:05 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 14:21:05 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.:'}
+2026-10-08 14:21:05 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-QIde:37:'}
+2026-10-08 14:21:05 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 14:21:05 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:21:05 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:21:05 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P2O5- Granulado' ncm='31054000' und='TON' qtde='37.0000' vlr_unit=None vlr_total='215.380.40'
+2026-10-08 14:21:05 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:21:05 | INFO     | produtos: extracao por conteudo (fallback) = 2 item(ns)
+2026-10-08 14:21:05 | INFO     | 8646.pdf | extracao COMPLETA
+2026-10-08 14:21:05 | INFO     | 8646.pdf | produtos=2 status=completa
+2026-10-08 14:21:05 | INFO     | pipeline | 8646.pdf | chave 51220723704333000601550010000086461530470545 ATUALIZADA
+2026-10-08 14:21:05 | INFO     | pipeline | [4/8] processando 8647.pdf
+2026-10-08 14:21:05 | INFO     | 8647.pdf | inicio de extracao
+2026-10-08 14:21:47 | INFO     | 8647.pdf | origem=ocr itens=171
+2026-10-08 14:21:47 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 21220723704333000601550010000086471969573618
+2026-10-08 14:21:47 | INFO     | 8647.pdf | chave=21220723704333000601550010000086471969573618 DV_valido=True
+2026-10-08 14:21:47 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 21220723704333000601550010000086471969573618
+2026-10-08 14:21:47 | INFO     | peso: rotulo 'PESO BRUTO' (x=2035 y=1666) -> valor da coluna de baixo '0' (dx=-119 dy=40)
+2026-10-08 14:21:47 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 14:21:47 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2294 y=1665) -> valor da coluna de baixo '36.000,00' (dx=43 dy=38)
+2026-10-08 14:21:47 | INFO     | peso_liquido: janela y=1640..1900 -> '36.000,00'
+2026-10-08 14:21:47 | INFO     | produtos: cabecalho detectado pelo criterio '2. CODIGO+CFOP'
+2026-10-08 14:21:47 | INFO     | produtos: colunas mapeadas (12): ['valor_ipi', 'valor_icms', 'bc_icms', 'valor_unitario', 'valor_total', 'desconto', 'quantidade', 'cfop', 'origem_cst', 'ncm', 'descricao', 'codigo']
+2026-10-08 14:21:47 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102 TON', 'quantidade': '36.0000', 'valor_unitario': '5.821.0919', 'valor_total': '209.559,31', 'bc_icms': '12.322.09', 'valor_icms': '2.094,76', 'valor_ipi': '0.0017.00'}
+2026-10-08 14:21:47 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 14:21:47 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO;'}
+2026-10-08 14:21:47 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:36:'}
+2026-10-08 14:21:47 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 14:21:47 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:21:47 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:21:47 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='36.0000' vlr_unit='5.821.0919' vlr_total='209.559,31'
+2026-10-08 14:21:47 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:21:47 | INFO     | 8647.pdf | extracao COMPLETA
+2026-10-08 14:21:47 | INFO     | 8647.pdf | produtos=1 status=completa
+2026-10-08 14:21:47 | INFO     | pipeline | 8647.pdf | chave 21220723704333000601550010000086471969573618 ATUALIZADA
+2026-10-08 14:21:47 | INFO     | pipeline | [5/8] processando 8649.pdf
+2026-10-08 14:21:47 | INFO     | 8649.pdf | inicio de extracao
+2026-10-08 14:22:29 | INFO     | 8649.pdf | origem=ocr itens=165
+2026-10-08 14:22:29 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 61220723704333000601550010000086491076822486
+2026-10-08 14:22:29 | INFO     | 8649.pdf | chave=61220723704333000601550010000086491076822486 DV_valido=True
+2026-10-08 14:22:29 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 61220723704333000601550010000086491076822486
+2026-10-08 14:22:29 | INFO     | peso: rotulo 'PESOBRUTO' (x=1992 y=1386) -> valor da coluna de baixo '0' (dx=-117 dy=38)
+2026-10-08 14:22:29 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 14:22:29 | INFO     | peso: rotulo 'PESOLIOUIDO' (x=2258 y=1395) -> valor da coluna de baixo '37.000,000' (dx=56 dy=42)
+2026-10-08 14:22:29 | INFO     | peso_liquido: janela y=1200..1640 -> '37.000,000'
+2026-10-08 14:22:29 | INFO     | produtos: cabecalho detectado pelo criterio '3. CODIGO+DESCRICAO (sem CFOP no cab)'
+2026-10-08 14:22:29 | INFO     | produtos: colunas mapeadas (14): ['codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'unidade', 'quantidade', 'valor_unitario', 'desconto', 'valor_total', 'aliquota', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 14:22:29 | DEBUG    | produtos: novo item -> {'codigo': 'PO15', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'bc_icms': 'VTRIB'}
+2026-10-08 14:22:29 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {'valor_total': '215.380,40', 'bc_icms': '12.664,37', 'valor_icms': '2.152,94', 'aliquota': '0,0017,000,00'}
+2026-10-08 14:22:29 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'VIASOLO.'}
+2026-10-08 14:22:29 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:37;'}
+2026-10-08 14:22:29 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 14:22:29 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:22:29 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:22:29 | INFO     | produtos: item 1 codigo='PO15' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='37,0000' vlr_unit='5.821,0919' vlr_total='215.380,40'
+2026-10-08 14:22:29 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:22:29 | INFO     | produtos: extracao por conteudo (fallback) = 2 item(ns)
+2026-10-08 14:22:29 | INFO     | 8649.pdf | extracao COMPLETA
+2026-10-08 14:22:29 | INFO     | 8649.pdf | produtos=2 status=completa
+2026-10-08 14:22:29 | INFO     | pipeline | 8649.pdf | chave 61220723704333000601550010000086491076822486 ATUALIZADA
+2026-10-08 14:22:29 | INFO     | pipeline | [6/8] processando 8662.pdf
+2026-10-08 14:22:29 | INFO     | 8662.pdf | inicio de extracao
+2026-10-08 14:23:10 | INFO     | 8662.pdf | origem=ocr itens=156
+2026-10-08 14:23:10 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 25220723704333000601550010000086621362784278
+2026-10-08 14:23:10 | INFO     | 8662.pdf | chave=25220723704333000601550010000086621362784278 DV_valido=True
+2026-10-08 14:23:11 | INFO     | chave: recuperada por reparo de DV/CNPJ -> 25220723704333000601550010000086621362784278
+2026-10-08 14:23:11 | INFO     | peso: rotulo 'PESO BRUTO' (x=2009 y=1327) -> valor da coluna de baixo '0' (dx=-116 dy=38)
+2026-10-08 14:23:11 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 14:23:11 | INFO     | peso: rotulo 'PESO LIOUIDO' (x=2271 y=1328) -> valor da coluna de baixo '48.000,000' (dx=52 dy=37)
+2026-10-08 14:23:11 | INFO     | peso_liquido: janela y=1200..1640 -> '48.000,000'
+2026-10-08 14:23:11 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 14:23:11 | INFO     | produtos: colunas mapeadas (12): ['codigo', 'valor_unitario', 'descricao', 'origem_cst', 'cfop', 'unidade', 'desconto', 'valor_total', 'valor_icms', 'ncm', 'valor_ipi', 'bc_icms']
+2026-10-08 14:23:11 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON 48,0000', 'valor_unitario': '5.907,0600', 'valor_total': '283.538.88', 'bc_icms': '16.672.09', 'valor_icms': '2.834,26', 'valor_ipi': '0.0017.000.0'}
+2026-10-08 14:23:11 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 14:23:11 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote:IMP197022-Qtde:48;'}
+2026-10-08 14:23:11 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lote(s):Reg.MAPA:PR 0015695000026.'}
+2026-10-08 14:23:11 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:23:11 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:23:11 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde=None vlr_unit='5.907,0600' vlr_total='283.538.88'
+2026-10-08 14:23:11 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:23:11 | INFO     | produtos: extracao por conteudo (fallback) = 1 item(ns)
+2026-10-08 14:23:11 | INFO     | 8662.pdf | extracao COMPLETA
+2026-10-08 14:23:11 | INFO     | 8662.pdf | produtos=1 status=completa
+2026-10-08 14:23:11 | INFO     | pipeline | 8662.pdf | chave 25220723704333000601550010000086621362784278 ATUALIZADA
+2026-10-08 14:23:11 | INFO     | pipeline | [7/8] processando 8694.pdf
+2026-10-08 14:23:11 | INFO     | 8694.pdf | inicio de extracao
+2026-10-08 14:23:55 | INFO     | 8694.pdf | origem=ocr itens=170
+2026-10-08 14:23:55 | INFO     | 8694.pdf | chave=51220823704333000601550010000086941339615756 DV_valido=True
+2026-10-08 14:23:55 | INFO     | peso: rotulo 'PESO BRUTO' (x=2010 y=1680) -> valor da coluna de baixo '0' (dx=-117 dy=39)
+2026-10-08 14:23:55 | INFO     | peso_bruto: janela y=1640..1900 -> '0'
+2026-10-08 14:23:55 | INFO     | peso: rotulo 'PESO LIQUIDO' (x=2270 y=1680) -> valor da coluna de baixo '32.000,000' (dx=53 dy=39)
+2026-10-08 14:23:55 | INFO     | peso_liquido: janela y=1640..1900 -> '32.000,000'
+2026-10-08 14:23:55 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 14:23:55 | INFO     | produtos: colunas mapeadas (13): ['ncm', 'bc_icms', 'valor_icms', 'cfop', 'valor_total', 'origem_cst', 'unidade', 'valor_unitario', 'desconto', 'valor_ipi', 'codigo', 'descricao', 'quantidade']
+2026-10-08 14:23:55 | DEBUG    | produtos: novo item -> {'codigo': 'POIS', 'descricao': 'FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '32,0000', 'valor_unitario': '5.907,0600', 'valor_total': '189.025.92', 'bc_icms': '11.114.72', 'valor_icms': '1.889.50', 'valor_ipi': '0,00|17.000.0'}
+2026-10-08 14:23:55 | DEBUG    | produtos: linha de 'obs' vista; valores nao-descricao aproveitados -> {}
+2026-10-08 14:23:55 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'APLICACAOVIASOLO'}
+2026-10-08 14:23:55 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lotc:1MP197022-Q1dc:32.'}
+2026-10-08 14:23:55 | DEBUG    | produtos: linha descartada apos obs -> {'descricao': 'Lolc(s):Reg.MAPA:PR0015695000026.'}
+2026-10-08 14:23:55 | DEBUG    | produtos: linha descartada apos obs -> {'codigo': 'DADOSADICIONAIS'}
+2026-10-08 14:23:55 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:23:55 | INFO     | produtos: item 1 codigo='P015' descricao='FosfatoMonoamonico11%N-52%P205- Granulado' ncm='31054000' und='TON' qtde='32,0000' vlr_unit='5.907,0600' vlr_total='189.025.92'
+2026-10-08 14:23:55 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:23:55 | INFO     | 8694.pdf | extracao COMPLETA
+2026-10-08 14:23:55 | INFO     | 8694.pdf | produtos=1 status=completa
+2026-10-08 14:23:55 | INFO     | pipeline | 8694.pdf | chave 51220823704333000601550010000086941339615756 ATUALIZADA
+2026-10-08 14:23:55 | INFO     | pipeline | [8/8] processando 8696.pdf
+2026-10-08 14:23:55 | INFO     | 8696.pdf | inicio de extracao
+2026-10-08 14:24:35 | INFO     | 8696.pdf | origem=ocr itens=159
+2026-10-08 14:24:35 | INFO     | 8696.pdf | chave=51220823704333000601550010000086961991321798 DV_valido=True
+2026-10-08 14:24:35 | INFO     | peso: rotulo 'PESO BRUTO' (x=2009 y=1260) -> valor da coluna de baixo '0' (dx=-115 dy=40)
+2026-10-08 14:24:35 | INFO     | peso_bruto: janela y=1200..1640 -> '0'
+2026-10-08 14:24:35 | INFO     | peso: rotulo 'PESOLIQUIDO' (x=2258 y=1262) -> valor da coluna de baixo '36.000,000' (dx=53 dy=39)
+2026-10-08 14:24:35 | INFO     | peso_liquido: janela y=1200..1640 -> '36.000,000'
+2026-10-08 14:24:35 | INFO     | produtos: cabecalho detectado pelo criterio '1. CODIGO+CFOP+VLR UNIT'
+2026-10-08 14:24:35 | INFO     | produtos: colunas mapeadas (14): ['aliquota', 'codigo', 'descricao', 'ncm', 'origem_cst', 'cfop', 'unidade', 'valor_unitario', 'quantidade', 'desconto', 'valor_total', 'bc_icms', 'valor_icms', 'valor_ipi']
+2026-10-08 14:24:35 | DEBUG    | produtos: novo item -> {'codigo': 'P015', 'descricao': 'Granulado FosfatoMonoamonico11%N-52%P205-', 'ncm': '31054000', 'origem_cst': '6/20', 'cfop': '5102', 'unidade': 'TON', 'quantidade': '36,0000', 'valor_unitario': '5.821,0925', 'valor_total': '209.559,33', 'bc_icms': '12.322,09', 'valor_icms': '2.094,76', 'aliquota': '0,0017,000,00'}
+2026-10-08 14:24:35 | INFO     | produtos: 1 item(ns) extraido(s)
+2026-10-08 14:24:35 | INFO     | produtos: item 1 codigo='P015' descricao='Granulado FosfatoMonoamonico11%N-52%P205' ncm='31054000' und='TON' qtde='36,0000' vlr_unit='5.821,0925' vlr_total='209.559,33'
+2026-10-08 14:24:35 | INFO     | produtos: total combinado (paginas) = 1
+2026-10-08 14:24:35 | INFO     | 8696.pdf | extracao COMPLETA
+2026-10-08 14:24:35 | INFO     | 8696.pdf | produtos=1 status=completa
+2026-10-08 14:24:35 | INFO     | pipeline | 8696.pdf | chave 51220823704333000601550010000086961991321798 ATUALIZADA
+2026-10-08 14:24:35 | INFO     | pipeline | RESULTADO: pdfs=8 inseridas=0 atualizadas=8 parciais=0 falhas=0 antes=11 depois=11 duracao=324.2s
+2026-10-08 14:24:35 | INFO     | pipeline | JSON=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.json CSV=C:\Users\MatheusMartinelli\OneDrive - Agrorobotica Fotonica Em Certificacoes Agroambientais\VERRA_Farmer\OS_050_Sementes Tropical\03_ENVIO_DE_DOCUMENTOS\2022\03_NOTAS_FISCAIS\NF_FERTILIZANTE\MAP\notas_fiscais.csv

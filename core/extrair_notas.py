@@ -78,6 +78,45 @@ REG_VALOR_TOL = r"\d{1,3}(?:[.,]\d{3})*[.,]\d{2}"
 # aceita "0", "37.000,000", "36.000,00", "48000" ...
 REG_PESO = r"([0-9][0-9.,]{0,14})"
 
+# ---------------------------------------------------------------------------
+# Nomenclaturas de peso no DANFE. A comparacao e feita sobre o texto
+# COMPACTADO (minusculas, sem acento e sem pontuacao) e por SUBSTRING, logo
+# cada item cobre tambem as formas que o contem ("peso liquido kg" cobre
+# "peso liquido"). As variantes abaixo cobrem os erros tipicos do OCR:
+#   'O' -> '0'        PESO LIQUID0, PES0 LIQUID0, PESO LIQUD0
+#   'I'/'l' -> '1'    PESO L1QUIDO, PESO L1QUID0
+#   'Q' -> 'O'        PESO LIOUIDO, PESO LIOU1DO
+#   letra trocada     PESO LIQDO, PESO LlQUIDO, PESO LIQULDO (LIQUlDO)
+#   rotulo cortado    PESO LIQ. / PESO LIQ (a caixa corta o fim do rotulo)
+#   unidade colada    PESO LIQUIDO KG / KGS / LIQUIDOKG / LÍQUIDO (KG)
+# ---------------------------------------------------------------------------
+ROTULOS_PESO_LIQUIDO = (
+    # grafia correta (com/sem acento, caixa alta/baixa)
+    "peso liquido", "peso líquido", "pêso líquido",
+    # OCR: 'O' lido como '0'
+    "peso liquid0", "pes0 liquido", "pes0 liquid0",
+    # OCR: 'I' / 'l' lidos como '1'
+    "peso l1quido", "peso l1quid0",
+    # OCR: 'Q' lido como 'O' / 'U'
+    "peso liouido", "peso liou1do",
+    # OCR: letras trocadas / fora de ordem ('LIQULDO' e 'LIQUlDO')
+    "peso liquldo", "peso llquido", "peso liqdo", "peso liqud0",
+    # unidade colada ao rotulo (KG / KGS)
+    "peso liquido kg", "peso líquido (kg)", "peso liquido kgs",
+    "peso liquidokg",
+    # rotulo cortado / abreviado - cobre tambem TODAS as formas acima
+    "peso liq",
+)
+
+ROTULOS_PESO_BRUTO = (
+    "peso bruto",
+    "peso bruto kg",
+    "peso brut0",           # OCR: 'O' -> '0'
+    "pes0 bruto",           # OCR: 'O' -> '0'
+    "peso brutto",          # OCR: letra duplicada
+    "peso bru",             # rotulo cortado (PESO BRU.)
+)
+
 
 def validar_chave(chave):
     """Valida chave de acesso NFe de 44 digitos (modulo 11)."""
@@ -1597,8 +1636,8 @@ def extrair_infos(itens, arquivo_rel):
     # transportadora ('254783430' / '133601609', que fica logo ACIMA do
     # rotulo) como se fosse peso.
     JANELAS_PESO = ((1640, 1900), (1200, 1640), (None, None))
-    for campo, rotulos in (("peso_bruto", ["pesobruto"]),
-                           ("peso_liquido", ["pesoliquido", "pesoliq"])):
+    for campo, rotulos in (("peso_bruto", ROTULOS_PESO_BRUTO),
+                           ("peso_liquido", ROTULOS_PESO_LIQUIDO)):
         valor = None
         for y0, y1 in JANELAS_PESO:
             valor = pegar_valor_peso(itens, rotulos, REG_PESO, margem=60,
